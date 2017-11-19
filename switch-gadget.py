@@ -1,4 +1,5 @@
 import RPi.GPIO as GPIO
+import curses
 import io
 import os
 import sys
@@ -15,6 +16,10 @@ SWITCH_MODE_BUTTON_PIN = 15
 SEND_PASSWORD_BUTTON_PIN = 11
 TFT_BUTTON_3_PIN = 16
 TFT_BUTTON_4_PIN = 13
+
+BTN_LABEL_X_POS = {
+        40 : [ 3, 15, 26, 37 ]
+        }
 
 # Encoder inputs
 ENC_A_PIN = 40
@@ -64,25 +69,27 @@ def get_enc_value():
 
 def check_gpio(mode, current_enc_value):
     new_mode = mode
+    enc_button_pressed = False
+
     if GPIO.event_detected(SWITCH_MODE_BUTTON_PIN):
-        print('Mode switch button pressed')
+        #print('Mode switch button pressed')
         if mode == HID_USB_MODE:
             new_mode = RNDIS_USB_MODE
         elif mode == RNDIS_USB_MODE:
             new_mode = HID_USB_MODE
-        else:
-            print("Unknown USB mode")
+        #else:
+        #    print("Unknown USB mode")
         set_usb_mode(new_mode)
 
     if GPIO.event_detected(SEND_PASSWORD_BUTTON_PIN):
         if mode == HID_USB_MODE:
-            print('Send password button pressed')
+            #print('Send password button pressed')
             send_password()
-        else:
-            print('Send password button pressed but not in HID mode')
+        #else:
+            #print('Send password button pressed but not in HID mode')
 
     if GPIO.event_detected(ENC_BUTTON_PIN):
-        print('Encoder button pressed.')
+        enc_button_pressed = True
 
     encoder_changed = False
     for pin in ENC_QUAD_PINS:
@@ -94,7 +101,7 @@ def check_gpio(mode, current_enc_value):
     if encoder_changed:
         new_enc_value = get_enc_value()
 
-    return new_mode, new_enc_value
+    return new_mode, new_enc_value, enc_button_pressed
 
 def set_usb_mode(mode):
     if True:
@@ -114,32 +121,48 @@ def send_password():
     dev.write("\0\0\0\0\0\0\0\0")
     dev.close()
 
-
-def main():
-    setup_gpio()
-
+def cryptex(stdscr):
     mode = RNDIS_USB_MODE
     #set_usb_mode(mode)
     enc_value = get_enc_value()
     selection = 0
 
+    curses.curs_set(0) # Turn off cursor
+    maxy, maxx = stdscr.getmaxyx()
+    stdscr.border()
+
+    stdscr.addstr(1, 1, "Screen dimensions: {0} x {1}".format(maxx, maxy))
+    for x in range(0,maxx):
+        stdscr.addstr(maxy-2, x, "{0}".format(x%10))
+    stdscr.addstr(1, 1, "Screen dimensions: {0} x {1}".format(maxx, maxy))
+    for b in range(0,4):
+        stdscr.addstr(maxy-1, BTN_LABEL_X_POS[maxx][b], "{0}".format(b+1))
+    stdscr.refresh()
+
     try:
         while 1:
-            mode, new_enc_value = check_gpio(mode, enc_value)
+            mode, new_enc_value, eb_pressed = check_gpio(mode, enc_value)
+            #if eb_pressed:
+                # do something
             if new_enc_value != enc_value:
                 if new_enc_value == CW_ORDER[enc_value]:
                     selection += 1
-                    print("New selection: " + str(selection))
                 elif new_enc_value == CCW_ORDER[enc_value]:
                     selection -= 1
-                    print("New selection: " + str(selection))
+                stdscr.addstr(2, 1, "Selection: {0:<5}".format(selection))
+                stdscr.refresh()
                 enc_value = new_enc_value
 
     except KeyboardInterrupt:
         GPIO.cleanup()
 
-    sys.exit(0)
 
+def main():
+    setup_gpio()
+
+    curses.wrapper(cryptex)
+
+    sys.exit(0)
 
 if __name__ == "__main__":
     main()
