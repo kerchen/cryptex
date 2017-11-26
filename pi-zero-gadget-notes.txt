@@ -11,7 +11,7 @@ http://blog.gbaman.info/?p=791
 https://elinux.org/RPi_Advanced_Setup
 
 (Optional) Some ISPs don't properly handle failed DNS lookups; Google's do.
-If your Windows shitbox is unable to connect to .local addresses or they take
+If your Windows box is unable to connect to .local addresses or they take
 a long time to serve up HTTP requests, or you can't use the normal HTTP port
 (80) without your ISP trying to "help" you, you might need to set your network
 adapter settings so that they use Google's:
@@ -82,6 +82,4 @@ character and not the British pound symbol.
           TerminusBold10x20           32x12
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-USB Gadget Fuckery (or, why are RNDIS connections slow & flaky?)
-Add _http service to /etc/avahi/services/multiple.service? No.
 
