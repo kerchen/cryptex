@@ -7,9 +7,6 @@ import sys
 import time
 import subprocess
 
-this_script_dir=os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.join(this_script_dir, 'pyLCD'))
-
 MODE_SWITCH_SCRIPT = "/home/pi/switch-mode.sh"
 
 # TFT buttons
