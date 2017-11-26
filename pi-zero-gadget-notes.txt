@@ -1,0 +1,87 @@
+Configuring gadgets:
+http://isticktoit.net/?p=1383
+
+Sorting Windows driver issues:
+http://irq5.io/2016/12/22/raspberry-pi-zero-as-multiple-usb-gadgets/
+https://hackaday.io/project/10387-gadget/log/34463-on-windows-drivers-and-usb-gadgets
+
+Setting up pi to use Avahi/zeroconf:
+https://gist.github.com/gbaman/975e2db164b3ca2b51ae11e45e8fd40a
+http://blog.gbaman.info/?p=791
+https://elinux.org/RPi_Advanced_Setup
+
+(Optional) Some ISPs don't properly handle failed DNS lookups; Google's do.
+If your Windows shitbox is unable to connect to .local addresses or they take
+a long time to serve up HTTP requests, or you can't use the normal HTTP port
+(80) without your ISP trying to "help" you, you might need to set your network
+adapter settings so that they use Google's:
+* For IPv4: 8.8.8.8 and/or 8.8.4.4.
+* For IPv6: 2001:4860:4860::8888 and/or 2001:4860:4860::8844.
+(More details here: https://developers.google.com/speed/public-dns/docs/using?csw=1)
+
+Steps for using Adafruit 2.2" TFT (non-touch)
+1. Grab Adadruit Jessie-based PiTFT 2.2" HAT image from https://s3.amazonaws.com/adafruit-raspberry-pi/2016-10-18-pitft-22.zip
+   Detailed instructions at https://learn.adafruit.com/adafruit-2-2-pitft-hat-320-240-primary-display-for-raspberry-pi/easy-install
+
+2. Burn image to SD card. Put wpa_supplicant.conf in root dir if you want to
+   be able to use a WiFi adapter for the configuration steps.
+3. Connect hardware:
+  a. Connect TFT to Pi
+  b. Connect USB hub to non-power USB connector on Pi. Connect keyboard,
+  mouse, and WiFi dongle (unless you want the frustration of trying to edit
+  files, etc on a tiny display).
+4. Connect USB cable to power USB port on Pi; connect other end to PC.
+   This should cause the Pi to boot.
+5. Once Pi is up, configure avahi per https://elinux.org/RPi_Advanced_Setup#Setting_up_for_remote_access_.2F_headless_operation
+6. Change locale, etc to US: sudo raspi-config
+  a. Select "5. Internationalisation Options" -> Change Locale
+     i. Select en_US.UTF-8 UTF-8
+     ii. Un-select en_GB.UTF-8 UTF-8
+     iii. Select <Ok>
+     iv. When prompted, select "en_US.UTF-8" as default locale for system environment
+  b. Select "5. Internationalisation Options" -> Change Locale
+     i. Select "Generic 101-key PC" 
+     ii. Select <Ok>
+     iii. Select "Other" for keyboard layout
+     iv. Find "English (US)" in list, select it, and then select <Ok>
+     v. Use plain English keyboard (no dvorak, etc)
+     vi. Use defaults for remaining options
+7. Escape from config program. Verify that typing shift-3 gives you a '#'
+character and not the British pound symbol.
+8. Set up USB gadget support:
+  a. Edit /boot/config.txt and add this line to the end of the file:
+     dtoverlay=dwc2
+  b. Edit /etc/modules and add these lines to the end of the file:
+     dwc2
+     libcomposite
+  c. Add this line to rc.local:
+     /home/pi/switch-mode.sh rndis
+9. At this point, you're ready to ditch the WiFi dongle. n.B. Avahi doesn't
+  seem to work with WiFi(?). You should probably install anything that
+  requires hitting an external server now.
+  a. Shut down the Pi and disconnect the USB hub.
+  b. Remove wpa_supplicant.conf from root of SD card.
+  c. Reconnect the USB cable to the non-power USB connector on the Pi (the
+     other end is still connected to host PC).
+10. Change console font size (optional) and turn off screen blanking:
+  a. Edit /boot/cmdline.txt.
+     i. Add 'consoleblank=0' to the end of the line
+     ii. Change boot font to desired value (e.g., Terminus10x20)
+  b. Change font size for post-boot:
+     i. Run 'sudo dpkg-reconfigure console-setup'
+     ii. Select font and size as desired
+          Font name                   Display Size (in characters)
+          Terminus6x12                53x20
+          Terminus8x14                40x17
+          Terminus8x16                40x15
+          Terminus10x20               32x12
+          Terminus11x22               29x10
+          Terminus12x24               26x10
+          Terminus14x28               22x8
+          Terminus16x32               20x7
+          TerminusBold10x20           32x12
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+USB Gadget Fuckery (or, why are RNDIS connections slow & flaky?)
+Add _http service to /etc/avahi/services/multiple.service? No.
+
