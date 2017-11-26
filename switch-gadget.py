@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
 import curses
+from datetime import datetime
 import io
 import os
 import sys
@@ -17,6 +18,9 @@ SEND_PASSWORD_BUTTON_PIN = 11
 TFT_BUTTON_3_PIN = 16
 TFT_BUTTON_4_PIN = 13
 
+# Button label positions are determined empirically and are dependent on
+# character resolution.
+# Dictionary key is max x character position.
 BTN_LABEL_X_POS = {
         40 : [ 3, 15, 26, 37 ]
         }
@@ -141,6 +145,8 @@ def cryptex(stdscr):
 
     try:
         while 1:
+            stdscr.addstr(2, 1, 
+                    "{0}".format(datetime.now().strftime("%Y %m %d %H:%M:%S")))
             mode, new_enc_value, eb_pressed = check_gpio(mode, enc_value)
             #if eb_pressed:
                 # do something
@@ -149,10 +155,10 @@ def cryptex(stdscr):
                     selection += 1
                 elif new_enc_value == CCW_ORDER[enc_value]:
                     selection -= 1
-                stdscr.addstr(2, 1, "Selection: {0:<5}".format(selection))
-                stdscr.refresh()
+                stdscr.addstr(3, 1, "Selection: {0:<5}".format(selection))
                 enc_value = new_enc_value
 
+            stdscr.refresh()
     except KeyboardInterrupt:
         GPIO.cleanup()
 

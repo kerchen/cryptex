@@ -17,7 +17,7 @@ hid_up() {
     echo "2"    > bDeviceClass
     echo 0x1d6b > idVendor # Linux Foundation
     echo 0x0104 > idProduct # Multifunction Composite Gadget
-    echo 0x3000 > bcdDevice # Increment whenever this script changes!
+    echo 0x3001 > bcdDevice # Increment whenever this script changes!
 
     mkdir -p strings/0x409
     echo "0000000000001" > strings/0x409/serialnumber
@@ -26,7 +26,7 @@ hid_up() {
 
     # Config 1: HID
     mkdir -p configs/c.1
-    echo "100" > configs/c.1/MaxPower
+    echo "200" > configs/c.1/MaxPower
     mkdir -p configs/c.1/strings/0x409
     echo "HID" > configs/c.1/strings/0x409/configuration
 
@@ -75,18 +75,18 @@ rndis_up() {
 
     echo 0x0200 > bcdUSB # USB2
     echo "2"    > bDeviceClass
-    echo 0x39ab > idVendor # Made up random!
-    echo 0xc002 > idProduct # Made up random!
-    echo 0x3000 > bcdDevice # Increment whenever this script changes!
+    echo 0x1d6b > idVendor # Linux Foundation
+    echo 0x0104 > idProduct # Multifunction Composite Gadget
+    echo 0x3002 > bcdDevice # Increment whenever this script changes!
 
     mkdir -p strings/0x409
     echo "0000000000001" > strings/0x409/serialnumber
     echo "Paul Kerchen"  > strings/0x409/manufacturer
-    echo "Password Locker RNDIS Device" > strings/0x409/product
+    echo "Cryptex RNDIS Device" > strings/0x409/product
 
     # Config 1: CDC
     mkdir -p configs/c.1
-    echo "100" > configs/c.1/MaxPower
+    echo "200" > configs/c.1/MaxPower
     mkdir -p configs/c.1/strings/0x409
     echo "CDC" > configs/c.1/strings/0x409/configuration
 
@@ -99,7 +99,7 @@ rndis_up() {
 
     # Config 2: RNDIS
     mkdir -p configs/c.2
-    echo "100" > configs/c.2/MaxPower
+    echo "200" > configs/c.2/MaxPower
     mkdir -p configs/c.2/strings/0x409
     echo "RNDIS" > configs/c.2/strings/0x409/configuration
 
