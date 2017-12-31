@@ -6,6 +6,10 @@ import os
 import sys
 import time
 import subprocess
+import threading
+
+sys.path.append("bottle")
+import server
 
 MODE_SWITCH_SCRIPT = "/home/pi/switch-mode.sh"
 
@@ -37,6 +41,7 @@ HID_USB_MODE = 1
 RNDIS_USB_MODE = 2
 
 def setup_gpio():
+    GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BOARD) # RPi pin-numbering scheme
     
     GPIO.setup(SWITCH_MODE_BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -162,6 +167,12 @@ def cryptex(stdscr):
 
 def main():
     setup_gpio()
+
+    web_server_thread = threading.Thread(
+            target=server.run_web_server,
+            args=(False,)
+            )
+    web_server_thread.start()
 
     curses.wrapper(cryptex)
 

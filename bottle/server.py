@@ -28,4 +28,5 @@ def do_login():
 #def server_static(filename):
     #return static_file(filename, root='/home/pi/bottle/assets')
 
-run(host='0.0.0.0', port=8080, debug=True)
+def run_web_server(debug):
+    run(host='0.0.0.0', port=80, debug=debug, quiet=not debug)
