@@ -1,5 +1,7 @@
 from bottle import get, post, request, route, run, static_file
 
+import shared_cfg
+
 @get('/login')
 def login():
     return '''
@@ -20,6 +22,9 @@ def do_login():
     username = request.forms.get('username')
     password = request.forms.get('password')
     if check_login(username, password):
+        shared_cfg.cv.acquire()
+        shared_cfg.db_loaded = True
+        shared_cfg.cv.release()
         return "<p>Your login information was correct.</p>"
     else:
         return "<p>Login failed.</p>"

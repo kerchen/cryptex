@@ -8,6 +8,8 @@ import time
 import subprocess
 import threading
 
+import shared_cfg
+
 sys.path.append("bottle")
 import server
 
@@ -159,6 +161,7 @@ def cryptex(stdscr):
                     selection -= 1
                 stdscr.addstr(3, 1, "Selection: {0:<5}".format(selection))
                 enc_value = new_enc_value
+            stdscr.addstr(4, 1, "DB loaded: {0}".format(shared_cfg.db_loaded))
 
             stdscr.refresh()
     except KeyboardInterrupt:
