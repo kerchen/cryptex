@@ -40,7 +40,7 @@ Steps for using Adafruit 2.2" TFT (non-touch)
      iii. Select <Ok>
      iv. When prompted, select "en_US.UTF-8" as default locale for system environment
   b. Select "5. Internationalisation Options" -> Change Locale
-     i. Select "Generic 101-key PC" 
+     i. Select "Generic 101-key PC"
      ii. Select <Ok>
      iii. Select "Other" for keyboard layout
      iv. Find "English (US)" in list, select it, and then select <Ok>
@@ -56,6 +56,10 @@ character and not the British pound symbol.
      libcomposite
   c. Add this line to rc.local:
      /home/pi/switch-mode.sh rndis
+8.5. Install things that need a connection to the internet:
+  a. sudo apt-get update
+  b. sudo apt-get install python-crypto
+  c. sudo pip2 install cheroot (optional; for serving HTTPS)
 9. At this point, you're ready to ditch the WiFi dongle. n.B. Avahi doesn't
   seem to work with WiFi(?). You should probably install anything that
   requires hitting an external server now.
@@ -83,3 +87,57 @@ character and not the British pound symbol.
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+SSL Cert setup: (from
+https://datacenteroverlords.com/2012/03/01/creating-your-own-ssl-certificate-authority/)
+
+Modify per-device cert creation steps:
+1. Generate private device key:
+openssl genrsa -out device.key 2048
+2. Generate cert signing request:
+openssreq -config device-ssl-cert.cfg -new -key device.key -out device.csr
+3. Sign CSR with CA root key:
+openssl x509 -req -in device.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out device.crt -days 500 -sha256 -extfile v3.ext
+
+Contents of device-ssl-cert.cfg:
+===============================================================================
+[ req ]
+default_bits       = 4096
+#default_md         = sha512
+#default_keyfile    = device.key
+prompt             = no
+#encrypt_key        = no
+
+# base request
+distinguished_name = req_distinguished_name
+
+# extensions
+req_extensions     = v3_req
+
+# distinguished_name
+[ req_distinguished_name ]
+countryName            = "US"                     # C=
+stateOrProvinceName    = "Michigan"               # ST=
+localityName           = "Almont"                 # L=
+postalCode             = "48003"                  # L/postalcode=
+organizationName       = "Paul Kerchen"           # O=
+organizationalUnitName = "Me"                     # OU=
+commonName             = "cryptex.local"          # CN=
+
+# req_extensions
+[ v3_req ]
+# The subject alternative name extension allows various literal values to be
+# included in the configuration file
+# http://www.openssl.org/docs/apps/x509v3_config.html
+subjectAltName  = DNS.1:cryptex.local
+===============================================================================
+
+Contents of v3.ext:
+===============================================================================
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = cryptex.local
+===============================================================================
