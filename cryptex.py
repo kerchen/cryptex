@@ -42,6 +42,7 @@ CCW_ORDER = [ 2, 0, 3, 1 ]
 HID_USB_MODE = 1
 RNDIS_USB_MODE = 2
 
+
 def setup_gpio():
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BOARD) # RPi pin-numbering scheme
@@ -67,6 +68,7 @@ def setup_gpio():
     #GPIO.setup(ENC_BIT4_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     #GPIO.add_event_detect(ENC_BIT4_PIN, GPIO.BOTH, bouncetime=50)
 
+
 def get_enc_value():
     new_val = 0
     for pin in ENC_QUAD_PINS:
@@ -74,6 +76,7 @@ def get_enc_value():
     #print("Encoder value: " + str(new_val))
 
     return new_val
+
 
 def check_gpio(mode, current_enc_value):
     new_mode = mode
@@ -111,6 +114,7 @@ def check_gpio(mode, current_enc_value):
 
     return new_mode, new_enc_value, enc_button_pressed
 
+
 def set_usb_mode(mode):
     if True:
         print("NOT setting USB mode.")
@@ -123,11 +127,13 @@ def set_usb_mode(mode):
     else:
         print("Unknown USB mode requested.")
 
+
 def send_password():
     dev = io.open("/dev/hidg0","wb")
     dev.write("\0\0\4\0\0\0\0\0")
     dev.write("\0\0\0\0\0\0\0\0")
     dev.close()
+
 
 def cryptex(stdscr):
     mode = RNDIS_USB_MODE
@@ -180,6 +186,7 @@ def main():
     curses.wrapper(cryptex)
 
     sys.exit(0)
+
 
 if __name__ == "__main__":
     main()

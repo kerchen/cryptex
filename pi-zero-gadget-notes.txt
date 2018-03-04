@@ -97,6 +97,14 @@ openssl genrsa -out device.key 2048
 openssreq -config device-ssl-cert.cfg -new -key device.key -out device.csr
 3. Sign CSR with CA root key:
 openssl x509 -req -in device.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out device.crt -days 500 -sha256 -extfile v3.ext
+4. Install root certificate in Windows certificate repository so that browsers
+   don't throw up scary warnings when you try to navigate to
+   https://cryptex.local.  To do this from Chrome:
+    i. Navigate to Settings->Advanced->Manage Certificates
+    ii. Import rootCA.pem (generated in previous steps), putting it in 
+    "Trusted Root Certification Authorities"
+  TODO: Firefox apparently has its own store, so might need to do it there
+  instead or in addition to the Windows store.
 
 Contents of device-ssl-cert.cfg:
 ===============================================================================

@@ -4,42 +4,45 @@ from cheroot import wsgi
 from cheroot.ssl.builtin import BuiltinSSLAdapter
 import ssl
 
+import db_setup
 import shared_cfg
+
 
 @route('/<filename:path>')
 def send_static(filename):
     return static_file(filename, root=".")
 
+
 @route('/')
 def default():
-    redirect("/index.html")
+    if not shared_cfg.db_conn:
+        redirect("/login")
+    else:
+        redirect("/index.html")
+
 
 @get('/login')
 def login():
-    return '''
-        <form action="/login" method="post">
-            Username: <input name="username" type="text" />
-            Password: <input name="password" type="password" />
-            <input value="Login" type="submit" />
-        </form>
-    '''
+    if not shared_cfg.db_conn:
+        return '''
+            <form action="/login" method="post">
+                Password: <input name="password" type="password" />
+                <input value="Login" type="submit" />
+            </form>
+        '''
+    return ''
 
-def check_login(user, passwd):
-    if user == 'paul' and passwd == 'pass':
-        return True
-    return False
 
 @post('/login')
 def do_login():
-    username = request.forms.get('username')
     password = request.forms.get('password')
-    if check_login(username, password):
-        shared_cfg.cv.acquire()
-        shared_cfg.db_loaded = True
-        shared_cfg.cv.release()
-        return "<p>Your login information was correct.</p>"
-    else:
-        return "<p>Login failed.</p>"
+    shared_cfg.cv.acquire()
+    shared_cfg.db_conn = db_setup.open_encrypted_db(password)
+    shared_cfg.cv.release()
+    # return "<p>Your login information was correct.</p>"
+    # else:
+    #     return "<p>Login failed.</p>"
+
 
 # Create our own sub-class of Bottle's ServerAdapter
 # so that we can specify SSL. Using just server='cherrypy'
@@ -60,9 +63,11 @@ class SSLCherryPyServer(ServerAdapter):
         finally:
             server.stop()
 
-#@route('/favicon.ico')
-#def server_static(filename):
-    #return static_file(filename, root='/home/pi/bottle/assets')
+
+# @route('/favicon.ico')
+# def server_static(filename):
+    # return static_file(filename, root='/home/pi/bottle/assets')
+
 
 def run_web_server(debug):
     run(host='0.0.0.0',
