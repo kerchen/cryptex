@@ -23,6 +23,7 @@ def create_table(conn, create_table_sql):
     """
     c = conn.cursor()
     c.execute(create_table_sql)
+    conn.commit()
 
 
 def connect_to_db(db_filename):
@@ -38,7 +39,10 @@ def connect_to_db(db_filename):
  
     conn = create_connection(db_filename)
     if conn is not None:
-        create_table(conn, sql_create_password_table)
+        try:
+            create_table(conn, sql_create_password_table)
+        except sqlite3.DatabaseError:
+            raise(Exception("DatabaseError exception. Bad password?"))
     else:
         raise(Exception("Error! cannot create the database connection."))
 
@@ -52,6 +56,13 @@ def open_encrypted_db(password,
         encryption.decrypt(key,
                            in_filename=encrypted_db_filename,
                            out_filename=decrypted_db_filename)
-        conn = connect_to_db(decrypted_db_filename)
+        try:
+            conn = connect_to_db(decrypted_db_filename)
+        except Exception:
+            conn = None
     else:
+        print("Creating new database at "+decrypted_db_filename)
         conn = connect_to_db(decrypted_db_filename)
+        encryption.encrypt(key, decrypted_db_filename, encrypted_db_filename)
+
+    return conn

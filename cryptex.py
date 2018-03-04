@@ -2,9 +2,7 @@ import RPi.GPIO as GPIO
 import curses
 from datetime import datetime
 import io
-import os
 import sys
-import time
 import subprocess
 import threading
 
@@ -167,7 +165,7 @@ def cryptex(stdscr):
                     selection -= 1
                 stdscr.addstr(3, 1, "Selection: {0:<5}".format(selection))
                 enc_value = new_enc_value
-            stdscr.addstr(4, 1, "DB loaded: {0}".format(shared_cfg.db_loaded))
+            stdscr.addstr(4, 1, "DB loaded: {0}".format("Yes" if shared_cfg.db_conn else "No" ))
 
             stdscr.refresh()
     except KeyboardInterrupt:
