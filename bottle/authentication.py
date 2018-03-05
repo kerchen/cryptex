@@ -5,6 +5,7 @@ import os
 import db_setup
 import shared_cfg
 
+
 def confirm_password_form(retry):
     form = '<form action="/first-time-setup" method="post">'
     if retry:
