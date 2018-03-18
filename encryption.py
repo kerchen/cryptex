@@ -10,13 +10,12 @@ from Crypto.Cipher import AES
 COOKIE = 'CRYDB001'
 
 
-def encrypt(key, in_filename, out_filename, chunk_size=64*1024):
+def encrypt(password, in_filename, out_filename, chunk_size=64*1024):
     """ Encrypts the contents of a file using AES (CBC mode) with the
-        given key.
+        given password.
 
-        key:
-            The encryption key - a string that must be either 16, 24 or 32
-            bytes long. Longer keys are more secure.
+        password:
+            The password to use for encrypting.
 
         in_filename:
             The filename of the file that contains the data to be encrypted.
@@ -30,6 +29,7 @@ def encrypt(key, in_filename, out_filename, chunk_size=64*1024):
             chunk_size must be divisible by 16.
     """
 
+    key = hashlib.sha256(password).digest()
     iv = ''.join(chr(random.randint(0, 0xFF)) for i in range(16))
     encryptor = AES.new(key, AES.MODE_CBC, iv)
     data_size = os.path.getsize(in_filename)
@@ -50,13 +50,12 @@ def encrypt(key, in_filename, out_filename, chunk_size=64*1024):
                 outfile.write(encryptor.encrypt(chunk))
 
 
-def encrypt_from_string(key, plaintext, out_filename, chunk_size=64*1024):
+def encrypt_from_string(password, plaintext, out_filename, chunk_size=64*1024):
     """ Encrypts an arbitrary string of bytes using AES (CBC mode) with the
-        given key.
+        given password.
 
-        key:
-            The encryption key - a string that must be either 16, 24 or 32
-            bytes long. Longer keys are more secure.
+        password:
+            The password to use for encrypting.
 
         plaintext:
             The string of bytes to be encrypted.
@@ -70,6 +69,7 @@ def encrypt_from_string(key, plaintext, out_filename, chunk_size=64*1024):
             chunk_size must be divisible by 16.
     """
 
+    key = hashlib.sha256(password).digest()
     iv = ''.join(chr(random.randint(0, 0xFF)) for i in range(16))
     encryptor = AES.new(key, AES.MODE_CBC, iv)
     data_size = len(plaintext)
@@ -91,11 +91,10 @@ def encrypt_from_string(key, plaintext, out_filename, chunk_size=64*1024):
             i += chunk_size
 
 
-def decrypt(key, in_filename, out_filename, chunk_size=24*1024):
-    """ Decrypts a file using AES (CBC mode) with the given key.
-        key:
-            The encryption key - a string that must be either 16, 24 or 32
-            bytes long. Longer keys are more secure.
+def decrypt(password, in_filename, out_filename, chunk_size=24*1024):
+    """ Decrypts a file using AES (CBC mode) with the given password.
+        password:
+            The password to use for encrypting.
 
         in_filename:
             The filename of the file that contains the data to be decrypted.
@@ -109,6 +108,7 @@ def decrypt(key, in_filename, out_filename, chunk_size=24*1024):
             chunk_size must be divisible by 16.
     """
 
+    key = hashlib.sha256(password).digest()
     with open(in_filename, 'rb') as infile:
         cookie = infile.read(len(COOKIE))
         if cookie != COOKIE:
@@ -129,10 +129,9 @@ def decrypt(key, in_filename, out_filename, chunk_size=24*1024):
 
 
 def decrypt_to_string(key, in_filename, chunk_size=24*1024):
-    """ Decrypts a file into a string, using AES (CBC mode) with the given key.
-        key:
-            The encryption key - a string that must be either 16, 24 or 32
-            bytes long. Longer keys are more secure.
+    """ Decrypts a file into a string, using AES (CBC mode) with the given password.
+        password:
+            The password to use for encrypting.
 
         in_filename:
             The filename of the file that contains the data to be decrypted.
@@ -143,6 +142,7 @@ def decrypt_to_string(key, in_filename, chunk_size=24*1024):
             chunk_size must be divisible by 16.
     """
 
+    key = hashlib.sha256(password).digest()
     plaintext = ""
 
     with open(in_filename, 'rb') as infile:
@@ -178,15 +178,14 @@ def main():
                  "like Aldus PageMaker including versions of Lorem Ipsum.")
 
     password = 's3krit pa55wort!'
-    key = hashlib.sha256(password).digest()
     plaintext_filename = 'lorem-encryptum.txt'
     ciphertext_filename = 'lorem-encryptum.enc'
 
     with open(plaintext_filename, 'wb') as ptfile:
         ptfile.write(plaintext)
 
-    encrypt(key, plaintext_filename, ciphertext_filename)
-    decrypt(key, ciphertext_filename, plaintext_filename)
+    encrypt(password, plaintext_filename, ciphertext_filename)
+    decrypt(password, ciphertext_filename, plaintext_filename)
 
     with open(plaintext_filename, 'rb') as ptfile:
         rt_plaintext = ptfile.read()
@@ -196,8 +195,8 @@ def main():
     else:
         print("Round-trip plaintext matches original")
 
-    encrypt_from_string(key, plaintext, ciphertext_filename)
-    rt_plaintext = decrypt_to_string(key, ciphertext_filename)
+    encrypt_from_string(password, plaintext, ciphertext_filename)
+    rt_plaintext = decrypt_to_string(password, ciphertext_filename)
 
     if rt_plaintext != plaintext:
         print("Round-trip plaintext doesn't match original?!")
