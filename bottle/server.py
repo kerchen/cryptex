@@ -1,4 +1,4 @@
-import bottle
+from bottle import (redirect, request, route, run, ServerAdapter, static_file)
 from cheroot import wsgi
 from cheroot.ssl.builtin import BuiltinSSLAdapter
 import ssl
@@ -8,23 +8,27 @@ import authentication
 import main_screen
 
 
-@bottle.route('/<filename:path>')
+@route('/<filename:path>')
 def send_static(filename):
-    return bottle.static_file(filename, root="web-root")
-
-
-@bottle.route('/')
-def default():
-    if not shared_cfg.pw_store:
-        bottle.redirect("/login")
+    if shared_cfg.is_valid_session(request.get_cookie(shared_cfg.SESSION_COOKIE_NAME)):
+        return static_file(filename, root="web-root")
     else:
-        bottle.redirect("/index.html")
+        redirect("/login")
+
+@route('/')
+def default():
+    if shared_cfg.is_valid_session(request.get_cookie(shared_cfg.SESSION_COOKIE_NAME)):
+        redirect("/index.html")
+    elif shared_cfg.session_key:
+        return static_file("/session-mismatch.html", root="web-root")
+    else:
+        redirect("/login")
 
 
 # Create our own sub-class of Bottle's ServerAdapter
 # so that we can specify SSL. Using just server='cherrypy'
 # uses the default cherrypy server, which doesn't use SSL
-class SSLCherryPyServer(bottle.ServerAdapter):
+class SSLCherryPyServer(ServerAdapter):
     def run(self, handler):
         server = wsgi.Server((self.host, self.port), handler)
         server.ssl_adapter = BuiltinSSLAdapter('./certs/device.crt',
@@ -42,8 +46,8 @@ class SSLCherryPyServer(bottle.ServerAdapter):
 
 
 def run_web_server(debug):
-    bottle.run(host='0.0.0.0',
-               port=443,
-               debug=debug,
-               quiet=not debug,
-               server=SSLCherryPyServer)
+    run(host='0.0.0.0',
+           port=443,
+           debug=debug,
+           quiet=not debug,
+           server=SSLCherryPyServer)

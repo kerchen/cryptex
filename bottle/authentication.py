@@ -1,9 +1,23 @@
 from bottle import (get, post, route, response, run, redirect, request,
                     static_file, ServerAdapter, default_app)
 import os
+import uuid
 
 import pw_store
 import shared_cfg
+
+
+
+
+def new_session():
+    """Make a new session key, add to the response a cookie with the session
+    key and return the new session key"""
+
+    key = str(uuid.uuid4())
+
+    response.set_cookie(shared_cfg.SESSION_COOKIE_NAME, key, secure=True)
+
+    return key
 
 
 def confirm_password_form(retry):
@@ -46,6 +60,7 @@ def do_first_time_setup():
         shared_cfg.pw_store = pw_store.open_pw_store(password, shared_cfg.pw_store_filename)
         if shared_cfg.pw_store:
             shared_cfg.master_password = password
+            shared_cfg.session_key = new_session()
         else:
             shared_cfg.master_password = None
         shared_cfg.cv.release()
@@ -93,6 +108,7 @@ def do_login():
     shared_cfg.pw_store = pw_store.open_pw_store(password, shared_cfg.pw_store_filename)
     if shared_cfg.pw_store:
         shared_cfg.master_password = password
+        shared_cfg.session_key = new_session()
     else:
         shared_cfg.master_password = None
     shared_cfg.cv.release()
