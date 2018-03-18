@@ -1,39 +1,52 @@
-import bottle
+from bottle import (post, redirect, request, route, static_file)
+
+import shared_cfg
 
 
-@bottle.route('/lock')
+@route('/lock')
 def lock():
-    print("Locking the whole thing down")
-    bottle.redirect("/lock.html")
+    if shared_cfg.is_session_valid(request):
+        print("Locking the whole thing down")
+        shared_cfg.lock_store()
+        return static_file("/lock.html", root="web-root")
+    return redirect("/")
 
 
-@bottle.route('/activate')
+@route('/activate')
 def activate():
-    print("Activating the device")
-    bottle.redirect("/activate.html")
+    if shared_cfg.is_session_valid(request):
+        print("Activating the device")
+        return redirect("/activate.html")
+    return redirect("/")
 
 
-@bottle.route('/master-pass')
+@route('/master-pass')
 def master_pass():
-    print("Changing master password")
-    bottle.redirect("/master-pass.html")
+    if shared_cfg.is_session_valid(request):
+        print("Changing master password")
+        return redirect("/master-pass.html")
+    return redirect("/")
 
 
-@bottle.route('/manage')
+@route('/manage')
 def manage():
-    print("Managing passwords")
-    bottle.redirect("/manage.html")
+    if shared_cfg.is_session_valid(request):
+        print("Managing passwords")
+        return redirect("/manage.html")
+    return redirect("/")
 
 
-@bottle.post('/main_menu')
+@post('/main_menu')
 def do_main_menu():
-    if bottle.request.forms.get("lock"):
-        bottle.redirect("/lock")
-    elif bottle.request.forms.get("activate"):
-        bottle.redirect("/activate")
-    elif bottle.request.forms.get("master_pass"):
-        bottle.redirect("/master-pass")
-    elif bottle.request.forms.get("manage"):
-        bottle.redirect("/manage")
+    if shared_cfg.is_session_valid(request):
+        if request.forms.get("lock"):
+            return redirect("/lock")
+        elif request.forms.get("activate"):
+            return redirect("/activate")
+        elif request.forms.get("master_pass"):
+            return redirect("/master-pass")
+        elif request.forms.get("manage"):
+            return redirect("/manage")
+    return redirect("/")
 
 

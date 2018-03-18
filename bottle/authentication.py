@@ -7,8 +7,6 @@ import pw_store
 import shared_cfg
 
 
-
-
 def new_session():
     """Make a new session key, add to the response a cookie with the session
     key and return the new session key"""
@@ -39,7 +37,7 @@ def first_time_setup(retry=""):
     if not shared_cfg.pw_store:
         if not os.path.exists(shared_cfg.pw_store_filename):
             return confirm_password_form(False)
-    redirect("/")
+    return redirect("/")
 
 
 @get('/first-time-setup-retry')
@@ -47,7 +45,7 @@ def first_time_setup_retry():
     if not shared_cfg.pw_store:
         if not os.path.exists(shared_cfg.pw_store_filename):
             return confirm_password_form(True)
-    redirect("/")
+    return redirect("/")
 
 
 @post('/first-time-setup')
@@ -64,9 +62,9 @@ def do_first_time_setup():
         else:
             shared_cfg.master_password = None
         shared_cfg.cv.release()
-        redirect("/")
+        return redirect("/")
     else:
-        redirect("/first-time-setup-retry")
+        return redirect("/first-time-setup-retry")
 
 
 def enter_password_form(retry):
@@ -88,7 +86,7 @@ def login_retry():
             redirect("/first-time-setup")
             return ''
         return enter_password_form(True)
-    redirect("/")
+    return redirect("/")
 
 
 @get('/login')
@@ -98,7 +96,7 @@ def login():
             redirect("/first-time-setup")
             return ''
         return enter_password_form(False)
-    redirect("/")
+    return redirect("/")
 
 
 @post('/login')
@@ -113,6 +111,6 @@ def do_login():
         shared_cfg.master_password = None
     shared_cfg.cv.release()
     if not shared_cfg.pw_store:
-        redirect("/login-retry")
+        return redirect("/login-retry")
     else:
-        redirect("/")
+        return redirect("/")

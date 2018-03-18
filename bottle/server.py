@@ -10,19 +10,23 @@ import main_screen
 
 @route('/<filename:path>')
 def send_static(filename):
-    if shared_cfg.is_valid_session(request.get_cookie(shared_cfg.SESSION_COOKIE_NAME)):
+    if shared_cfg.is_session_valid(request):
         return static_file(filename, root="web-root")
     else:
-        redirect("/login")
+        return redirect("/login")
+
 
 @route('/')
 def default():
-    if shared_cfg.is_valid_session(request.get_cookie(shared_cfg.SESSION_COOKIE_NAME)):
-        redirect("/index.html")
-    elif shared_cfg.session_key:
+    if shared_cfg.is_session_valid(request):
+        print("Default redirect to index.html")
+        return redirect("/index.html")
+    elif shared_cfg.is_session_active():
+        print("Default redirect to mismatch because session is active")
         return static_file("/session-mismatch.html", root="web-root")
     else:
-        redirect("/login")
+        print("Default redirect to login")
+        return redirect("/login")
 
 
 # Create our own sub-class of Bottle's ServerAdapter
