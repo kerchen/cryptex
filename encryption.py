@@ -128,7 +128,7 @@ def decrypt(password, in_filename, out_filename, chunk_size=24*1024):
             outfile.truncate(orig_size)
 
 
-def decrypt_to_string(key, in_filename, chunk_size=24*1024):
+def decrypt_to_string(password, in_filename, chunk_size=24*1024):
     """ Decrypts a file into a string, using AES (CBC mode) with the given password.
         password:
             The password to use for encrypting.

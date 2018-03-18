@@ -44,6 +44,10 @@ def do_first_time_setup():
     if password == password2:
         shared_cfg.cv.acquire()
         shared_cfg.pw_store = pw_store.open_pw_store(password, shared_cfg.pw_store_filename)
+        if shared_cfg.pw_store:
+            shared_cfg.master_password = password
+        else:
+            shared_cfg.master_password = None
         shared_cfg.cv.release()
         redirect("/")
     else:
@@ -87,6 +91,10 @@ def do_login():
     password = request.forms.get('password')
     shared_cfg.cv.acquire()
     shared_cfg.pw_store = pw_store.open_pw_store(password, shared_cfg.pw_store_filename)
+    if shared_cfg.pw_store:
+        shared_cfg.master_password = password
+    else:
+        shared_cfg.master_password = None
     shared_cfg.cv.release()
     if not shared_cfg.pw_store:
         redirect("/login-retry")
