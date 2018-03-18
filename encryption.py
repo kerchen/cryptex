@@ -11,7 +11,7 @@ COOKIE = 'CRYDB001'
 
 
 def encrypt(key, in_filename, out_filename, chunk_size=64*1024):
-    """ Encrypts an arbitrary string of bytes using AES (CBC mode) with the
+    """ Encrypts the contents of a file using AES (CBC mode) with the
         given key.
 
         key:
@@ -48,6 +48,47 @@ def encrypt(key, in_filename, out_filename, chunk_size=64*1024):
                     chunk += ' ' * (16 - len(chunk) % 16)
 
                 outfile.write(encryptor.encrypt(chunk))
+
+
+def encrypt_from_string(key, plaintext, out_filename, chunk_size=64*1024):
+    """ Encrypts an arbitrary string of bytes using AES (CBC mode) with the
+        given key.
+
+        key:
+            The encryption key - a string that must be either 16, 24 or 32
+            bytes long. Longer keys are more secure.
+
+        plaintext:
+            The string of bytes to be encrypted.
+
+        out_filename:
+            The file to be written, containing the encrypted data.
+
+        chunk_size:
+            Sets the size of the chunk which the function uses to encrypt the
+            data. Larger chunk sizes can be faster for some files and machines.
+            chunk_size must be divisible by 16.
+    """
+
+    iv = ''.join(chr(random.randint(0, 0xFF)) for i in range(16))
+    encryptor = AES.new(key, AES.MODE_CBC, iv)
+    data_size = len(plaintext)
+
+    with open(out_filename, 'wb') as outfile:
+        outfile.write(COOKIE)
+        outfile.write(struct.pack('<Q', data_size))
+        outfile.write(iv)
+
+        i = 0
+        while True:
+            chunk = plaintext[i:i+chunk_size]
+            if len(chunk) == 0:
+                break
+            elif len(chunk) % 16 != 0:
+                chunk += ' ' * (16 - len(chunk) % 16)
+
+            outfile.write(encryptor.encrypt(chunk))
+            i += chunk_size
 
 
 def decrypt(key, in_filename, out_filename, chunk_size=24*1024):
@@ -87,6 +128,43 @@ def decrypt(key, in_filename, out_filename, chunk_size=24*1024):
             outfile.truncate(orig_size)
 
 
+def decrypt_to_string(key, in_filename, chunk_size=24*1024):
+    """ Decrypts a file into a string, using AES (CBC mode) with the given key.
+        key:
+            The encryption key - a string that must be either 16, 24 or 32
+            bytes long. Longer keys are more secure.
+
+        in_filename:
+            The filename of the file that contains the data to be decrypted.
+
+        chunk_size:
+            Sets the size of the chunk which the function uses to encrypt the
+            data. Larger chunk sizes can be faster for some files and machines.
+            chunk_size must be divisible by 16.
+    """
+
+    plaintext = ""
+
+    with open(in_filename, 'rb') as infile:
+        cookie = infile.read(len(COOKIE))
+        if cookie != COOKIE:
+            raise Exception("Input file does not have expected cookie")
+
+        orig_size = struct.unpack('<Q', infile.read(struct.calcsize('Q')))[0]
+        iv = infile.read(16)
+        decryptor = AES.new(key, AES.MODE_CBC, iv)
+
+        while True:
+            chunk = infile.read(chunk_size)
+            if len(chunk) == 0:
+                break
+            plaintext += decryptor.decrypt(chunk)
+
+        plaintext = plaintext[:orig_size]
+
+    return plaintext
+
+
 def main():
     plaintext = ("Lorem Ipsum is simply dummy text of the printing and "
                  "typesetting industry. Lorem Ipsum has been the industry's "
@@ -112,6 +190,14 @@ def main():
 
     with open(plaintext_filename, 'rb') as ptfile:
         rt_plaintext = ptfile.read()
+
+    if rt_plaintext != plaintext:
+        print("Round-trip plaintext doesn't match original?!")
+    else:
+        print("Round-trip plaintext matches original")
+
+    encrypt_from_string(key, plaintext, ciphertext_filename)
+    rt_plaintext = decrypt_to_string(key, ciphertext_filename)
 
     if rt_plaintext != plaintext:
         print("Round-trip plaintext doesn't match original?!")

@@ -2,7 +2,5 @@ import threading
 
 cv = threading.Condition()
 
-db_filename = "/home/pi/cryptex.db"
-encrypted_db_filename = db_filename + ".enc"
-
-db_conn = None
+pw_store_filename = "/home/pi/pw_store.enc"
+pw_store = None

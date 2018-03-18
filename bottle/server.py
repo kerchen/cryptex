@@ -14,7 +14,7 @@ def send_static(filename):
 
 @bottle.route('/')
 def default():
-    if not shared_cfg.db_conn:
+    if not shared_cfg.pw_store:
         bottle.redirect("/login")
     else:
         bottle.redirect("/index.html")
@@ -27,19 +27,19 @@ def lock():
 
 
 @bottle.route('/activate')
-def lock():
+def activate():
     print("Activating the device")
     bottle.redirect("/activate.html")
 
 
 @bottle.route('/master-pass')
-def lock():
+def master_pass():
     print("Changing master password")
     bottle.redirect("/master-pass.html")
 
 
 @bottle.route('/manage')
-def lock():
+def manage():
     print("Managing passwords")
     bottle.redirect("/manage.html")
 

@@ -2,7 +2,7 @@ from bottle import (get, post, route, response, run, redirect, request,
                     static_file, ServerAdapter, default_app)
 import os
 
-import db_setup
+import pw_store_setup
 import shared_cfg
 
 
@@ -22,16 +22,16 @@ def confirm_password_form(retry):
 
 @get('/first-time-setup')
 def first_time_setup(retry=""):
-    if not shared_cfg.db_conn:
-        if not os.path.exists(shared_cfg.encrypted_db_filename):
+    if not shared_cfg.pw_store:
+        if not os.path.exists(shared_cfg.pw_store_filename):
             return confirm_password_form(False)
     redirect("/")
 
 
 @get('/first-time-setup-retry')
 def first_time_setup_retry():
-    if not shared_cfg.db_conn:
-        if not os.path.exists(shared_cfg.encrypted_db_filename):
+    if not shared_cfg.pw_store:
+        if not os.path.exists(shared_cfg.pw_store_filename):
             return confirm_password_form(True)
     redirect("/")
 
@@ -43,7 +43,7 @@ def do_first_time_setup():
     password2 = request.forms.get('password2')
     if password == password2:
         shared_cfg.cv.acquire()
-        shared_cfg.db_conn = db_setup.open_encrypted_db(password)
+        shared_cfg.pw_store = pw_store_setup.open_pw_store(password, shared_cfg.pw_store_filename)
         shared_cfg.cv.release()
         redirect("/")
     else:
@@ -64,8 +64,9 @@ def enter_password_form(retry):
 
 @get('/login-retry')
 def login_retry():
-    if not shared_cfg.db_conn:
-        if not os.path.exists(shared_cfg.encrypted_db_filename):
+    #if not shared_cfg.db_conn:
+    if not shared_cfg.pw_store:
+        if not os.path.exists(shared_cfg.pw_store_filename):
             redirect("/first-time-setup")
             return ''
         return enter_password_form(True)
@@ -74,8 +75,8 @@ def login_retry():
 
 @get('/login')
 def login():
-    if not shared_cfg.db_conn:
-        if not os.path.exists(shared_cfg.encrypted_db_filename):
+    if not shared_cfg.pw_store:
+        if not os.path.exists(shared_cfg.pw_store_filename):
             redirect("/first-time-setup")
             return ''
         return enter_password_form(False)
@@ -86,9 +87,9 @@ def login():
 def do_login():
     password = request.forms.get('password')
     shared_cfg.cv.acquire()
-    shared_cfg.db_conn = db_setup.open_encrypted_db(password)
+    shared_cfg.pw_store = pw_store_setup.open_pw_store(password, shared_cfg.pw_store_filename)
     shared_cfg.cv.release()
-    if not shared_cfg.db_conn:
+    if not shared_cfg.pw_store:
         redirect("/login-retry")
     else:
         redirect("/")

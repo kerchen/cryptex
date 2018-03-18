@@ -6,8 +6,7 @@ sys.path.append(os.path.join(my_path, ".."))
 import shared_cfg
 
 # Override settings from shared config.
-shared_cfg.db_filename = os.path.join(my_path, "..", "cryptex.db")
-shared_cfg.encrypted_db_filename = shared_cfg.db_filename + ".enc"
+shared_cfg.pw_store_filename = os.path.join(my_path, "..", "pw_store.enc")
 
 print(os.path.join(my_path, "..", "bottle"))
 sys.path.append(os.path.join(my_path, "..", "bottle"))
