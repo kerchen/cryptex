@@ -2,7 +2,7 @@ from bottle import (get, post, route, response, run, redirect, request,
                     static_file, ServerAdapter, default_app)
 import os
 
-import pw_store_setup
+import pw_store
 import shared_cfg
 
 
@@ -43,7 +43,7 @@ def do_first_time_setup():
     password2 = request.forms.get('password2')
     if password == password2:
         shared_cfg.cv.acquire()
-        shared_cfg.pw_store = pw_store_setup.open_pw_store(password, shared_cfg.pw_store_filename)
+        shared_cfg.pw_store = pw_store.open_pw_store(password, shared_cfg.pw_store_filename)
         shared_cfg.cv.release()
         redirect("/")
     else:
@@ -64,7 +64,6 @@ def enter_password_form(retry):
 
 @get('/login-retry')
 def login_retry():
-    #if not shared_cfg.db_conn:
     if not shared_cfg.pw_store:
         if not os.path.exists(shared_cfg.pw_store_filename):
             redirect("/first-time-setup")
@@ -87,7 +86,7 @@ def login():
 def do_login():
     password = request.forms.get('password')
     shared_cfg.cv.acquire()
-    shared_cfg.pw_store = pw_store_setup.open_pw_store(password, shared_cfg.pw_store_filename)
+    shared_cfg.pw_store = pw_store.open_pw_store(password, shared_cfg.pw_store_filename)
     shared_cfg.cv.release()
     if not shared_cfg.pw_store:
         redirect("/login-retry")
