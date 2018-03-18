@@ -27,20 +27,35 @@ def create_table(conn, create_table_sql):
 
 
 def connect_to_db(db_filename):
+    sql_create_folder_table = """
+            CREATE TABLE IF NOT EXISTS folders (
+            id integer UNIQUE PRIMARY KEY,
+            name text NOT NULL
+            );
+        """
     sql_create_password_table = """
             CREATE TABLE IF NOT EXISTS passwords (
             key integer UNIQUE PRIMARY KEY,
             name text,
             username text,
             password text,
-            site_url text
+            site_url text,
+            folder_id integer NOT NULL,
+                FOREIGN KEY (folder_id) REFERENCES folders(id)
             ); 
         """
- 
+    sql_create_root_folder = """INSERT INTO folders (name) VALUES ('root');"""
+
     conn = create_connection(db_filename)
     if conn is not None:
         try:
+            create_table(conn, sql_create_folder_table)
             create_table(conn, sql_create_password_table)
+
+            c = conn.cursor()
+            c.execute(sql_create_root_folder)
+            conn.commit()
+
         except sqlite3.DatabaseError:
             raise(Exception("DatabaseError exception. Bad password?"))
     else:
