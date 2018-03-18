@@ -19,13 +19,10 @@ def send_static(filename):
 @route('/')
 def default():
     if shared_cfg.is_session_valid(request):
-        print("Default redirect to index.html")
         return redirect("/index.html")
     elif shared_cfg.is_session_active():
-        print("Default redirect to mismatch because session is active")
         return static_file("/session-mismatch.html", root="web-root")
     else:
-        print("Default redirect to login")
         return redirect("/login")
 
 

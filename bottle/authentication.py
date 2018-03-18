@@ -50,7 +50,6 @@ def first_time_setup_retry():
 
 @post('/first-time-setup')
 def do_first_time_setup():
-    print("In do_first_time_setup()")
     password = request.forms.get('password')
     password2 = request.forms.get('password2')
     if password == password2:
@@ -83,8 +82,7 @@ def enter_password_form(retry):
 def login_retry():
     if not shared_cfg.pw_store:
         if not os.path.exists(shared_cfg.pw_store_filename):
-            redirect("/first-time-setup")
-            return ''
+            return redirect("/first-time-setup")
         return enter_password_form(True)
     return redirect("/")
 
@@ -93,8 +91,7 @@ def login_retry():
 def login():
     if not shared_cfg.pw_store:
         if not os.path.exists(shared_cfg.pw_store_filename):
-            redirect("/first-time-setup")
-            return ''
+            return redirect("/first-time-setup")
         return enter_password_form(False)
     return redirect("/")
 

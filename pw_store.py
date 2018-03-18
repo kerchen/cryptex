@@ -16,12 +16,12 @@ def open_pw_store(password, pw_store_filename):
         pw_store = ET.Element("cryptex_pw_store")
         ET.SubElement(pw_store, "passwords")
 
-        save_pw_store(password, pw_store_filename)
+        save_pw_store(pw_store, password, pw_store_filename)
 
     return pw_store
 
 
-def save_pw_store(password, pw_store_filename):
+def save_pw_store(pw_store, password, pw_store_filename):
     pw_store_xml = ET.tostring(pw_store, encoding='utf8', method='xml')
     print(pw_store_xml)
     encryption.encrypt_from_string(password, pw_store_xml, pw_store_filename)

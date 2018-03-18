@@ -1,5 +1,7 @@
 import threading
 
+from pw_store import save_pw_store
+
 cv = threading.Condition()
 
 SESSION_COOKIE_NAME = "cryptex-session-id"
@@ -29,7 +31,8 @@ def does_session_match(cookie):
 def lock_store():
     global pw_store, master_password, session_key
     cv.acquire()
-    # TODO: Save password store
+    if pw_store and master_password:
+        save_pw_store(pw_store, master_password, pw_store_filename)
     pw_store = None
     master_password = None
     session_key = None
