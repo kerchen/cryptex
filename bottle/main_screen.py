@@ -24,7 +24,7 @@ def activate():
 def master_pass():
     if shared_cfg.is_session_valid(request):
         print("Changing master password")
-        return redirect("/master-pass.html")
+        return redirect("/change-master-password")
     return redirect("/")
 
 

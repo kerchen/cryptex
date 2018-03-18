@@ -66,6 +66,61 @@ def do_first_time_setup():
         return redirect("/first-time-setup-retry")
 
 
+def change_master_password_form(bad_master, mismatch):
+    form = '<form action="/change-master-password" method="post">'
+    if bad_master:
+        form += "Entered master password was incorrect. Please try again.</br>"
+    if mismatch:
+        form += "New passwords did not match. Please try again.</br>"
+    form += '''
+                Changing master password.</br>
+                Existing Password: <input name="existing_password" type="password"/> </br>
+                New Password: <input name="new_password" type="password"/> </br>
+                Re-enter New Password: <input name="new_password_confirm" type="password" />
+                <input value="Create" type="submit" />
+                </form>
+            '''
+    return form
+
+
+@get('/change-master-password')
+def change_master_password():
+    if shared_cfg.is_session_valid(request):
+        return change_master_password_form(False, False)
+    return redirect("/")
+
+
+@get('/change-master-password-retry-bad-master')
+def change_master_password_retry_bad_master():
+    if shared_cfg.is_session_valid(request):
+        return change_master_password_form(True, False)
+    return redirect("/")
+
+
+@get('/change-master-password-retry-mismatch')
+def change_master_password_retry_mismatch():
+    if shared_cfg.is_session_valid(request):
+        return change_master_password_form(False, True)
+    return redirect("/")
+
+
+@post('/change-master-password')
+def change_master_password():
+    if shared_cfg.is_session_valid(request):
+        existing_password = request.forms.get('existing_password')
+        new_password = request.forms.get('new_password')
+        new_password_confirm = request.forms.get('new_password_confirm')
+        if existing_password != shared_cfg.master_password:
+            return redirect("/change-master-password-retry-bad-master")
+        if new_password != new_password_confirm:
+            return redirect("/change-master-password-retry-mismatch")
+        shared_cfg.cv.acquire()
+        shared_cfg.master_password = new_password
+        pw_store.save_pw_store(shared_cfg.pw_store, new_password, shared_cfg.pw_store_filename)
+        shared_cfg.cv.release()
+    return redirect("/")
+
+
 def enter_password_form(retry):
     form = '<form action="/login" method="post">'
     if retry:
