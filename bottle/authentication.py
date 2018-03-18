@@ -148,6 +148,10 @@ def login():
         if not os.path.exists(shared_cfg.pw_store_filename):
             return redirect("/first-time-setup")
         return enter_password_form(False)
+    elif not shared_cfg.is_session_active():
+        # We're in keyboard mode. TODO: How to get back to web interface mode?
+        print("Uhh, what now? Device handshake or just slam back into web mode?")
+        return static_file("/activate.html", root="web-root")
     return redirect("/")
 
 

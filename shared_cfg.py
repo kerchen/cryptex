@@ -28,6 +28,16 @@ def does_session_match(cookie):
     return cookie and session_key and cookie == session_key
 
 
+def activate_keyboard_mode():
+    global pw_store, master_password, session_key
+    cv.acquire()
+    if pw_store and master_password:
+        save_pw_store(pw_store, master_password, pw_store_filename)
+    master_password = None
+    session_key = None
+    cv.release()
+
+
 def lock_store():
     global pw_store, master_password, session_key
     cv.acquire()

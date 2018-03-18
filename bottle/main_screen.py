@@ -16,7 +16,8 @@ def lock():
 def activate():
     if shared_cfg.is_session_valid(request):
         print("Activating the device")
-        return redirect("/activate.html")
+        shared_cfg.activate_keyboard_mode()
+        return static_file("/activate.html", root="web-root")
     return redirect("/")
 
 
