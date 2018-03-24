@@ -10,7 +10,7 @@ import main_screen
 
 @route('/<filename:path>')
 def send_static(filename):
-    if shared_cfg.is_session_valid(request):
+    if shared_cfg.validate_session(request):
         return static_file(filename, root="web-root")
     else:
         return redirect("/login")
@@ -18,10 +18,14 @@ def send_static(filename):
 
 @route('/')
 def default():
-    if shared_cfg.is_session_valid(request):
+    if shared_cfg.validate_session(request):
         return redirect("/index.html")
     elif shared_cfg.is_session_active():
         return static_file("/session-mismatch.html", root="web-root")
+    elif request.get_cookie(shared_cfg.SESSION_COOKIE_NAME) is not None:
+        return static_file("/session-timeout.html", root="web-root")
+    elif shared_cfg.is_in_keyboard_mode():
+        return static_file("/keyboard-mode.html", root="web-root")
     else:
         return redirect("/login")
 

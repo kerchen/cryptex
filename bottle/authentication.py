@@ -1,21 +1,12 @@
-from bottle import (get, post, route, response, run, redirect, request,
-                    static_file, ServerAdapter, default_app)
+from bottle import (get, post, redirect, request, response, static_file)
+import logging
 import os
-import uuid
 
 import pw_store
 import shared_cfg
 
 
-def new_session():
-    """Make a new session key, add to the response a cookie with the session
-    key and return the new session key"""
-
-    key = str(uuid.uuid4())
-
-    response.set_cookie(shared_cfg.SESSION_COOKIE_NAME, key, secure=True)
-
-    return key
+log = logging.getLogger(__name__)
 
 
 def confirm_password_form(retry):
@@ -57,7 +48,7 @@ def do_first_time_setup():
         shared_cfg.pw_store = pw_store.open_pw_store(password, shared_cfg.pw_store_filename)
         if shared_cfg.pw_store:
             shared_cfg.master_password = password
-            shared_cfg.session_key = new_session()
+            shared_cfg.session_key = shared_cfg.new_session(response)
         else:
             shared_cfg.master_password = None
         shared_cfg.cv.release()
@@ -85,28 +76,28 @@ def change_master_password_form(bad_master, mismatch):
 
 @get('/change-master-password')
 def change_master_password():
-    if shared_cfg.is_session_valid(request):
+    if shared_cfg.validate_session(request):
         return change_master_password_form(False, False)
     return redirect("/")
 
 
 @get('/change-master-password-retry-bad-master')
 def change_master_password_retry_bad_master():
-    if shared_cfg.is_session_valid(request):
+    if shared_cfg.validate_session(request):
         return change_master_password_form(True, False)
     return redirect("/")
 
 
 @get('/change-master-password-retry-mismatch')
 def change_master_password_retry_mismatch():
-    if shared_cfg.is_session_valid(request):
+    if shared_cfg.validate_session(request):
         return change_master_password_form(False, True)
     return redirect("/")
 
 
 @post('/change-master-password')
 def change_master_password():
-    if shared_cfg.is_session_valid(request):
+    if shared_cfg.validate_session(request):
         existing_password = request.forms.get('existing_password')
         new_password = request.forms.get('new_password')
         new_password_confirm = request.forms.get('new_password_confirm')
@@ -148,11 +139,11 @@ def login():
         if not os.path.exists(shared_cfg.pw_store_filename):
             return redirect("/first-time-setup")
         return enter_password_form(False)
-    elif not shared_cfg.is_session_active():
+    elif shared_cfg.is_in_keyboard_mode():
         # We're in keyboard mode. TODO: How to get back to web interface mode?
-        print("Uhh, what now? Device handshake or just slam back into web mode?")
-        return static_file("/activate.html", root="web-root")
-    return redirect("/")
+        log.warn("Uhh, what now? Device handshake or just slam back into web mode?")
+        return static_file("/keyboard-mode.html", root="web-root")
+    return enter_password_form(False)
 
 
 @post('/login')
@@ -162,7 +153,7 @@ def do_login():
     shared_cfg.pw_store = pw_store.open_pw_store(password, shared_cfg.pw_store_filename)
     if shared_cfg.pw_store:
         shared_cfg.master_password = password
-        shared_cfg.session_key = new_session()
+        shared_cfg.session_key = shared_cfg.new_session(response)
     else:
         shared_cfg.master_password = None
     shared_cfg.cv.release()
