@@ -2,6 +2,7 @@ import RPi.GPIO as GPIO
 import curses
 from datetime import datetime
 import io
+import logging
 import sys
 import subprocess
 import threading
@@ -12,6 +13,7 @@ sys.path.append("bottle")
 import server
 
 MODE_SWITCH_SCRIPT = "/home/pi/switch-mode.sh"
+LOG_FILENAME = "/home/pi/cryptex.log"
 
 # TFT buttons
 SWITCH_MODE_BUTTON_PIN = 15
@@ -39,6 +41,9 @@ CCW_ORDER = [ 2, 0, 3, 1 ]
 
 HID_USB_MODE = 1
 RNDIS_USB_MODE = 2
+
+
+log = logging.getLogger(__name__)
 
 
 def setup_gpio():
@@ -81,21 +86,21 @@ def check_gpio(mode, current_enc_value):
     enc_button_pressed = False
 
     if GPIO.event_detected(SWITCH_MODE_BUTTON_PIN):
-        #print('Mode switch button pressed')
+        log.debug('Mode switch button pressed')
         if mode == HID_USB_MODE:
             new_mode = RNDIS_USB_MODE
         elif mode == RNDIS_USB_MODE:
             new_mode = HID_USB_MODE
-        #else:
-        #    print("Unknown USB mode")
+        else:
+            log.warn("Unknown USB mode")
         set_usb_mode(new_mode)
 
     if GPIO.event_detected(SEND_PASSWORD_BUTTON_PIN):
         if mode == HID_USB_MODE:
-            #print('Send password button pressed')
+            log.debug('Send password button pressed')
             send_password()
-        #else:
-            #print('Send password button pressed but not in HID mode')
+        else:
+            log.debug('Send password button pressed but not in HID mode')
 
     if GPIO.event_detected(ENC_BUTTON_PIN):
         enc_button_pressed = True
@@ -103,7 +108,7 @@ def check_gpio(mode, current_enc_value):
     encoder_changed = False
     for pin in ENC_QUAD_PINS:
         if GPIO.event_detected(pin):
-            #print("Event for pin {0} detected".format(pin))
+            log.debug("Event for pin {0} detected".format(pin))
             encoder_changed = True
 
     new_enc_value = current_enc_value
@@ -115,7 +120,7 @@ def check_gpio(mode, current_enc_value):
 
 def set_usb_mode(mode):
     if True:
-        print("NOT setting USB mode.")
+        log.critical("NOT setting USB mode.")
         return
 
     if mode == HID_USB_MODE:
@@ -123,7 +128,7 @@ def set_usb_mode(mode):
     elif mode == RNDIS_USB_MODE:
         subprocess.call([MODE_SWITCH_SCRIPT, "rndis"])
     else:
-        print("Unknown USB mode requested.")
+        log.warn("Unknown USB mode requested.")
 
 
 def send_password():
@@ -165,7 +170,7 @@ def cryptex(stdscr):
                     selection -= 1
                 stdscr.addstr(3, 1, "Selection: {0:<5}".format(selection))
                 enc_value = new_enc_value
-            stdscr.addstr(4, 1, "DB loaded: {0}".format("Yes" if shared_cfg.db_conn else "No" ))
+            stdscr.addstr(4, 1, "PW store loaded: {0}".format("Yes" if shared_cfg.pw_store else "No" ))
 
             stdscr.refresh()
     except KeyboardInterrupt:
@@ -173,6 +178,8 @@ def cryptex(stdscr):
 
 
 def main():
+    logging.basicConfig(filename=LOG_FILENAME, filemode='w', level=logging.DEBUG)
+
     setup_gpio()
 
     web_server_thread = threading.Thread(
