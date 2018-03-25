@@ -1,11 +1,12 @@
-from bottle import (redirect, request, route, run, ServerAdapter, static_file)
+from bottle import (redirect, request, route, run, ServerAdapter, static_file,
+                    template)
 from cheroot import wsgi
 from cheroot.ssl.builtin import BuiltinSSLAdapter
 import ssl
 
 import shared_cfg
 import authentication
-import main_screen
+import index
 
 
 @route('/<filename:path>')
@@ -13,19 +14,19 @@ def send_static(filename):
     if shared_cfg.validate_session(request):
         return static_file(filename, root="web-root")
     else:
-        return redirect("/login")
+        return redirect("/")
 
 
 @route('/')
 def default():
     if shared_cfg.validate_session(request):
-        return redirect("/index.html")
+        return template("index.tpl", title="Cryptex")
     elif shared_cfg.is_session_active():
-        return static_file("/session-mismatch.html", root="web-root")
+        return template("session_mismatch.tpl", title="Cryptex Session Active")
     elif request.get_cookie(shared_cfg.SESSION_COOKIE_NAME) is not None:
-        return static_file("/session-timeout.html", root="web-root")
+        return template("session_timeout.tpl", title="Cryptex Session Timed Out")
     elif shared_cfg.is_in_keyboard_mode():
-        return static_file("/keyboard-mode.html", root="web-root")
+        return template("activate_keyboard_mode.tpl", title="Keyboard Mode")
     else:
         return redirect("/login")
 

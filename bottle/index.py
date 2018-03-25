@@ -1,4 +1,4 @@
-from bottle import (post, redirect, request, route, static_file)
+from bottle import (post, redirect, request, route, static_file, template)
 import logging
 
 import shared_cfg
@@ -11,7 +11,7 @@ def lock():
     if shared_cfg.validate_session(request):
         log.debug("Locking the whole thing down")
         shared_cfg.lock_store()
-        return static_file("/lock.html", root="web-root")
+        return template("lock.tpl", title="Cryptex Locked")
     return redirect("/")
 
 
@@ -20,7 +20,7 @@ def activate():
     if shared_cfg.validate_session(request):
         log.debug("Activating the device")
         shared_cfg.activate_keyboard_mode()
-        return static_file("/activate.html", root="web-root")
+        return template("activate_keyboard_mode.tpl", title="Keyboard Mode")
     return redirect("/")
 
 
@@ -36,7 +36,7 @@ def master_pass():
 def manage():
     if shared_cfg.validate_session(request):
         log.debug("Managing passwords")
-        return redirect("/manage.html")
+        return template("manage_passwords.tpl", title="Manage Passwords")
     return redirect("/")
 
 
