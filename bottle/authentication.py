@@ -67,17 +67,20 @@ def change_master_password_retry_mismatch():
 @post('/change-master-password')
 def change_master_password():
     if shared_cfg.validate_session(request):
-        existing_password = request.forms.get('existing_password')
-        new_password = request.forms.get('new_password')
-        new_password_confirm = request.forms.get('new_password_confirm')
-        if existing_password != shared_cfg.master_password:
-            return redirect("/change-master-password-retry-bad-master")
-        if new_password != new_password_confirm:
-            return redirect("/change-master-password-retry-mismatch")
-        shared_cfg.cv.acquire()
-        shared_cfg.master_password = new_password
-        pw_store.save_pw_store(shared_cfg.pw_store, new_password, shared_cfg.pw_store_filename)
-        shared_cfg.cv.release()
+        if request.forms.get("change"):
+            existing_password = request.forms.get('existing_password')
+            new_password = request.forms.get('new_password')
+            new_password_confirm = request.forms.get('new_password_confirm')
+            if existing_password != shared_cfg.master_password:
+                return redirect("/change-master-password-retry-bad-master")
+            if new_password != new_password_confirm:
+                return redirect("/change-master-password-retry-mismatch")
+            shared_cfg.cv.acquire()
+            shared_cfg.master_password = new_password
+            pw_store.save_pw_store(shared_cfg.pw_store, new_password, shared_cfg.pw_store_filename)
+            shared_cfg.cv.release()
+            return template("index.tpl", status_msg="Master password successfully changed.")
+        return template("index.tpl", status_msg="Master password unchanged.")
     return redirect("/")
 
 
@@ -104,7 +107,7 @@ def login():
 
 
 @post('/login')
-def do_login():
+def handle_login_post():
     password = request.forms.get('password')
     shared_cfg.cv.acquire()
     shared_cfg.pw_store = pw_store.open_pw_store(password, shared_cfg.pw_store_filename)
@@ -117,4 +120,4 @@ def do_login():
     if not shared_cfg.pw_store:
         return redirect("/login-retry")
     else:
-        return redirect("/")
+        return template("index.tpl", status_msg="")

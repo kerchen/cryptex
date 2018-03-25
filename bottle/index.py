@@ -1,4 +1,4 @@
-from bottle import (post, redirect, request, route, static_file, template)
+from bottle import (post, redirect, request, route, template)
 import logging
 
 import shared_cfg
@@ -41,7 +41,8 @@ def manage():
 
 
 @post('/main_menu')
-def do_main_menu():
+def handle_main_menu_post():
+    log.debug("Handling main menu post")
     if shared_cfg.validate_session(request):
         if request.forms.get("lock"):
             return redirect("/lock")

@@ -2,11 +2,14 @@ from bottle import (redirect, request, route, run, ServerAdapter, static_file,
                     template)
 from cheroot import wsgi
 from cheroot.ssl.builtin import BuiltinSSLAdapter
+import logging
 import ssl
 
 import shared_cfg
 import authentication
 import index
+
+log = logging.getLogger(__name__)
 
 
 @route('/<filename:path>')
@@ -20,7 +23,7 @@ def send_static(filename):
 @route('/')
 def default():
     if shared_cfg.validate_session(request):
-        return template("index.tpl", title="Cryptex")
+        return template("index.tpl", status_msg="")
     elif shared_cfg.is_session_active():
         return template("session_mismatch.tpl", title="Cryptex Session Active")
     elif request.get_cookie(shared_cfg.SESSION_COOKIE_NAME) is not None:

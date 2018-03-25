@@ -7,8 +7,19 @@
     % if mismatch:
         <p class="error">New passwords did not match. Please try again.</p>
     % end
-    Existing Password: <input name="existing_password" type="password"/> </br>
-    New Password: <input name="new_password" type="password"/> </br>
-    Re-enter New Password: <input name="new_password_confirm" type="password" />
-    <input value="Create" type="submit" />
+    <table>
+        <tr>
+            <th>Existing Password:</th>
+            <th><input name="existing_password" type="password"/></th>
+        </tr>
+        <tr>
+            <th>New Password:</th>
+            <th><input name="new_password" type="password"/></th>
+        </tr>
+        <tr>
+            <th>Re-enter New Password:</th>
+            <th><input name="new_password_confirm" type="password" /></th>
+        </tr>
+    </table>
+    <input value="Change" name="change" type="submit" /> <input value="Cancel" name="cancel" type="submit" />
 </form>
