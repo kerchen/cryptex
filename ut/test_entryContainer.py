@@ -1,5 +1,6 @@
 from unittest import TestCase
-from pw_store import ECDuplicateException, ECNotFoundException, EntryContainer
+from pw_store import ECDuplicateException, ECNotFoundException, Entry, \
+                     EntryContainer
 
 
 CONTAINER_NAME = "Super Container!"
@@ -17,17 +18,17 @@ class TestEntryContainer(TestCase):
         self.cut.set_name(new_name)
         self.assertEqual(new_name, self.cut.get_name())
 
-    def test_add_container(self):
-        new_cont = EntryContainer(name="A New Beginning")
-        self.cut.add_container(new_cont)
-        self.assertEqual(1, self.cut.get_container_count())
-
     def test_clear(self):
         new_cont = EntryContainer(name="A New Beginning")
         self.cut.add_container(new_cont)
         self.assertEqual(1, self.cut.get_container_count())
         self.cut.clear()
         self.assertEqual(0, self.cut.get_container_count())
+
+    def test_add_container(self):
+        new_cont = EntryContainer(name="A New Beginning")
+        self.cut.add_container(new_cont)
+        self.assertEqual(1, self.cut.get_container_count())
 
     def test_rename_nonexistent_container(self):
         with self.assertRaises(ECNotFoundException):
@@ -65,4 +66,42 @@ class TestEntryContainer(TestCase):
             self.cut.add_container(EntryContainer(name=cont_name))
 
     def test_add_entry(self):
-        self.fail()
+        new_entry = Entry(name="Rogue One")
+        self.cut.add_entry(new_entry)
+        self.assertEqual(1, self.cut.get_entry_count())
+
+    def test_rename_nonexistent_entry(self):
+        with self.assertRaises(ECNotFoundException):
+            self.cut.rename_entry("old", "new")
+
+    def test_rename_duplicate_entry(self):
+        entry_name1 = "Rogue One"
+        entry_name2 = "Rogue Two"
+        self.cut.add_entry(Entry(name=entry_name1))
+        self.cut.add_entry(Entry(name=entry_name2))
+        with self.assertRaises(ECDuplicateException):
+            self.cut.rename_entry(entry_name1, entry_name2)
+
+    def test_rename_entry(self):
+        entry_name1 = "Rogue One"
+        entry_name2 = "Rogue Two"
+        self.cut.add_entry(Entry(name=entry_name1))
+        self.cut.rename_entry(entry_name1, entry_name2)
+        with self.assertRaises(ECNotFoundException):
+            self.cut.remove_entry(entry_name1)
+        self.cut.remove_entry(entry_name2)
+        self.assertEqual(0, self.cut.get_entry_count())
+
+    def test_add_and_remove_entry(self):
+        new_entry = Entry(name="Rogue One")
+        self.cut.add_entry(new_entry)
+        self.assertEqual(1, self.cut.get_entry_count())
+        self.cut.remove_entry(new_entry.get_name())
+        self.assertEqual(0, self.cut.get_entry_count())
+
+    def test_add_duplicate_entry(self):
+        entry_name = "Rogue One"
+        self.cut.add_entry(Entry(name=entry_name))
+        with self.assertRaises(ECDuplicateException):
+            self.cut.add_entry(EntryContainer(name=entry_name))
+

@@ -49,28 +49,47 @@ class EntryContainer():
 
     def rename_container(self, old_name, new_name):
         if old_name not in self.containers:
-            raise ECNotFoundException("Container with name '{0}' not found".format(old_name))
+            raise ECNotFoundException(
+                "Container with name '{0}' not found".format(old_name))
         if new_name in self.containers:
-            raise ECDuplicateException("Container with name '{0}' already present".format(new_name))
+            raise ECDuplicateException(
+                "Container with name '{0}' already present".format(new_name))
         cont = self.containers.pop(old_name)
         cont.set_name(new_name)
-        #try:
-            #self.add_container(cont)
-        #except ECDuplicateException as ex:
+        self.add_container(cont)
 
     def remove_container(self, name):
         if name not in self.containers:
-            raise ECNotFoundException("Container with name '{}' not found".format(name))
+            raise ECNotFoundException(
+                "Container with name '{}' not found".format(name))
         self.containers.pop(name)
 
     def add_entry(self, entry):
         if entry.get_name() in self.entries:
-            raise ECException("Duplicate entry name")
+            raise ECDuplicateException(
+                "Entry with name {0} already exists".format(entry.get_name()))
         self.entries[entry.get_name()] = entry
+
+    def rename_entry(self, old_name, new_name):
+        if old_name not in self.entries:
+            raise ECNotFoundException(
+                "Entry with name '{0}' not found".format(old_name))
+        if new_name in self.entries:
+            raise ECDuplicateException(
+                "Entry with name '{0}' already present".format(new_name))
+        entry = self.entries.pop(old_name)
+        entry.set_name(new_name)
+        self.add_entry(entry)
+
+    def remove_entry(self, name):
+        if name not in self.entries:
+            raise ECNotFoundException(
+                "Entry with name '{}' not found".format(name))
+        self.entries.pop(name)
 
 
 class Entry():
-    def __init__(self, name, username, password, url):
+    def __init__(self, name, username=None, password=None, url=None):
         self.name = name
         self.username = username
         self.password = password
