@@ -120,26 +120,33 @@ class Entry():
         self.url = url
 
 
+ROOT_TAG="cryptex"
+STORE_ROOT_TAG="store"
+NAME_ATTRIBUTE="name"
+CONTAINER_TAG="container"
+ENTRY_TAG="entry"
+USERNAME_TAG="username"
+PASSWORD_TAG="password"
+URL_TAG="url"
+
+
 def add_children(xml_node):
-    print(xml_node)
-    if 'name' in xml_node.attrib:
-        new_cont = EntryContainer(xml_node.attrib['name'])
+    if NAME_ATTRIBUTE in xml_node.attrib:
+        new_cont = EntryContainer(xml_node.attrib[NAME_ATTRIBUTE])
     else:
         new_cont = EntryContainer(name=None)
 
     for el in list(xml_node):
-        if el.tag == "container":
-            print(el.tag + ": " + el.attrib['name'])
+        if el.tag == CONTAINER_TAG:
             new_cont.add_container(add_children(el))
-        elif el.tag == "entry":
-            print(el.tag + ": " + el.attrib['name'])
-            new_entry = Entry(el.attrib['name'])
+        elif el.tag == ENTRY_TAG:
+            new_entry = Entry(el.attrib[NAME_ATTRIBUTE])
             for en in el.iter():
-                if en.tag == "username":
+                if en.tag == USERNAME_TAG:
                     new_entry.set_username(en.text)
-                elif en.tag == "password":
+                elif en.tag == PASSWORD_TAG:
                     new_entry.set_password(en.text)
-                elif en.tag == "url":
+                elif en.tag == URL_TAG:
                     new_entry.set_url(en.text)
             new_cont.add_entry(new_entry)
 
@@ -150,8 +157,8 @@ class PasswordStore():
     def __init__(self, serialized_data):
         # Parse serialized (XML) store data
         xml_root = ET.fromstring(serialized_data)
-        entry_root = xml_root.find("passwords")
-        self.root = add_children(entry_root)
+        store_root = xml_root.find(STORE_ROOT_TAG)
+        self.root = add_children(store_root)
 
     def get_root(self):
         return self.root
@@ -166,8 +173,8 @@ def open_pw_store(password, pw_store_filename):
             pw_store = None
     else:
         log.debug("Creating new password store")
-        pw_store = ET.Element("cryptex_pw_store")
-        ET.SubElement(pw_store, "passwords")
+        pw_store = ET.Element(ROOT_TAG)
+        ET.SubElement(pw_store, STORE_ROOT_TAG)
 
         save_pw_store(pw_store, password, pw_store_filename)
 

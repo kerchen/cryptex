@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cryptex>
-    <passwords>
+    <store>
         <entry name="Entry 1-0">
             <password>frobazz!</password>
             <url>https://frobazz.net</url>
@@ -27,5 +27,5 @@
                 </entry>
             </container>
         </container>
-    </passwords>
+    </store>
 </cryptex>
