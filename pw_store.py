@@ -120,9 +120,41 @@ class Entry():
         self.url = url
 
 
+def add_children(xml_node):
+    print(xml_node)
+    if 'name' in xml_node.attrib:
+        new_cont = EntryContainer(xml_node.attrib['name'])
+    else:
+        new_cont = EntryContainer(name=None)
+
+    for el in list(xml_node):
+        if el.tag == "container":
+            print(el.tag + ": " + el.attrib['name'])
+            new_cont.add_container(add_children(el))
+        elif el.tag == "entry":
+            print(el.tag + ": " + el.attrib['name'])
+            new_entry = Entry(el.attrib['name'])
+            for en in el.iter():
+                if en.tag == "username":
+                    new_entry.set_username(en.text)
+                elif en.tag == "password":
+                    new_entry.set_password(en.text)
+                elif en.tag == "url":
+                    new_entry.set_url(en.text)
+            new_cont.add_entry(new_entry)
+
+    return new_cont
+
+
 class PasswordStore():
     def __init__(self, serialized_data):
-        self.root = EntryContainer(name=None)
+        # Parse serialized (XML) store data
+        xml_root = ET.fromstring(serialized_data)
+        entry_root = xml_root.find("passwords")
+        self.root = add_children(entry_root)
+
+    def get_root(self):
+        return self.root
 
 
 def open_pw_store(password, pw_store_filename):

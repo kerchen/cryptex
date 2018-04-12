@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cryptex>
+    <passwords>
+        <entry name="Entry 1-0">
+            <password>frobazz!</password>
+            <url>https://frobazz.net</url>
+            <username>melvin</username>
+        </entry>
+        <container name="Container 1">
+            <entry name="Entry 1-1">
+                <password>!zzaborf</password>
+                <url>https://zzaborf.ten</url>
+                <username>nivlem</username>
+            </entry>
+            <container name="Container 1-1">
+                <entry name="Entry 1-1-1">
+                    <password>!zzaborf</password>
+                    <url>https://zzaborf.ten</url>
+                    <username>nivlem</username>
+                </entry>
+            </container>
+            <container name="Container 2-1">
+                <entry name="Entry 1-2-1">
+                    <password>!zzaborf</password>
+                    <url>https://zzaborf.ten</url>
+                    <username>nivlem</username>
+                </entry>
+            </container>
+        </container>
+    </passwords>
+</cryptex>
