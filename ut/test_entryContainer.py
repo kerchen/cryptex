@@ -30,6 +30,14 @@ class TestEntryContainer(TestCase):
         self.cut.add_container(new_cont)
         self.assertEqual(1, self.cut.get_container_count())
 
+    def test_get_containers(self):
+        new_cont = EntryContainer(name="A New Beginning")
+        self.cut.add_container(new_cont)
+        containers = self.cut.get_containers()
+        for k, c in containers:
+            self.assertEqual(new_cont.get_name(), k)
+            self.assertEqual(new_cont, c)
+
     def test_rename_nonexistent_container(self):
         with self.assertRaises(ECNotFoundException):
             self.cut.rename_container("old", "new")
@@ -69,6 +77,14 @@ class TestEntryContainer(TestCase):
         new_entry = Entry(name="Rogue One")
         self.cut.add_entry(new_entry)
         self.assertEqual(1, self.cut.get_entry_count())
+
+    def test_get_entries(self):
+        new_entry = Entry(name="Rogue One")
+        self.cut.add_entry(new_entry)
+        entries = self.cut.get_entries()
+        for k, e in entries:
+            self.assertEqual(new_entry.get_name(), k)
+            self.assertEqual(new_entry, e)
 
     def test_rename_nonexistent_entry(self):
         with self.assertRaises(ECNotFoundException):

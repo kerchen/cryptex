@@ -35,8 +35,14 @@ class EntryContainer():
     def get_container_count(self):
         return len(self.containers)
 
+    def get_containers(self):
+        return frozenset(self.containers.items())
+
     def get_entry_count(self):
         return len(self.entries)
+
+    def get_entries(self):
+        return frozenset(self.entries.items())
 
     def clear(self):
         self.containers.clear()
