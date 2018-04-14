@@ -2,7 +2,6 @@ from unittest import TestCase
 from pw_store import Entry
 
 
-ENTRY_NAME="EntryName"
 USERNAME="UserName"
 PASSWORD="P@55werd"
 URL="https//www.example.com"
@@ -10,16 +9,8 @@ URL="https//www.example.com"
 
 class TestEntry(TestCase):
     def setUp(self):
-        self.cut = Entry(name=ENTRY_NAME, username=USERNAME,
+        self.cut = Entry(username=USERNAME,
                          password=PASSWORD, url=URL)
-
-    def test_get_name(self):
-        self.assertEqual(ENTRY_NAME, self.cut.get_name())
-
-    def test_set_name(self):
-        new_name = ENTRY_NAME + "1"
-        self.cut.set_name(new_name)
-        self.assertEqual(new_name, self.cut.get_name())
 
     def test_get_username(self):
         self.assertEqual(USERNAME, self.cut.get_username())

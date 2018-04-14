@@ -21,22 +21,27 @@ class ECNotFoundException(ECException):
 
 
 class EntryContainer():
-    def __init__(self, name):
-        self.name = name
+    def __init__(self):
         self.containers = dict()
         self.entries = dict()
 
-    def get_name(self):
-        return self.name
-
-    def set_name(self, name):
-        self.name = name
+    def get_container(self, cont_name):
+        if cont_name not in self.containers:
+            raise ECNotFoundException(
+                "Container with name '{0}' not found".format(cont_name))
+        return self.containers[cont_name]
 
     def get_container_count(self):
         return len(self.containers)
 
     def get_containers(self):
         return frozenset(self.containers.items())
+
+    def get_entry(self, entry_name):
+        if entry_name not in self.entries:
+            raise ECNotFoundException(
+                "Entry with name '{0}' not found".format(entry_name))
+        return self.entries[entry_name]
 
     def get_entry_count(self):
         return len(self.entries)
@@ -48,10 +53,10 @@ class EntryContainer():
         self.containers.clear()
         self.entries.clear()
 
-    def add_container(self, cont):
-        if cont.get_name() in self.containers:
-            raise ECDuplicateException("Duplicate container name")
-        self.containers[cont.get_name()] = cont
+    def add_container(self, cont, name):
+        if name in self.containers:
+            raise ECDuplicateException("Duplicate container name {0}".format(name))
+        self.containers[name] = cont
 
     def rename_container(self, old_name, new_name):
         if old_name not in self.containers:
@@ -61,8 +66,7 @@ class EntryContainer():
             raise ECDuplicateException(
                 "Container with name '{0}' already present".format(new_name))
         cont = self.containers.pop(old_name)
-        cont.set_name(new_name)
-        self.add_container(cont)
+        self.add_container(cont, new_name)
 
     def remove_container(self, name):
         if name not in self.containers:
@@ -70,11 +74,11 @@ class EntryContainer():
                 "Container with name '{}' not found".format(name))
         self.containers.pop(name)
 
-    def add_entry(self, entry):
-        if entry.get_name() in self.entries:
+    def add_entry(self, entry, name):
+        if name in self.entries:
             raise ECDuplicateException(
-                "Entry with name {0} already exists".format(entry.get_name()))
-        self.entries[entry.get_name()] = entry
+                "Entry with name {0} already exists".format(name))
+        self.entries[name] = entry
 
     def rename_entry(self, old_name, new_name):
         if old_name not in self.entries:
@@ -84,8 +88,7 @@ class EntryContainer():
             raise ECDuplicateException(
                 "Entry with name '{0}' already present".format(new_name))
         entry = self.entries.pop(old_name)
-        entry.set_name(new_name)
-        self.add_entry(entry)
+        self.add_entry(entry, new_name)
 
     def remove_entry(self, name):
         if name not in self.entries:
@@ -95,17 +98,10 @@ class EntryContainer():
 
 
 class Entry():
-    def __init__(self, name, username=None, password=None, url=None):
-        self.name = name
+    def __init__(self,  username=None, password=None, url=None):
         self.username = username
         self.password = password
         self.url = url
-
-    def get_name(self):
-        return self.name
-
-    def set_name(self, name):
-        self.name = name
 
     def get_username(self):
         return self.username
@@ -137,16 +133,18 @@ URL_TAG="url"
 
 
 def add_children(xml_node):
+    new_cont = EntryContainer()
     if NAME_ATTRIBUTE in xml_node.attrib:
-        new_cont = EntryContainer(xml_node.attrib[NAME_ATTRIBUTE])
+        cont_name = xml_node.attrib[NAME_ATTRIBUTE]
     else:
-        new_cont = EntryContainer(name=None)
+        cont_name = None
 
     for el in list(xml_node):
         if el.tag == CONTAINER_TAG:
-            new_cont.add_container(add_children(el))
+            n, c = add_children(el)
+            new_cont.add_container(c, n)
         elif el.tag == ENTRY_TAG:
-            new_entry = Entry(el.attrib[NAME_ATTRIBUTE])
+            new_entry = Entry()
             for en in el.iter():
                 if en.tag == USERNAME_TAG:
                     new_entry.set_username(en.text)
@@ -154,9 +152,9 @@ def add_children(xml_node):
                     new_entry.set_password(en.text)
                 elif en.tag == URL_TAG:
                     new_entry.set_url(en.text)
-            new_cont.add_entry(new_entry)
+            new_cont.add_entry(new_entry, el.attrib[NAME_ATTRIBUTE])
 
-    return new_cont
+    return cont_name, new_cont
 
 
 class PasswordStore():
@@ -167,6 +165,7 @@ class PasswordStore():
         self.root = add_children(store_root)
 
     def get_root(self):
+        '''Returns the EntryContainer that is the root of the store.'''
         return self.root
 
 
