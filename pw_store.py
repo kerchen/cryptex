@@ -109,19 +109,28 @@ class Entry:
         return self.username
 
     def set_username(self, username):
-        self.username = username
+        if len(username):
+            self.username = username
+        else:
+            self.username = None
 
     def get_password(self):
         return self.password
 
     def set_password(self, password):
-        self.password = password
+        if len(password):
+            self.password = password
+        else:
+            self.password = None
 
     def get_url(self):
         return self.url
 
     def set_url(self, url):
-        self.url = url
+        if len(url):
+            self.url = url
+        else:
+            self.url = None
 
 
 ROOT_TAG = "cryptex"
@@ -167,6 +176,8 @@ def deserialize_xml(xml_node=None):
 
 
 def serialize_xml(xml_root, cont_name, cont, cont_tag=CONTAINER_TAG):
+    """Given an XML root node, serializes to XML the EntryContainer 'cont' with
+    the name 'cont_name'."""
     root_element = ET.SubElement(xml_root, cont_tag)
     if cont_name:
         root_element.set(NAME_ATTRIBUTE, b64encode(cont_name))
@@ -202,6 +213,39 @@ class PasswordStore:
         """Returns the EntryContainer that is the root of the store."""
         return self.root
 
+    def get_container_by_path(self, path):
+        dest_cont = self.root
+        cont_chain = path.split("/")
+        for c in cont_chain:
+            c = c.strip()
+            if len(c):
+                dest_cont = dest_cont.get_container(c)
+        return dest_cont
+
+    def add_entry(self, entry, entry_name, path):
+        if not entry:
+            raise ECException("Invalid entry")
+        if not entry_name or len(entry_name) == 0:
+            raise ECException("Invalid entry name")
+        dest_cont = self.get_container_by_path(path)
+        dest_cont.add_entry(entry, entry_name)
+
+    def get_entries_by_path(self, path):
+        cont = self.get_container_by_path(path)
+        return cont.get_entries()
+
+    def add_container(self, cont, cont_name, path):
+        if not cont:
+            raise ECException("Invalid container")
+        if not cont_name or len(cont_name) == 0:
+            raise ECException("Invalid container name")
+        dest_cont = self.get_container_by_path(path)
+        dest_cont.add_container(cont, cont_name)
+
+    def get_containers_by_path(self, path):
+        cont = self.get_container_by_path(path)
+        return cont.get_containers()
+
     def serialize_to_xml(self):
         xml_root = ET.Element(ROOT_TAG)
         serialize_xml(xml_root, None, self.root, STORE_ROOT_TAG)
@@ -227,6 +271,4 @@ def open_pw_store(password, pw_store_filename):
 
 def save_pw_store(pw_store, password, pw_store_filename):
     pw_store_xml = pw_store.serialize_to_xml()
-    log.debug("Dump of pw store xml:")
-    log.debug(pw_store_xml)
     encryption.encrypt_from_string(password, pw_store_xml, pw_store_filename)

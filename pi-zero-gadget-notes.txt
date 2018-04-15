@@ -149,3 +149,8 @@ subjectAltName = @alt_names
 [alt_names]
 DNS.1 = cryptex.local
 ===============================================================================
+
+Bottle notes
+* If a post fails with the error 'method not allowed', try importing into the
+  module which is doing the template expansion, the module which contains the
+  @post function.
