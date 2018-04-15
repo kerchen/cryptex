@@ -1,4 +1,4 @@
-import base64
+from base64 import b64decode, b64encode
 import logging
 import os
 import xml.etree.cElementTree as ET
@@ -21,7 +21,7 @@ class ECNotFoundException(ECException):
     pass
 
 
-class EntryContainer():
+class EntryContainer:
     def __init__(self):
         self.containers = dict()
         self.entries = dict()
@@ -56,7 +56,8 @@ class EntryContainer():
 
     def add_container(self, cont, name):
         if name in self.containers:
-            raise ECDuplicateException("Duplicate container name {0}".format(name))
+            raise ECDuplicateException(
+                "Duplicate container name {0}".format(name))
         self.containers[name] = cont
 
     def rename_container(self, old_name, new_name):
@@ -98,7 +99,7 @@ class EntryContainer():
         self.entries.pop(name)
 
 
-class Entry():
+class Entry:
     def __init__(self,  username=None, password=None, url=None):
         self.username = username
         self.password = password
@@ -123,17 +124,17 @@ class Entry():
         self.url = url
 
 
-ROOT_TAG="cryptex"
-STORE_ROOT_TAG="store"
-NAME_ATTRIBUTE="name"
-CONTAINER_TAG="container"
-ENTRY_TAG="entry"
-USERNAME_TAG="username"
-PASSWORD_TAG="password"
-URL_TAG="url"
+ROOT_TAG = "cryptex"
+STORE_ROOT_TAG = "store"
+NAME_ATTRIBUTE = "name"
+CONTAINER_TAG = "container"
+ENTRY_TAG = "entry"
+USERNAME_TAG = "username"
+PASSWORD_TAG = "password"
+URL_TAG = "url"
 
 
-def deserialize_xml(xml_node):
+def deserialize_xml(xml_node=None):
     """Given an XML node which represents the root of a container, creates
     an EntryContainer object and adds the entries and containers that are
     children of the node.
@@ -145,7 +146,7 @@ def deserialize_xml(xml_node):
         return cont_name, cont
 
     if NAME_ATTRIBUTE in xml_node.attrib:
-        cont_name = base64.b64decode(xml_node.attrib[NAME_ATTRIBUTE])
+        cont_name = b64decode(xml_node.attrib[NAME_ATTRIBUTE])
 
     for el in list(xml_node):
         if el.tag == CONTAINER_TAG:
@@ -155,12 +156,12 @@ def deserialize_xml(xml_node):
             new_entry = Entry()
             for en in el.iter():
                 if en.tag == USERNAME_TAG:
-                    new_entry.set_username(base64.b64decode(en.text))
+                    new_entry.set_username(b64decode(en.text))
                 elif en.tag == PASSWORD_TAG:
-                    new_entry.set_password(base64.b64decode(en.text))
+                    new_entry.set_password(b64decode(en.text))
                 elif en.tag == URL_TAG:
-                    new_entry.set_url(base64.b64decode(en.text))
-            cont.add_entry(new_entry, base64.b64decode(el.attrib[NAME_ATTRIBUTE]))
+                    new_entry.set_url(b64decode(en.text))
+            cont.add_entry(new_entry, b64decode(el.attrib[NAME_ATTRIBUTE]))
 
     return cont_name, cont
 
@@ -168,23 +169,23 @@ def deserialize_xml(xml_node):
 def serialize_xml(xml_root, cont_name, cont, cont_tag=CONTAINER_TAG):
     root_element = ET.SubElement(xml_root, cont_tag)
     if cont_name:
-        root_element.set(NAME_ATTRIBUTE, base64.b64encode(cont_name))
+        root_element.set(NAME_ATTRIBUTE, b64encode(cont_name))
 
     for k, e in cont.get_entries():
         entry_el = ET.SubElement(root_element, ENTRY_TAG)
-        entry_el.set(NAME_ATTRIBUTE, base64.b64encode(k))
+        entry_el.set(NAME_ATTRIBUTE, b64encode(k))
         username_el = ET.SubElement(entry_el, USERNAME_TAG)
-        username_el.text = base64.b64encode(e.get_username())
+        username_el.text = b64encode(e.get_username())
         password_el = ET.SubElement(entry_el, PASSWORD_TAG)
-        password_el.text = base64.b64encode(e.get_password())
+        password_el.text = b64encode(e.get_password())
         url_el = ET.SubElement(entry_el, URL_TAG)
-        url_el.text = base64.b64encode(e.get_url())
+        url_el.text = b64encode(e.get_url())
 
     for k, c in cont.get_containers():
         serialize_xml(root_element, k, c)
 
 
-class PasswordStore():
+class PasswordStore:
     def __init__(self, serialized_data):
         # Parse serialized (XML) store data
         if serialized_data:
@@ -192,7 +193,7 @@ class PasswordStore():
             store_root = xml_root.find(STORE_ROOT_TAG)
             _, self.root = deserialize_xml(store_root)
         else:
-            _, self.root = deserialize_xml(None)
+            _, self.root = deserialize_xml()
 
     def get_root(self):
         """Returns the EntryContainer that is the root of the store."""
