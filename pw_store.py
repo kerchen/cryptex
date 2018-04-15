@@ -1,3 +1,4 @@
+import base64
 import logging
 import os
 import xml.etree.cElementTree as ET
@@ -132,29 +133,55 @@ PASSWORD_TAG="password"
 URL_TAG="url"
 
 
-def add_children(xml_node):
-    new_cont = EntryContainer()
+def deserialize_xml(xml_node):
+    """Given an XML node which represents the root of a container, creates
+    an EntryContainer object and adds the entries and containers that are
+    children of the node.
+    :returns a tuple of the container name and object"""
+    cont = EntryContainer()
+    cont_name = None
+    
+    if not xml_node:
+        return cont_name, cont
+
     if NAME_ATTRIBUTE in xml_node.attrib:
-        cont_name = xml_node.attrib[NAME_ATTRIBUTE]
-    else:
-        cont_name = None
+        cont_name = base64.b64decode(xml_node.attrib[NAME_ATTRIBUTE])
 
     for el in list(xml_node):
         if el.tag == CONTAINER_TAG:
-            n, c = add_children(el)
-            new_cont.add_container(c, n)
+            n, c = deserialize_xml(el)
+            cont.add_container(c, n)
         elif el.tag == ENTRY_TAG:
             new_entry = Entry()
             for en in el.iter():
                 if en.tag == USERNAME_TAG:
-                    new_entry.set_username(en.text)
+                    new_entry.set_username(base64.b64decode(en.text))
                 elif en.tag == PASSWORD_TAG:
-                    new_entry.set_password(en.text)
+                    new_entry.set_password(base64.b64decode(en.text))
                 elif en.tag == URL_TAG:
-                    new_entry.set_url(en.text)
-            new_cont.add_entry(new_entry, el.attrib[NAME_ATTRIBUTE])
+                    new_entry.set_url(base64.b64decode(en.text))
+            cont.add_entry(new_entry, base64.b64decode(el.attrib[NAME_ATTRIBUTE]))
 
-    return cont_name, new_cont
+    return cont_name, cont
+
+
+def serialize_xml(xml_root, cont_name, cont, cont_tag=CONTAINER_TAG):
+    root_element = ET.SubElement(xml_root, cont_tag)
+    if cont_name:
+        root_element.set(NAME_ATTRIBUTE, base64.b64encode(cont_name))
+
+    for k, e in cont.get_entries():
+        entry_el = ET.SubElement(root_element, ENTRY_TAG)
+        entry_el.set(NAME_ATTRIBUTE, base64.b64encode(k))
+        username_el = ET.SubElement(entry_el, USERNAME_TAG)
+        username_el.text = base64.b64encode(e.get_username())
+        password_el = ET.SubElement(entry_el, PASSWORD_TAG)
+        password_el.text = base64.b64encode(e.get_password())
+        url_el = ET.SubElement(entry_el, URL_TAG)
+        url_el.text = base64.b64encode(e.get_url())
+
+    for k, c in cont.get_containers():
+        serialize_xml(root_element, k, c)
 
 
 class PasswordStore():
@@ -162,24 +189,28 @@ class PasswordStore():
         # Parse serialized (XML) store data
         xml_root = ET.fromstring(serialized_data)
         store_root = xml_root.find(STORE_ROOT_TAG)
-        self.root = add_children(store_root)
+        _, self.root = deserialize_xml(store_root)
 
     def get_root(self):
-        '''Returns the EntryContainer that is the root of the store.'''
+        """Returns the EntryContainer that is the root of the store."""
         return self.root
+
+    def serialize_to_xml(self):
+        xml_root = ET.Element(ROOT_TAG)
+        serialize_xml(xml_root, None, self.root, STORE_ROOT_TAG)
+        return ET.tostring(xml_root, encoding='utf8', method='xml')
 
 
 def open_pw_store(password, pw_store_filename):
     if os.path.exists(pw_store_filename):
         pw_store_xml = encryption.decrypt_to_string(password, pw_store_filename)
         try:
-            pw_store = ET.fromstring(pw_store_xml)
+            pw_store = PasswordStore(pw_store_xml)
         except Exception:
             pw_store = None
     else:
         log.debug("Creating new password store")
-        pw_store = ET.Element(ROOT_TAG)
-        ET.SubElement(pw_store, STORE_ROOT_TAG)
+        pw_store = PasswordStore(None)
 
         save_pw_store(pw_store, password, pw_store_filename)
 
@@ -187,7 +218,7 @@ def open_pw_store(password, pw_store_filename):
 
 
 def save_pw_store(pw_store, password, pw_store_filename):
-    pw_store_xml = ET.tostring(pw_store, encoding='utf8', method='xml')
+    pw_store_xml = pw_store.serialize_to_xml()
     log.debug("Dump of pw store xml:")
     log.debug(pw_store_xml)
     encryption.encrypt_from_string(password, pw_store_xml, pw_store_filename)

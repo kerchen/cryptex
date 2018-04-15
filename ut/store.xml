@@ -1,29 +1,29 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='utf8'?>
 <cryptex>
     <store>
-        <entry name="Entry 1-0">
-            <password>frobazz!</password>
-            <url>https://frobazz.net</url>
-            <username>melvin</username>
+        <entry name="RW50cnkgMS0w">
+            <username>bWVsdmlu</username>
+            <password>ZnJvYmF6eiE=</password>
+            <url>aHR0cHM6Ly9mcm9iYXp6Lm5ldA==</url>
         </entry>
-        <container name="Container 1">
-            <entry name="Entry 1-1">
-                <password>!zzaborf</password>
-                <url>https://zzaborf.ten</url>
-                <username>nivlem</username>
+        <container name="Q29udGFpbmVyIDE=">
+            <entry name="RW50cnkgMS0x">
+                <username>bml2bGVt</username>
+                <password>IXp6YWJvcmY=</password>
+                <url>aHR0cHM6Ly96emFib3JmLnRlbg==</url>
             </entry>
-            <container name="Container 1-1">
-                <entry name="Entry 1-1-1">
-                    <password>!zzaborf</password>
-                    <url>https://zzaborf.ten</url>
-                    <username>nivlem</username>
+            <container name="Q29udGFpbmVyIDItMQ==">
+                <entry name="RW50cnkgMS0yLTE=">
+                    <username>bml2bGVt</username>
+                    <password>R2FuZGFsZiB3ZWFycyBwYW50c3VpdHM/</password>
+                    <url>aHR0cHM6Ly96emFib3JmLnRlbg==</url>
                 </entry>
             </container>
-            <container name="Container 2-1">
-                <entry name="Entry 1-2-1">
-                    <password>!zzaborf</password>
-                    <url>https://zzaborf.ten</url>
-                    <username>nivlem</username>
+            <container name="Q29udGFpbmVyIDEtMQ==">
+                <entry name="RW50cnkgMS0xLTE=">
+                    <username>bml2bGVt</username>
+                    <password>IXp6YWJvcmY=</password>
+                    <url>aHR0cHM6Ly96emFib3JmLnRlbg==</url>
                 </entry>
             </container>
         </container>
