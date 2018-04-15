@@ -187,9 +187,12 @@ def serialize_xml(xml_root, cont_name, cont, cont_tag=CONTAINER_TAG):
 class PasswordStore():
     def __init__(self, serialized_data):
         # Parse serialized (XML) store data
-        xml_root = ET.fromstring(serialized_data)
-        store_root = xml_root.find(STORE_ROOT_TAG)
-        _, self.root = deserialize_xml(store_root)
+        if serialized_data:
+            xml_root = ET.fromstring(serialized_data)
+            store_root = xml_root.find(STORE_ROOT_TAG)
+            _, self.root = deserialize_xml(store_root)
+        else:
+            _, self.root = deserialize_xml(None)
 
     def get_root(self):
         """Returns the EntryContainer that is the root of the store."""
