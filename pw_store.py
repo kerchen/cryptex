@@ -174,12 +174,15 @@ def serialize_xml(xml_root, cont_name, cont, cont_tag=CONTAINER_TAG):
     for k, e in cont.get_entries():
         entry_el = ET.SubElement(root_element, ENTRY_TAG)
         entry_el.set(NAME_ATTRIBUTE, b64encode(k))
-        username_el = ET.SubElement(entry_el, USERNAME_TAG)
-        username_el.text = b64encode(e.get_username())
-        password_el = ET.SubElement(entry_el, PASSWORD_TAG)
-        password_el.text = b64encode(e.get_password())
-        url_el = ET.SubElement(entry_el, URL_TAG)
-        url_el.text = b64encode(e.get_url())
+        if e.get_username():
+            username_el = ET.SubElement(entry_el, USERNAME_TAG)
+            username_el.text = b64encode(e.get_username())
+        if e.get_password():
+            password_el = ET.SubElement(entry_el, PASSWORD_TAG)
+            password_el.text = b64encode(e.get_password())
+        if e.get_url():
+            url_el = ET.SubElement(entry_el, URL_TAG)
+            url_el.text = b64encode(e.get_url())
 
     for k, c in cont.get_containers():
         serialize_xml(root_element, k, c)
