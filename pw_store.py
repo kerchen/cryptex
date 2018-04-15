@@ -213,7 +213,8 @@ def open_pw_store(password, pw_store_filename):
         pw_store_xml = encryption.decrypt_to_string(password, pw_store_filename)
         try:
             pw_store = PasswordStore(pw_store_xml)
-        except Exception:
+        except ECException as ex:
+            log.error("Failed to open password store: {0}".format(ex))
             pw_store = None
     else:
         log.debug("Creating new password store")
