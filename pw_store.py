@@ -251,6 +251,10 @@ class PasswordStore:
         serialize_xml(xml_root, None, self.root, STORE_ROOT_TAG)
         return ET.tostring(xml_root, encoding='utf8', method='xml')
 
+    def save(self, password, filename):
+        pw_store_xml = self.serialize_to_xml()
+        encryption.encrypt_from_string(password, pw_store_xml, filename)
+
 
 def open_pw_store(password, pw_store_filename):
     if os.path.exists(pw_store_filename):
@@ -269,6 +273,3 @@ def open_pw_store(password, pw_store_filename):
     return pw_store
 
 
-def save_pw_store(pw_store, password, pw_store_filename):
-    pw_store_xml = pw_store.serialize_to_xml()
-    encryption.encrypt_from_string(password, pw_store_xml, pw_store_filename)

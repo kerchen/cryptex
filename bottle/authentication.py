@@ -30,14 +30,7 @@ def do_first_time_setup():
     password = request.forms.get('password')
     password2 = request.forms.get('password2')
     if password == password2:
-        shared_cfg.cv.acquire()
-        shared_cfg.pw_store = pw_store.open_pw_store(password, shared_cfg.pw_store_filename)
-        if shared_cfg.pw_store:
-            shared_cfg.master_password = password
-            shared_cfg.new_session(response)
-        else:
-            shared_cfg.master_password = None
-        shared_cfg.cv.release()
+        shared_cfg.login(password)
         return redirect("/")
     else:
         return redirect("/first-time-setup-retry")
@@ -75,10 +68,7 @@ def change_master_password():
                 return redirect("/change-master-password-retry-bad-master")
             if new_password != new_password_confirm:
                 return redirect("/change-master-password-retry-mismatch")
-            shared_cfg.cv.acquire()
-            shared_cfg.master_password = new_password
-            pw_store.save_pw_store(shared_cfg.pw_store, new_password, shared_cfg.pw_store_filename)
-            shared_cfg.cv.release()
+            shared_cfg.change_master_password(new_password)
             return template("index.tpl", status_msg="Master password successfully changed.")
         return template("index.tpl", status_msg="Master password unchanged.")
     return redirect("/")
@@ -109,15 +99,8 @@ def login():
 @post('/login')
 def handle_login_post():
     password = request.forms.get('password')
-    shared_cfg.cv.acquire()
-    shared_cfg.pw_store = pw_store.open_pw_store(password, shared_cfg.pw_store_filename)
-    if shared_cfg.pw_store:
-        shared_cfg.master_password = password
+    if shared_cfg.login(password):
         shared_cfg.new_session(response)
-    else:
-        shared_cfg.master_password = None
-    shared_cfg.cv.release()
-    if not shared_cfg.pw_store:
-        return redirect("/login-retry")
-    else:
         return template("index.tpl", status_msg="")
+    else:
+        return redirect("/login-retry")

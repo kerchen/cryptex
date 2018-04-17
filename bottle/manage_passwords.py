@@ -48,7 +48,7 @@ def handle_new_entry_post():
             if password != password2:
                 return redirect("/master-new-entry-password-retry-mismatch")
             ent = pw_store.Entry(username=username, password=password, url=url)
-            shared_cfg.pw_store.add_entry(ent, ent_name, shared_cfg.session.path)
+            shared_cfg.add_entry(ent, ent_name)
             return redirect("/manage"+shared_cfg.session.path)
         elif request.forms.get("cancel"):
             log.debug("New entry cancelled")
@@ -65,7 +65,7 @@ def handle_new_container_post():
             log.debug("New container confirmed")
             log.debug("Name: {}".format(cont_name))
             cont = pw_store.EntryContainer()
-            shared_cfg.pw_store.add_container(cont, cont_name, shared_cfg.session.path)
+            shared_cfg.add_container(cont, cont_name)
             return redirect("/manage"+shared_cfg.session.path+"/"+cont_name)
         elif request.forms.get("cancel"):
             log.debug("New container cancelled")

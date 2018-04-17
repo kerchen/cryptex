@@ -3,7 +3,7 @@ import logging
 import threading
 import uuid
 
-from pw_store import save_pw_store
+import pw_store
 
 cv = threading.Condition()
 
@@ -23,10 +23,33 @@ session = None
 keyboard_mode = False
 master_password = None
 pw_store_filename = "/home/pi/pw_store.enc"
-pw_store = None
+master_store = None
 
 
 log = logging.getLogger(__name__)
+
+
+def login(password):
+    global master_store, pw_store_filename, master_password
+
+    cv.acquire()
+    master_store = pw_store.open_pw_store(password, pw_store_filename)
+    if master_store:
+        master_password = password
+    else:
+        master_password = None
+    cv.release()
+    return master_password is not None
+
+
+def change_master_password(password):
+    global master_password, master_store, pw_store_filename
+
+    cv.acquire()
+    if master_store and master_password:
+        master_password = password
+        master_store.save(password, pw_store_filename)
+    cv.release()
 
 
 def new_session(response):
@@ -34,18 +57,21 @@ def new_session(response):
     key"""
     global session
 
+    cv.acquire()
     session = Session()
 
     session.key = str(uuid.uuid4())
     response.set_cookie(SESSION_COOKIE_NAME, session.key, secure=True)
     session.last_active_time = datetime.now()
+    cv.release()
+
     log.debug("Creating new session with key '{0}'".format(session.key))
 
 
 def validate_session(request):
-    ''' Returns True if there is a current session and its session ID matches
+    """ Returns True if there is a current session and its session ID matches
     the session ID of the passed-in request. If the session is valid, the
-    session timeout will be reset. '''
+    session timeout will be reset. """
     global session
 
     if not session:
@@ -72,7 +98,7 @@ def validate_session(request):
 
 
 def is_session_active():
-    ''' Returns True if there is an active session.'''
+    """ Returns True if there is an active session."""
     return session is not None
 
 
@@ -84,11 +110,39 @@ def is_in_keyboard_mode():
     return keyboard_mode
 
 
-def activate_keyboard_mode():
-    global keyboard_mode, pw_store, master_password, session
+def add_entry(ent, ent_name):
+    global master_store, pw_store_filename, master_password, session
+
     cv.acquire()
-    if pw_store and master_password:
-        save_pw_store(pw_store, master_password, pw_store_filename)
+    if master_store and master_password:
+        master_store.add_entry(ent, ent_name, session.path)
+        master_store.save(master_password, pw_store_filename)
+    cv.release()
+
+
+def add_container(cont, cont_name):
+    global master_store, pw_store_filename, master_password, session
+
+    cv.acquire()
+    if master_store and master_password:
+        master_store.add_container(cont, cont_name, session.path)
+        master_store.save(master_password, pw_store_filename)
+    cv.release()
+
+
+def save_pw_store():
+    global master_store, pw_store_filename, master_password
+
+    cv.acquire()
+    if master_store and master_password:
+        master_store.save(master_password, pw_store_filename)
+    cv.release()
+
+
+def activate_keyboard_mode():
+    global keyboard_mode, master_store, master_password, session
+    cv.acquire()
+    save_pw_store()
     master_password = None
     session = None
     keyboard_mode = True
@@ -96,11 +150,10 @@ def activate_keyboard_mode():
 
 
 def lock_store():
-    global pw_store, master_password, session
+    global master_store, master_password, session
     cv.acquire()
-    if pw_store and master_password:
-        save_pw_store(pw_store, master_password, pw_store_filename)
-    pw_store = None
+    save_pw_store()
+    master_store = None
     master_password = None
     session.key = None
     cv.release()
