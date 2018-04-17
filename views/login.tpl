@@ -5,6 +5,6 @@
     % if retry:
         <p class="error">Entered password didn't work. Please try again.</p>
     % end
-    Password: <input name="password" type="password" />
+    Password: <input name="password" type="password" autofocus />
     <input value="Log In" type="submit" />
 </form>

@@ -6,13 +6,15 @@ import shared_cfg
 
 log = logging.getLogger(__name__)
 
-@route('/manage/<path:path>')
+
+@route('/manage<path:path>')
 def manage_path(path):
     if shared_cfg.validate_session(request):
         log.debug("Routing to path {0}".format(path))
-        #return template("lock.tpl", title="Cryptex Locked")
-        return
+        shared_cfg.session_path = path
+        return template("manage_passwords.tpl", title="Manage Passwords", path=path)
     return redirect("/")
+
 
 @post('/manage')
 def handle_manage_post():
@@ -22,7 +24,7 @@ def handle_manage_post():
             log.debug("Add entry button pressed")
             return template("new_entry.tpl", retry=False)
         elif request.forms.get("addcontainer"):
-            log.debug("Add container button pressed")
+            log.debug("Add container button pressed. path = {}".format(shared_cfg.session_path))
             return template("new_container.tpl", retry=False)
     return redirect("/")
 
@@ -46,11 +48,11 @@ def handle_new_entry_post():
             if password != password2:
                 return redirect("/master-new-entry-password-retry-mismatch")
             ent = pw_store.Entry(username=username, password=password, url=url)
-            shared_cfg.pw_store.add_entry(ent, ent_name, "/")
-            return redirect("/manage")
+            shared_cfg.pw_store.add_entry(ent, ent_name, shared_cfg.session_path)
+            return redirect("/manage"+shared_cfg.session_path)
         elif request.forms.get("cancel"):
             log.debug("New entry cancelled")
-            return redirect("/manage")
+            return redirect("/manage"+shared_cfg.session_path)
     return redirect("/")
 
 
@@ -63,9 +65,9 @@ def handle_new_container_post():
             log.debug("New container confirmed")
             log.debug("Name: {}".format(cont_name))
             cont = pw_store.EntryContainer()
-            shared_cfg.pw_store.add_container(cont, cont_name, "/")
-            return redirect("/manage")
+            shared_cfg.pw_store.add_container(cont, cont_name, shared_cfg.session_path)
+            return redirect("/manage"+shared_cfg.session_path+"/"+cont_name)
         elif request.forms.get("cancel"):
             log.debug("New container cancelled")
-            return redirect("/manage")
+            return redirect("/manage"+shared_cfg.session_path)
     return redirect("/")

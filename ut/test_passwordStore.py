@@ -14,6 +14,22 @@ class TestPasswordStore(TestCase):
         root = self.cut.get_root()
         self.assertIsNotNone(root)
 
+    def test_get_container_by_path(self):
+        root = self.cut.get_root()
+        lvl1 = EntryContainer()
+        lvl2 = EntryContainer()
+        lvl3 = EntryContainer()
+        lvl2.add_container(lvl3, "lvl3")
+        lvl1.add_container(lvl2, "lvl2")
+        root.add_container(lvl1, "lvl1")
+        self.assertEqual(lvl1, self.cut.get_container_by_path("/lvl1"))
+        self.assertEqual(lvl2, self.cut.get_container_by_path("/lvl1/lvl2"))
+        self.assertEqual(lvl3, self.cut.get_container_by_path("/lvl1/lvl2/lvl3"))
+
+    def test_invalid_container_path(self):
+        with self.assertRaises(ECNotFoundException):
+            self.cut.get_container_by_path("/Something/Not/there")
+
     def match_entries(self, cont1, cont2):
         self.assertEqual(cont1.get_entry_count(), cont2.get_entry_count())
         for k, e1 in cont1.get_entries():
