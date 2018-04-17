@@ -2,7 +2,6 @@ from bottle import (get, post, redirect, request, response, template)
 import logging
 import os
 
-import pw_store
 import shared_cfg
 
 
@@ -11,7 +10,7 @@ log = logging.getLogger(__name__)
 
 @get('/first-time-setup')
 def first_time_setup(retry=""):
-    if not shared_cfg.pw_store:
+    if not shared_cfg.master_store:
         if not os.path.exists(shared_cfg.pw_store_filename):
             return template("first_time_setup.tpl", retry=False)
     return redirect("/")
@@ -19,7 +18,7 @@ def first_time_setup(retry=""):
 
 @get('/first-time-setup-retry')
 def first_time_setup_retry():
-    if not shared_cfg.pw_store:
+    if not shared_cfg.master_store:
         if not os.path.exists(shared_cfg.pw_store_filename):
             return template("first_time_setup.tpl", retry=True)
     return redirect("/")
@@ -76,7 +75,7 @@ def change_master_password():
 
 @get('/login-retry')
 def login_retry():
-    if not shared_cfg.pw_store:
+    if not shared_cfg.master_store:
         if not os.path.exists(shared_cfg.pw_store_filename):
             return redirect("/first-time-setup")
         return template("login.tpl", retry=True)
@@ -85,7 +84,7 @@ def login_retry():
 
 @get('/login')
 def login():
-    if not shared_cfg.pw_store:
+    if not shared_cfg.master_store:
         if not os.path.exists(shared_cfg.pw_store_filename):
             return redirect("/first-time-setup")
         return template("login.tpl", retry=False)

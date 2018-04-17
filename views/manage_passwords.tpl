@@ -11,13 +11,13 @@
 % end
 <p>Entries</p>
 <ul>
-    % for k, e in shared_cfg.master_store.get_entries_by_path(path):
+    % for k, e in shared_cfg.get_entries_by_path(path):
         <li>{{k}}</li>
     % end
 </ul>
 <p>Folders</p>
 <ul>
-    % for k, c in shared_cfg.master_store.get_containers_by_path(path):
+    % for k, c in shared_cfg.get_containers_by_path(path):
     % if path == "/":
         <li><a href="/manage/{{k}}">{{k}}</a></li>
     % else:

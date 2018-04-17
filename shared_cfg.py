@@ -22,7 +22,7 @@ session = None
 
 keyboard_mode = False
 master_password = None
-pw_store_filename = "/home/pi/pw_store.enc"
+pw_store_filename = "/home/pi/master_store.enc"
 master_store = None
 
 
@@ -30,7 +30,7 @@ log = logging.getLogger(__name__)
 
 
 def login(password):
-    global master_store, pw_store_filename, master_password
+    global cv, master_store, pw_store_filename, master_password
 
     cv.acquire()
     master_store = pw_store.open_pw_store(password, pw_store_filename)
@@ -43,7 +43,7 @@ def login(password):
 
 
 def change_master_password(password):
-    global master_password, master_store, pw_store_filename
+    global cv, master_password, master_store, pw_store_filename
 
     cv.acquire()
     if master_store and master_password:
@@ -55,7 +55,7 @@ def change_master_password(password):
 def new_session(response):
     """Creates a new session and adds to the response a cookie with the session
     key"""
-    global session
+    global cv, session
 
     cv.acquire()
     session = Session()
@@ -72,7 +72,7 @@ def validate_session(request):
     """ Returns True if there is a current session and its session ID matches
     the session ID of the passed-in request. If the session is valid, the
     session timeout will be reset. """
-    global session
+    global cv, session
 
     if not session:
         log.debug("Session invalid due to no session object")
@@ -86,11 +86,15 @@ def validate_session(request):
         delta = datetime.now() - session.last_active_time
         if delta.total_seconds() <= session.timeout_seconds:
             log.debug("Session valid; resetting timeout")
+            cv.acquire()
             session.last_active_time = datetime.now()
+            cv.release()
             return True
 
         log.debug("Session invalid due to timeout")
+        cv.acquire()
         session = None
+        cv.release()
     else:
         log.debug("Session invalid due to cookie mismatch")
 
@@ -99,19 +103,25 @@ def validate_session(request):
 
 def is_session_active():
     """ Returns True if there is an active session."""
+    global session
+
     return session is not None
 
 
 def does_session_match(cookie):
+    global session
+
     return cookie and session and session.key and cookie == session.key
 
 
 def is_in_keyboard_mode():
+    global keyboard_mode
+
     return keyboard_mode
 
 
 def add_entry(ent, ent_name):
-    global master_store, pw_store_filename, master_password, session
+    global cv, master_store, pw_store_filename, master_password, session
 
     cv.acquire()
     if master_store and master_password:
@@ -121,7 +131,7 @@ def add_entry(ent, ent_name):
 
 
 def add_container(cont, cont_name):
-    global master_store, pw_store_filename, master_password, session
+    global cv, master_store, pw_store_filename, master_password, session
 
     cv.acquire()
     if master_store and master_password:
@@ -130,8 +140,26 @@ def add_container(cont, cont_name):
     cv.release()
 
 
+def get_entries_by_path(path):
+    global master_store
+
+    if master_store:
+        return master_store.get_entries_by_path(path)
+
+    return []
+
+
+def get_containers_by_path(path):
+    global master_store
+
+    if master_store:
+        return master_store.get_containers_by_path(path)
+
+    return []
+
+
 def save_pw_store():
-    global master_store, pw_store_filename, master_password
+    global cv, master_store, pw_store_filename, master_password
 
     cv.acquire()
     if master_store and master_password:
@@ -140,7 +168,8 @@ def save_pw_store():
 
 
 def activate_keyboard_mode():
-    global keyboard_mode, master_store, master_password, session
+    global cv, keyboard_mode, master_store, master_password, session
+
     cv.acquire()
     save_pw_store()
     master_password = None
@@ -150,7 +179,8 @@ def activate_keyboard_mode():
 
 
 def lock_store():
-    global master_store, master_password, session
+    global cv, master_store, master_password, session
+
     cv.acquire()
     save_pw_store()
     master_store = None

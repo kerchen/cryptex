@@ -7,7 +7,7 @@ sys.path.append(os.path.join(my_path, ".."))
 import shared_cfg
 
 # Override settings from shared config.
-shared_cfg.pw_store_filename = os.path.join(my_path, "..", "pw_store.enc")
+shared_cfg.pw_store_filename = os.path.join(my_path, "..", "master_store.enc")
 
 sys.path.append(os.path.join(my_path, "..", "bottle"))
 import server
