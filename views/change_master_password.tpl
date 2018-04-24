@@ -1,4 +1,4 @@
-% rebase('base.tpl', title="Change Master Password")
+% rebase('nonav_base.tpl', title="Change Master Password")
 <h1>Changing Master Password</h1>
 <form action="/change-master-password" method="post">
     % if bad_master:

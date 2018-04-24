@@ -41,7 +41,7 @@ def manage():
     return redirect("/")
 
 
-@post('/main_menu')
+@post('/footer')
 def handle_main_menu_post():
     log.debug("Handling main menu post")
     if shared_cfg.validate_session(request):

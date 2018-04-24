@@ -9,7 +9,12 @@
     {{!base}}
 
     <footer>
-        <p>This is the page footer. Nice, eh?</p>
+        <form action="/footer" method="post">
+            <input type="submit" name="activate" value="Keyboard Mode">
+            <input type="submit" name="manage" value="Manage Passwords">
+            <input type="submit" name="master_pass" value="Change Master Password">
+            <input type="submit" name="lock" value="Lock Everything">
+        </form>
     </footer>
 </body>
 </html>

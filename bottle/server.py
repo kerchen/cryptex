@@ -7,7 +7,7 @@ import ssl
 
 import shared_cfg
 import authentication
-import index
+import footer
 
 log = logging.getLogger(__name__)
 

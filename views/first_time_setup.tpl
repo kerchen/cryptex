@@ -1,4 +1,4 @@
-% rebase('base.tpl', title="Cryptex Setup")
+% rebase('nonav_base.tpl', title="Cryptex Setup")
 <h1>Setting up your Cryptex</h1>
 <p>It looks like this is the first time this Cryptex has been used. Let's set it up!</p>
 <form action="/first-time-setup" method="post">

@@ -1,4 +1,4 @@
-% rebase('base.tpl', title="Cryptex Login")
+% rebase('nonav_base.tpl', title="Cryptex Login")
 <h1>Welcome to Cryptex</h1>
 <p>Enter your master password to continue.</p>
 <form action="/login" method="post">

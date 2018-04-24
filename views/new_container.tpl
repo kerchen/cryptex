@@ -1,4 +1,4 @@
-% rebase('base.tpl', title="New Folder")
+% rebase('nonav_base.tpl', title="New Folder")
 <h1>Create new folder</h1>
 <form action="/manage-new-container" method="post">
     % if retry:

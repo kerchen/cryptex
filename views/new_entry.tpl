@@ -1,4 +1,4 @@
-% rebase('base.tpl', title="New Entry")
+% rebase('nonav_base.tpl', title="New Entry")
 <h1>Create new entry</h1>
 <form action="/manage-new-entry" method="post">
     % if retry:
