@@ -1,12 +1,17 @@
 from base64 import b64decode, b64encode
 import logging
 import os
+import re
 import xml.etree.cElementTree as ET
 
 import encryption
 
 
 log = logging.getLogger(__name__)
+
+
+ILLEGAL_NAME_CHARS = r"\\./?@#%"
+LEGAL_CHAR_RE = re.compile("^[^"+ILLEGAL_NAME_CHARS+"]+$")
 
 
 class ECException(Exception):
@@ -18,6 +23,10 @@ class ECDuplicateException(ECException):
 
 
 class ECNotFoundException(ECException):
+    pass
+
+
+class ECNaughtyCharacterException(ECException):
     pass
 
 
@@ -58,6 +67,9 @@ class EntryContainer:
         if name in self.containers:
             raise ECDuplicateException(
                 "Duplicate container name {0}".format(name))
+        if name and not LEGAL_CHAR_RE.match(name):
+            raise ECNaughtyCharacterException(
+                "Illegal character used in name {0}".format(name))
         self.containers[name] = cont
 
     def rename_container(self, old_name, new_name):
@@ -67,6 +79,9 @@ class EntryContainer:
         if new_name in self.containers:
             raise ECDuplicateException(
                 "Container with name '{0}' already present".format(new_name))
+        if not LEGAL_CHAR_RE.match(new_name):
+            raise ECNaughtyCharacterException(
+                "Illegal character used in new name {0}".format(new_name))
         cont = self.containers.pop(old_name)
         self.add_container(cont, new_name)
 
@@ -80,6 +95,9 @@ class EntryContainer:
         if name in self.entries:
             raise ECDuplicateException(
                 "Entry with name {0} already exists".format(name))
+        if not LEGAL_CHAR_RE.match(name):
+            raise ECNaughtyCharacterException(
+                "Illegal character used in name {0}".format(name))
         self.entries[name] = entry
 
     def rename_entry(self, old_name, new_name):
@@ -89,6 +107,9 @@ class EntryContainer:
         if new_name in self.entries:
             raise ECDuplicateException(
                 "Entry with name '{0}' already present".format(new_name))
+        if not LEGAL_CHAR_RE.match(new_name):
+            raise ECNaughtyCharacterException(
+                "Illegal character used in new name {0}".format(new_name))
         entry = self.entries.pop(old_name)
         self.add_entry(entry, new_name)
 
@@ -151,7 +172,7 @@ def deserialize_xml(xml_node=None):
     cont = EntryContainer()
     cont_name = None
     
-    if not xml_node:
+    if xml_node is None:
         return cont_name, cont
 
     if NAME_ATTRIBUTE in xml_node.attrib:

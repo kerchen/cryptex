@@ -5,16 +5,37 @@ import uuid
 
 import pw_store
 
-cv = threading.Condition()
+
+class LockWrapper:
+    """Wraps a lock object to make it easier to enable/disable the lock."""
+    def __init__(self, enable):
+        if enable:
+            self.lock = threading.RLock()
+        else:
+            self.lock = None
+
+    def acquire(self, block=False):
+        if self.lock:
+            return self.lock.acquire(block)
+        else:
+            return True
+
+    def release(self):
+        if self.lock:
+            self.lock.release()
+
+
+config_lock = LockWrapper(False)
 
 SESSION_COOKIE_NAME = "cryptex-session-id"
+ILLEGAL_NAME_CHARS = pw_store.ILLEGAL_NAME_CHARS
 
 
 class Session:
     def __init__(self):
         self.key = None
         self.last_active_time = None
-        self.timeout_seconds = 60
+        self.timeout_seconds = 60 * 5
         self.path = "/"
 
 
@@ -30,40 +51,40 @@ log = logging.getLogger(__name__)
 
 
 def login(password):
-    global cv, master_store, pw_store_filename, master_password
+    global config_lock, master_store, pw_store_filename, master_password
 
-    cv.acquire()
+    config_lock.acquire()
     master_store = pw_store.open_pw_store(password, pw_store_filename)
     if master_store:
         master_password = password
     else:
         master_password = None
-    cv.release()
+    config_lock.release()
     return master_password is not None
 
 
 def change_master_password(password):
-    global cv, master_password, master_store, pw_store_filename
+    global config_lock, master_password, master_store, pw_store_filename
 
-    cv.acquire()
+    config_lock.acquire()
     if master_store and master_password:
         master_password = password
         master_store.save(password, pw_store_filename)
-    cv.release()
+    config_lock.release()
 
 
 def new_session(response):
     """Creates a new session and adds to the response a cookie with the session
     key"""
-    global cv, session
+    global config_lock, session
 
-    cv.acquire()
+    config_lock.acquire()
     session = Session()
 
     session.key = str(uuid.uuid4())
     response.set_cookie(SESSION_COOKIE_NAME, session.key, secure=True)
     session.last_active_time = datetime.now()
-    cv.release()
+    config_lock.release()
 
     log.debug("Creating new session with key '{0}'".format(session.key))
 
@@ -72,7 +93,7 @@ def validate_session(request):
     """ Returns True if there is a current session and its session ID matches
     the session ID of the passed-in request. If the session is valid, the
     session timeout will be reset. """
-    global cv, session
+    global config_lock, session
 
     if not session:
         log.debug("Session invalid due to no session object")
@@ -84,17 +105,18 @@ def validate_session(request):
 
     if does_session_match(request.get_cookie(SESSION_COOKIE_NAME)):
         delta = datetime.now() - session.last_active_time
+        log.debug("Session timeout delta: {0}".format(delta.total_seconds()))
         if delta.total_seconds() <= session.timeout_seconds:
             log.debug("Session valid; resetting timeout")
-            cv.acquire()
+            config_lock.acquire()
             session.last_active_time = datetime.now()
-            cv.release()
+            config_lock.release()
             return True
 
         log.debug("Session invalid due to timeout")
-        cv.acquire()
+        config_lock.acquire()
         session = None
-        cv.release()
+        config_lock.release()
     else:
         log.debug("Session invalid due to cookie mismatch")
 
@@ -121,23 +143,30 @@ def is_in_keyboard_mode():
 
 
 def add_entry(ent, ent_name):
-    global cv, master_store, pw_store_filename, master_password, session
+    global config_lock, master_store, pw_store_filename, master_password, session
 
-    cv.acquire()
+    config_lock.acquire()
     if master_store and master_password:
         master_store.add_entry(ent, ent_name, session.path)
         master_store.save(master_password, pw_store_filename)
-    cv.release()
+    config_lock.release()
 
 
 def add_container(cont, cont_name):
-    global cv, master_store, pw_store_filename, master_password, session
+    global config_lock, master_store, pw_store_filename, master_password, session
 
-    cv.acquire()
+    config_lock.acquire()
     if master_store and master_password:
         master_store.add_container(cont, cont_name, session.path)
         master_store.save(master_password, pw_store_filename)
-    cv.release()
+    config_lock.release()
+
+
+def change_session_path(path):
+    global config_lock, session
+    config_lock.acquire()
+    session.path = path
+    config_lock.release()
 
 
 def get_entries_by_path(path):
@@ -159,31 +188,31 @@ def get_containers_by_path(path):
 
 
 def save_pw_store():
-    global cv, master_store, pw_store_filename, master_password
+    global config_lock, master_store, pw_store_filename, master_password
 
-    cv.acquire()
+    config_lock.acquire()
     if master_store and master_password:
         master_store.save(master_password, pw_store_filename)
-    cv.release()
+    config_lock.release()
 
 
 def activate_keyboard_mode():
-    global cv, keyboard_mode, master_store, master_password, session
+    global config_lock, keyboard_mode, master_store, master_password, session
 
-    cv.acquire()
+    config_lock.acquire()
     save_pw_store()
     master_password = None
     session = None
     keyboard_mode = True
-    cv.release()
+    config_lock.release()
 
 
 def lock_store():
-    global cv, master_store, master_password, session
+    global config_lock, master_store, master_password, session
 
-    cv.acquire()
+    config_lock.acquire()
     save_pw_store()
     master_store = None
     master_password = None
     session.key = None
-    cv.release()
+    config_lock.release()

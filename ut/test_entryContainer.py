@@ -1,5 +1,6 @@
 from unittest import TestCase
-from pw_store import ECDuplicateException, ECNotFoundException, Entry, \
+from pw_store import ECDuplicateException, ECNotFoundException, \
+                     ECNaughtyCharacterException, Entry, \
                      EntryContainer
 
 
@@ -72,6 +73,18 @@ class TestEntryContainer(TestCase):
         self.cut.add_container(EntryContainer(), name=cont_name)
         with self.assertRaises(ECDuplicateException):
             self.cut.add_container(EntryContainer(), name=cont_name)
+
+    def test_illegal_container_name(self):
+        illegal_chars = ['\\', '/', '@', '#', '.', '?', '%']
+        for cont_name in illegal_chars:
+            with self.assertRaises(ECNaughtyCharacterException):
+                self.cut.add_container(EntryContainer(), name=cont_name)
+
+    def test_illegal_entry_name(self):
+        illegal_chars = ['\\', '/', '@', '#', '.', '?', '%']
+        for ent_name in illegal_chars:
+            with self.assertRaises(ECNaughtyCharacterException):
+                self.cut.add_entry(Entry(), name=ent_name)
 
     def test_add_entry(self):
         new_entry = Entry()

@@ -10,7 +10,7 @@
     <table>
         <tr>
             <th>Existing Password:</th>
-            <th><input name="existing_password" type="password"/></th>
+            <th><input name="existing_password" type="password" autofocus/></th>
         </tr>
         <tr>
             <th>New Password:</th>

@@ -9,7 +9,7 @@ log = logging.getLogger(__name__)
 
 
 @get('/first-time-setup')
-def first_time_setup(retry=""):
+def first_time_setup():
     if not shared_cfg.master_store:
         if not os.path.exists(shared_cfg.pw_store_filename):
             return template("first_time_setup.tpl", retry=False)
@@ -30,7 +30,7 @@ def do_first_time_setup():
     password2 = request.forms.get('password2')
     if password == password2:
         shared_cfg.login(password)
-        return redirect("/")
+        return redirect("/login")
     else:
         return redirect("/first-time-setup-retry")
 
@@ -68,7 +68,8 @@ def change_master_password():
             if new_password != new_password_confirm:
                 return redirect("/change-master-password-retry-mismatch")
             shared_cfg.change_master_password(new_password)
-            return template("index.tpl", status_msg="Master password successfully changed.")
+            return template("index.tpl",
+                            status_msg="Master password successfully changed.")
         return template("index.tpl", status_msg="Master password unchanged.")
     return redirect("/")
 

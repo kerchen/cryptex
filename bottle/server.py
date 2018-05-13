@@ -51,6 +51,7 @@ class SSLCherryPyServer(ServerAdapter):
         try:
             server.start()
         finally:
+            log.info("Stopping web server.")
             server.stop()
 
 

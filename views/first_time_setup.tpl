@@ -6,7 +6,7 @@
         <p class="error">Entered passwords did not match. Please try again.</p>
     % end
     Please enter the master password for the password database:</br>
-    Password: <input name="password" type="password"/> </br>
+    Password: <input name="password" type="password" autofocus/> </br>
     Re-enter Password: <input name="password2" type="password" /></br>
     <input value="Create" type="submit" />
 </form>
