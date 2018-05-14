@@ -25,7 +25,7 @@ class LockWrapper:
             self.lock.release()
 
 
-config_lock = LockWrapper(False)
+config_lock = LockWrapper(True)
 
 SESSION_COOKIE_NAME = "cryptex-session-id"
 ILLEGAL_NAME_CHARS = pw_store.ILLEGAL_NAME_CHARS
@@ -54,12 +54,14 @@ def login(password):
     global config_lock, master_store, pw_store_filename, master_password
 
     config_lock.acquire()
-    master_store = pw_store.open_pw_store(password, pw_store_filename)
-    if master_store:
-        master_password = password
-    else:
-        master_password = None
-    config_lock.release()
+    try:
+        master_store = pw_store.open_pw_store(password, pw_store_filename)
+        if master_store:
+            master_password = password
+        else:
+            master_password = None
+    finally:
+        config_lock.release()
     return master_password is not None
 
 
@@ -67,10 +69,12 @@ def change_master_password(password):
     global config_lock, master_password, master_store, pw_store_filename
 
     config_lock.acquire()
-    if master_store and master_password:
-        master_password = password
-        master_store.save(password, pw_store_filename)
-    config_lock.release()
+    try:
+        if master_store and master_password:
+            master_password = password
+            master_store.save(password, pw_store_filename)
+    finally:
+        config_lock.release()
 
 
 def new_session(response):
@@ -79,12 +83,14 @@ def new_session(response):
     global config_lock, session
 
     config_lock.acquire()
-    session = Session()
+    try:
+        session = Session()
 
-    session.key = str(uuid.uuid4())
-    response.set_cookie(SESSION_COOKIE_NAME, session.key, secure=True)
-    session.last_active_time = datetime.now()
-    config_lock.release()
+        session.key = str(uuid.uuid4())
+        response.set_cookie(SESSION_COOKIE_NAME, session.key, secure=True)
+        session.last_active_time = datetime.now()
+    finally:
+        config_lock.release()
 
     log.debug("Creating new session with key '{0}'".format(session.key))
 
@@ -146,20 +152,24 @@ def add_entry(ent, ent_name):
     global config_lock, master_store, pw_store_filename, master_password, session
 
     config_lock.acquire()
-    if master_store and master_password:
-        master_store.add_entry(ent, ent_name, session.path)
-        master_store.save(master_password, pw_store_filename)
-    config_lock.release()
+    try:
+        if master_store and master_password:
+            master_store.add_entry(ent, ent_name, session.path)
+            master_store.save(master_password, pw_store_filename)
+    finally:
+        config_lock.release()
 
 
 def add_container(cont, cont_name):
     global config_lock, master_store, pw_store_filename, master_password, session
 
     config_lock.acquire()
-    if master_store and master_password:
-        master_store.add_container(cont, cont_name, session.path)
-        master_store.save(master_password, pw_store_filename)
-    config_lock.release()
+    try:
+        if master_store and master_password:
+            master_store.add_container(cont, cont_name, session.path)
+            master_store.save(master_password, pw_store_filename)
+    finally:
+        config_lock.release()
 
 
 def change_session_path(path):
@@ -191,9 +201,11 @@ def save_pw_store():
     global config_lock, master_store, pw_store_filename, master_password
 
     config_lock.acquire()
-    if master_store and master_password:
-        master_store.save(master_password, pw_store_filename)
-    config_lock.release()
+    try:
+        if master_store and master_password:
+            master_store.save(master_password, pw_store_filename)
+    finally:
+        config_lock.release()
 
 
 def activate_keyboard_mode():
@@ -211,8 +223,10 @@ def lock_store():
     global config_lock, master_store, master_password, session
 
     config_lock.acquire()
-    save_pw_store()
-    master_store = None
-    master_password = None
-    session.key = None
-    config_lock.release()
+    try:
+        save_pw_store()
+        master_store = None
+        master_password = None
+        session.key = None
+    finally:
+        config_lock.release()
