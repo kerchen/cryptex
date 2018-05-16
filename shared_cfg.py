@@ -179,20 +179,24 @@ def change_session_path(path):
     config_lock.release()
 
 
-def get_entries_by_path(path):
+def get_entries_by_path(path, reverse=False):
     global master_store
 
     if master_store:
-        return master_store.get_entries_by_path(path)
+        return sorted(master_store.get_entries_by_path(path),
+                      key=lambda entry: str.lower(entry[0]),
+                      reverse=reverse)
 
     return []
 
 
-def get_containers_by_path(path):
+def get_containers_by_path(path, reverse=False):
     global master_store
 
     if master_store:
-        return master_store.get_containers_by_path(path)
+        return sorted(master_store.get_containers_by_path(path),
+                      key=lambda cont: str.lower(cont[0]),
+                      reverse=reverse)
 
     return []
 

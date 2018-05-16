@@ -9,12 +9,6 @@
         <a href="/manage{{accum_path}}">/{{f}}</a>
     % end
 % end
-<p>Entries</p>
-<ul>
-    % for k, e in shared_cfg.get_entries_by_path(path):
-        <li>{{k}}</li>
-    % end
-</ul>
 <p>Folders</p>
 <ul>
     % for k, c in shared_cfg.get_containers_by_path(path):
@@ -25,6 +19,12 @@
     % end
     % end
 </ul>
+<p>Entries</p>
+<ul>
+    % for k, e in shared_cfg.get_entries_by_path(path):
+    <li>{{k}}</li>
+    % end
+</ul>
 
 <form action="/manage" method="post">
     <input type="submit" path="{{path}}" name="addentry" value="Add Entry">
@@ -32,3 +32,4 @@
     <input type="submit" path="{{path}}" name="addcontainer" value="Add Folder">
     <input type="submit" path="{{path}}" name="removecontainer" value="Remove Folder">
 </form>
+<br/>
