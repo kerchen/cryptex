@@ -14,21 +14,30 @@
     % for k, c in shared_cfg.get_containers_by_path(path):
     % if path == "/":
         <li><a href="/manage/{{k}}">{{k}}</a></li>
+        <ul>
+    %   for k1, c1 in c.get_containers():
+            <li><a href="/manage/{{k}}/{{k1}}">{{k1}}</a></li>
+        </ul>
+    %   end
     % else:
         <li><a href="/manage{{path}}/{{k}}">{{k}}</a></li>
+        <ul>
+        %   for k1, c1 in c.get_containers():
+            <li><a href="/manage{{path}}/{{k}}/{{k1}}">{{k1}}</a></li>
+        </ul>
+    %   end
     % end
     % end
 </ul>
 <p>Entries</p>
 <ul>
     % for k, e in shared_cfg.get_entries_by_path(path):
-    <li>{{k}}</li>
+    <li><a href="/edit{{path}}/{{k}}">{{k}}</a></li>
     % end
 </ul>
 
 <form action="/manage" method="post">
     <input type="submit" path="{{path}}" name="addentry" value="Add Entry">
-    <input type="submit" path="{{path}}" name="removeentry" value="Remove Entry">
     <input type="submit" path="{{path}}" name="addcontainer" value="Add Folder">
     <input type="submit" path="{{path}}" name="removecontainer" value="Remove Folder">
 </form>

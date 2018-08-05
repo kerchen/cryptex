@@ -251,6 +251,11 @@ class PasswordStore:
         dest_cont = self.get_container_by_path(path)
         dest_cont.add_entry(entry, entry_name)
 
+    def get_entry_by_path(self, path):
+        cont_path, ent_name = os.path.split(path)
+        cont = self.get_container_by_path(cont_path)
+        return ent_name, cont.get_entry(ent_name)
+
     def get_entries_by_path(self, path):
         cont = self.get_container_by_path(path)
         return cont.get_entries()

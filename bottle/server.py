@@ -8,6 +8,8 @@ import ssl
 import shared_cfg
 import authentication
 import footer
+import edit_entry
+
 
 log = logging.getLogger(__name__)
 

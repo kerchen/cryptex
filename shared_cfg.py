@@ -179,6 +179,15 @@ def change_session_path(path):
     config_lock.release()
 
 
+def get_entry_by_path(path):
+    global master_store
+
+    if master_store:
+        return master_store.get_entry_by_path(path)
+
+    return None
+
+
 def get_entries_by_path(path, reverse=False):
     global master_store
 
