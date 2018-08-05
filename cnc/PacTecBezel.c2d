@@ -1,0 +1,249 @@
+{
+    "CIRCLE_OBJECTS": [
+        {
+            "group_id": [
+            ],
+            "id": "{144dc657-894c-46a4-8589-1b2577702c86}",
+            "position": [
+                28.676599999999997,
+                37.490399999999994
+            ],
+            "radius": 4.191
+        },
+        {
+            "group_id": [
+            ],
+            "id": "{a45ae3ec-549c-4560-9091-3766e0619b17}",
+            "position": [
+                69.85,
+                11.684
+            ],
+            "radius": 2.921
+        },
+        {
+            "group_id": [
+            ],
+            "id": "{e486cfe0-1f3d-463a-acd4-a37842cd5976}",
+            "position": [
+                82.55,
+                11.684
+            ],
+            "radius": 2.921
+        },
+        {
+            "group_id": [
+            ],
+            "id": "{80bf12bd-cb0b-443c-9150-edd08d05d256}",
+            "position": [
+                107.94999999999999,
+                11.684
+            ],
+            "radius": 2.921
+        },
+        {
+            "group_id": [
+            ],
+            "id": "{85b16f4f-e98d-4d33-9805-57ecd749841b}",
+            "position": [
+                95.25,
+                11.684
+            ],
+            "radius": 2.921
+        }
+    ],
+    "CURVE_OBJECTS": [
+    ],
+    "DOCUMENT_VALUES": {
+        "BACKGROUND_IMAGE": "AAAAAA==",
+        "BACKGROUND_OPACITY": 0.5,
+        "BACKGROUND_POSITION_X": 0,
+        "BACKGROUND_POSITION_Y": 0,
+        "BACKGROUND_ROTATION": 0,
+        "BACKGROUND_SCALE": 1,
+        "BACKGROUND_VISIBLE": false,
+        "DISPLAYMM": false,
+        "HEIGHT": 76.19999999999999,
+        "MACHINE": "Shapeoko XL",
+        "MATERIAL": "Polycarbonate",
+        "RETRACT": 10,
+        "THICKNESS": 1.5748,
+        "WIDTH": 127,
+        "ZERO_X": 0,
+        "ZERO_Y": 0,
+        "ZERO_Z": 0,
+        "grid_enabled": true,
+        "grid_spacing": 5,
+        "version": 1
+    },
+    "RECT_OBJECTS": [
+        {
+            "corner_type": 1,
+            "group_id": [
+            ],
+            "height": 65.3796,
+            "id": "{7e5f2ca8-3df7-44f9-9477-309f0013e507}",
+            "position": [
+                63.423799999999986,
+                37.337999999999994
+            ],
+            "radius": 3.175,
+            "rotation": 0,
+            "width": 120.29439999999998
+        }
+    ],
+    "REGULAR_POLYGON_OBJECTS": [
+    ],
+    "TEXT_OBJECTS": [
+    ],
+    "TOOLPATH_OBJECTS": [
+        {
+            "automatic_parameters": true,
+            "elements": [
+                {
+                    "tab_index": [
+                    ],
+                    "tab_u": [
+                    ],
+                    "uuid": "{144dc657-894c-46a4-8589-1b2577702c86}"
+                }
+            ],
+            "enabled": true,
+            "end_depth": -1.5748,
+            "name": "Wheel Hole",
+            "ofset_dir": -1,
+            "speeds": {
+                "feedrate": 401.3199999999986,
+                "plungerate": 100.32999999999964,
+                "rpm": 6250
+            },
+            "start_depth": 0,
+            "stepdown": 0.603467152598936,
+            "stepover": 1.42875,
+            "tab_height": 3,
+            "tab_width": 12,
+            "tolerance": 0.01,
+            "tool": {
+                "angle": 0,
+                "corner_radius": 0,
+                "diameter": 3.175,
+                "display_mm": false,
+                "flutes": 2,
+                "length": 19.049999999999997,
+                "name": "",
+                "number": 102,
+                "overall_length": 0,
+                "uuid": "{00000000-0000-0000-0000-000000000102}"
+            },
+            "uuid": "{616df191-a696-4f77-8422-763ebe86031e}"
+        },
+        {
+            "automatic_parameters": true,
+            "elements": [
+                {
+                    "tab_index": [
+                    ],
+                    "tab_u": [
+                    ],
+                    "uuid": "{85b16f4f-e98d-4d33-9805-57ecd749841b}"
+                },
+                {
+                    "tab_index": [
+                    ],
+                    "tab_u": [
+                    ],
+                    "uuid": "{80bf12bd-cb0b-443c-9150-edd08d05d256}"
+                },
+                {
+                    "tab_index": [
+                    ],
+                    "tab_u": [
+                    ],
+                    "uuid": "{e486cfe0-1f3d-463a-acd4-a37842cd5976}"
+                },
+                {
+                    "tab_index": [
+                    ],
+                    "tab_u": [
+                    ],
+                    "uuid": "{a45ae3ec-549c-4560-9091-3766e0619b17}"
+                }
+            ],
+            "enabled": true,
+            "end_depth": -1.5748,
+            "name": "Button Holes",
+            "ofset_dir": -1,
+            "speeds": {
+                "feedrate": 401.3199999999986,
+                "plungerate": 100.32999999999964,
+                "rpm": 6250
+            },
+            "start_depth": 0,
+            "stepdown": 0.603467152598936,
+            "stepover": 1.42875,
+            "tab_height": 3,
+            "tab_width": 12,
+            "tolerance": 0.01,
+            "tool": {
+                "angle": 0,
+                "corner_radius": 0,
+                "diameter": 3.175,
+                "display_mm": false,
+                "flutes": 2,
+                "length": 19.049999999999997,
+                "name": "",
+                "number": 102,
+                "overall_length": 0,
+                "uuid": "{00000000-0000-0000-0000-000000000102}"
+            },
+            "uuid": "{c2565315-5e37-423e-89c9-5e995190ba11}"
+        },
+        {
+            "automatic_parameters": true,
+            "elements": [
+                {
+                    "tab_index": [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    "tab_u": [
+                        0.16897063148976557,
+                        0.3993938157459538,
+                        0.6424447704143587,
+                        0.9120215861581705
+                    ],
+                    "uuid": "{7e5f2ca8-3df7-44f9-9477-309f0013e507}"
+                }
+            ],
+            "enabled": true,
+            "end_depth": -1.5748,
+            "name": "Profile",
+            "ofset_dir": 1,
+            "speeds": {
+                "feedrate": 401.3199999999986,
+                "plungerate": 100.32999999999964,
+                "rpm": 6250
+            },
+            "start_depth": 0,
+            "stepdown": 0.603467152598936,
+            "stepover": 1.42875,
+            "tab_height": 3,
+            "tab_width": 2,
+            "tolerance": 0.01,
+            "tool": {
+                "angle": 0,
+                "corner_radius": 0,
+                "diameter": 3.175,
+                "display_mm": false,
+                "flutes": 2,
+                "length": 19.049999999999997,
+                "name": "",
+                "number": 102,
+                "overall_length": 0,
+                "uuid": "{00000000-0000-0000-0000-000000000102}"
+            },
+            "uuid": "{46d3a6ba-3e77-4ed0-878e-0acad5132c4e}"
+        }
+    ]
+}
