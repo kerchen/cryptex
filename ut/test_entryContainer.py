@@ -144,4 +144,3 @@ class TestEntryContainer(TestCase):
         self.cut.add_entry(Entry(), entry_name)
         with self.assertRaises(ECDuplicateException):
             self.cut.add_entry(EntryContainer(), name=entry_name)
-

@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import logging
+import os
 import threading
 import uuid
 
@@ -156,6 +157,23 @@ def add_entry(ent, ent_name):
         if master_store and master_password:
             master_store.add_entry(ent, ent_name, session.path)
             master_store.save(master_password, pw_store_filename)
+    finally:
+        config_lock.release()
+
+
+def remove_entry(entry_path):
+    global config_lock, master_store, pw_store_filename, master_password, session
+
+    config_lock.acquire()
+    try:
+        if master_store and master_password:
+            try:
+                cont_path, entry_name = os.path.split(entry_path)
+                cont = master_store.get_container_by_path(cont_path)
+                cont.remove_entry(entry_name)
+                master_store.save(master_password, pw_store_filename)
+            finally:
+                pass
     finally:
         config_lock.release()
 

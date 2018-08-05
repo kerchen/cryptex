@@ -32,7 +32,11 @@
 <p>Entries</p>
 <ul>
     % for k, e in shared_cfg.get_entries_by_path(path):
-    <li><a href="/edit{{path}}/{{k}}">{{k}}</a></li>
+        % if path == "/":
+            <li><a href="/edit/{{k}}">{{k}}</a></li>
+        % else:
+            <li><a href="/edit{{path}}/{{k}}">{{k}}</a></li>
+        % end
     % end
 </ul>
 

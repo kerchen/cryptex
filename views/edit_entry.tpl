@@ -10,9 +10,15 @@ Name: <input name="name" type="text" value="{{e_name}}" autofocus/> </br>
 Username: <input name="username" type="text" value="{{e.get_username()}}"/> </br>
 Password: <input name="password" type="password" value="{{e.get_password()}}"/> </br>
 URL: <input name="url" type="url" value="{{e.get_url()}}"/> </br>
-
-<form action="/manage" method="post">
-    <input type="submit" path="{{path}}" name="updateentry" value="Update Entry">
-    <input type="submit" path="{{path}}" name="removeentry" value="Remove Entry">
-</form>
+</br>
+<button onclick="update_entry()">Update Entry</button>
+<button onclick="confirm_remove()">Remove Entry</button>
+<script>
+    function confirm_remove() {
+        var response = confirm("Remove the entry '{{path}}'?");
+        if (response == true) {
+            post('/removeentry'+'{{path}}', {}, "post");
+        }
+    }
+</script>
 <br/>

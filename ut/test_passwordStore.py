@@ -30,6 +30,13 @@ class TestPasswordStore(TestCase):
         with self.assertRaises(ECNotFoundException):
             self.cut.get_container_by_path("/Something/Not/there")
 
+    def test_get_entry_by_path(self):
+        new_cont = EntryContainer()
+        entry = Entry()
+        new_cont.add_entry(entry, "Entry1")
+        self.cut.add_container(new_cont, "A New Beginning", "/")
+        self.assertEqual(("Entry1", entry), self.cut.get_entry_by_path("/A New Beginning/Entry1"))
+
     def match_entries(self, cont1, cont2):
         self.assertEqual(cont1.get_entry_count(), cont2.get_entry_count())
         for k, e1 in cont1.get_entries():
