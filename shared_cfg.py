@@ -161,6 +161,18 @@ def add_entry(ent, ent_name):
         config_lock.release()
 
 
+def update_entry(entry_path, updated_name, updated_entry):
+    global config_lock, master_store, pw_store_filename, master_password
+
+    config_lock.acquire()
+    try:
+        if master_store and master_password:
+            master_store.update_entry(entry_path, updated_name, updated_entry)
+            master_store.save(master_password, pw_store_filename)
+    finally:
+        config_lock.release()
+
+
 def remove_entry(entry_path):
     global config_lock, master_store, pw_store_filename, master_password, session
 

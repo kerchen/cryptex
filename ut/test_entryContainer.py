@@ -91,6 +91,20 @@ class TestEntryContainer(TestCase):
         self.cut.add_entry(new_entry, "Rogue One")
         self.assertEqual(1, self.cut.get_entry_count())
 
+    def test_replace_entry(self):
+        old_entry = Entry()
+        old_entry.url = "old_url"
+        old_entry.password = "old_password"
+        old_entry.username = "old_username"
+        self.cut.add_entry(old_entry, "Old One")
+        new_entry = Entry()
+        new_entry.url = "new_url"
+        new_entry.password = "new_password"
+        new_entry.username = "new_username"
+        self.cut.replace_entry(new_entry, "Old One")
+        entry = self.cut.get_entry("Old One")
+        self.assertEqual(entry, new_entry)
+
     def test_get_entry(self):
         entry_name = "Enter the Dragon"
         new_entry = Entry()

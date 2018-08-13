@@ -25,11 +25,11 @@
     % if retry == "other_error":
         <p class="error">An error occurred adding the entry. Please try again.</p>
     % end
-    Name: <input name="name" type="text" value="{{name}}" autofocus/> </br>
-    Username: <input name="username" type="text" value="{{username}}"/> </br>
-    Password: <input name="password" type="password"/> </br>
-    Re-enter Password: <input name="password2" type="password" /></br>
-    URL: <input name="url" type="url" value="{{url}}"/> </br>
+    Name: <input name="name" type="text" value="{{name}}" autofocus/> <br>
+    Username: <input name="username" type="text" value="{{username}}"/> <br>
+    Password: <input name="password" type="password"/> <br>
+    Re-enter Password: <input name="password2" type="password" /><br>
+    URL: <input name="url" type="url" value="{{url}}"/> <br>
     <input name="create" value="Create" type="submit" />
     <input name="cancel" value="Cancel" type="submit" />
 </form>

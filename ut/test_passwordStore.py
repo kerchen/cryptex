@@ -65,3 +65,32 @@ class TestPasswordStore(TestCase):
 
         self.match_containers(self.cut.get_root(), store.get_root())
 
+    def test_update_entry_same_name(self):
+        old_entry = Entry()
+        old_entry.url = "old_url"
+        old_entry.password = "old_password"
+        old_entry.username = "old_username"
+        self.cut.add_entry(old_entry, "Old One", "/")
+        new_entry = Entry()
+        new_entry.url = "new_url"
+        new_entry.password = "new_password"
+        new_entry.username = "new_username"
+        self.cut.update_entry("/Old One", "Old One", new_entry)
+        ent_name, entry = self.cut.get_entry_by_path("/Old One")
+        self.assertEqual(ent_name, "Old One")
+        self.assertEqual(entry, new_entry)
+
+    def test_update_entry_different_name(self):
+        old_entry = Entry()
+        old_entry.url = "old_url"
+        old_entry.password = "old_password"
+        old_entry.username = "old_username"
+        self.cut.add_entry(old_entry, "Old One", "/")
+        new_entry = Entry()
+        new_entry.url = "new_url"
+        new_entry.password = "new_password"
+        new_entry.username = "new_username"
+        self.cut.update_entry("/Old One", "New One", new_entry)
+        ent_name, entry = self.cut.get_entry_by_path("/New One")
+        self.assertEqual(ent_name, "New One")
+        self.assertEqual(entry, new_entry)

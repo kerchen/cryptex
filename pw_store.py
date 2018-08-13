@@ -100,6 +100,12 @@ class EntryContainer:
                 "Illegal character used in name {0}".format(name))
         self.entries[name] = entry
 
+    def replace_entry(self, entry, name):
+        if name not in self.entries:
+            raise ECNotFoundException(
+                "Entry with name '{0}' not found".format(name))
+        self.entries[name] = entry
+
     def rename_entry(self, old_name, new_name):
         if old_name not in self.entries:
             raise ECNotFoundException(
@@ -250,6 +256,17 @@ class PasswordStore:
             raise ECException("Invalid entry name")
         dest_cont = self.get_container_by_path(path)
         dest_cont.add_entry(entry, entry_name)
+
+    def update_entry(self, path, updated_name, updated_entry):
+        if not updated_entry:
+            raise ECException("Invalid entry")
+        if not updated_name or len(updated_name) == 0:
+            raise ECException("Invalid entry name")
+        cont_path, current_name = os.path.split(path)
+        cont = self.get_container_by_path(cont_path)
+        if updated_name != current_name:
+            cont.rename_entry(current_name, updated_name)
+        cont.replace_entry(updated_entry, updated_name)
 
     def get_entry_by_path(self, path):
         cont_path, ent_name = os.path.split(path)

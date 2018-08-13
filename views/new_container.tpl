@@ -18,7 +18,7 @@
     % if retry == "other_error":
         <p class="error">An error occurred adding the folder. Please try again.</p>
     % end
-    Name: <input name="name" type="text" value="{{name}}" autofocus/> </br>
+    Name: <input name="name" type="text" value="{{name}}" autofocus/> <br>
     <input name="create" value="Create" type="submit" />
     <input name="cancel" value="Cancel" type="submit" />
 </form>
