@@ -7,6 +7,10 @@ import uuid
 import pw_store
 
 
+HID_USB_MODE = 1
+RNDIS_USB_MODE = 2
+
+
 class LockWrapper:
     """Wraps a lock object to make it easier to enable/disable the lock."""
     def __init__(self, enable):
