@@ -7,8 +7,8 @@ import uuid
 import pw_store
 
 
-HID_USB_MODE = 1
-RNDIS_USB_MODE = 2
+HID_USB_MODE = 1    # aka 'curses/keyboard' mode
+RNDIS_USB_MODE = 2  # aka 'web interface' mode
 
 
 class LockWrapper:
@@ -46,7 +46,7 @@ class Session:
 
 session = None
 
-keyboard_mode = False
+device_mode = RNDIS_USB_MODE
 master_password = None
 pw_store_filename = "/home/pi/master_store.enc"
 master_store = None
@@ -148,9 +148,9 @@ def does_session_match(cookie):
 
 
 def is_in_keyboard_mode():
-    global keyboard_mode
+    global device_mode
 
-    return keyboard_mode
+    return device_mode == HID_USB_MODE
 
 
 def add_entry(ent, ent_name):
@@ -256,13 +256,22 @@ def save_pw_store():
 
 
 def activate_keyboard_mode():
-    global config_lock, keyboard_mode, master_store, master_password, session
+    global config_lock, device_mode, master_store, master_password, session
 
     config_lock.acquire()
     save_pw_store()
     master_password = None
     session = None
-    keyboard_mode = True
+    device_mode = HID_USB_MODE
+    config_lock.release()
+
+
+def activate_web_mode():
+    global config_lock, device_mode, master_store, master_password, session
+
+    config_lock.acquire()
+    save_pw_store()
+    device_mode = RNDIS_USB_MODE
     config_lock.release()
 
 

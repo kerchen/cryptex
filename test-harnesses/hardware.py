@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 
 # Windows
 if os.name == 'nt':
@@ -7,10 +8,13 @@ if os.name == 'nt':
 
 # Posix (Linux, OS X)
 else:
-    import sys
     import termios
     import atexit
     from select import select
+
+my_path = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(os.path.join(my_path, ".."))
+import shared_cfg
 
 
 log = logging.getLogger(__name__)
@@ -110,6 +114,9 @@ class KBHit:
 GPIO = GPIO_stub()
 kb = KBHit()
 
+def set_device_mode(mode):
+    log.debug("Stub set_device_mode()")
+
 
 def setup_gpio():
     log.debug("Stub setup_gpio()")
@@ -122,25 +129,56 @@ def get_enc_value():
     return new_val
 
 
-def check_gpio(mode, current_enc_value):
-    new_mode = mode
+def check_gpio(current_enc_value):
     new_enc_value = current_enc_value
     enc_button_pressed = False
 
-    CW_ORDER = [ 1, 3, 0, 2 ]
-    CCW_ORDER = [ 2, 0, 3, 1 ]
+    CW_ORDER = [1, 3, 0, 2]
+    CCW_ORDER = [2, 0, 3, 1]
+
+    SWITCH_MODE_KEY = '1'
+    LOCK_DEVICE_KEY = '4'
+
+    # Mapping of keyboard keys to hardware buttons:
+    #  Esc: no hardware equivalent; used to exit simulation
+    #  -: One CCW tick of encoder knob
+    #  =: One CW tick of encoder knob
+    #  Return: Encoder knob button press
+    #  1-4: TFT buttons, with left-most = 1
 
     if kb.kbhit():
-        c = kb.getch()
+        try:
+            c = kb.getch()
+        except UnicodeDecodeError:
+            # Arrow keys will cause this exception.
+            c = ' '
+            pass
         if ord(c) == 27: # ESC
             log.debug("Esc pressed. Throwing keyboard exception.")
             raise KeyboardInterrupt
         if c == '=': # simulate turning knob one click CW
+            log.debug("= pressed. Turning knob CW")
             new_enc_value = CW_ORDER[current_enc_value]
         elif c == '-': # simulate turning knob one click CCW
+            log.debug("- pressed. Turning knob CCW")
             new_enc_value = CCW_ORDER[current_enc_value]
+        elif ord(c) == 13: # carriage return
+            log.debug("CR pressed. Simulating encoder button press.")
+            enc_button_pressed = True
+        elif c == SWITCH_MODE_KEY:
+            if shared_cfg.is_in_keyboard_mode():
+                log.debug("Switching mode to 'web'")
+                shared_cfg.activate_web_mode()
+            else:
+                log.debug("Keyboard mode must be enabled from web browser.")
 
-    return new_mode, new_enc_value, enc_button_pressed
+        else:
+            log.debug("Unused key {0} pressed.".format(ord(c)))
+
+        log.debug("Key pressed: given {0}, returning {1}, {2}".format(
+            current_enc_value, new_enc_value, enc_button_pressed))
+
+    return new_enc_value, enc_button_pressed
 
 
 if __name__ == "__main__":

@@ -1,7 +1,6 @@
 import RPi.GPIO as GPIO
 import io
 import logging
-import sys
 
 import shared_cfg
 
@@ -25,6 +24,19 @@ ENC_QUAD_PINS = [ ENC_B_PIN, ENC_A_PIN ]
 
 
 log = logging.getLogger(__name__)
+
+
+def set_device_mode(mode):
+    if True:
+        log.critical("NOT setting USB mode.")
+        return
+
+    if mode == HID_USB_MODE:
+        subprocess.call([MODE_SWITCH_SCRIPT, "hid"])
+    elif mode == RNDIS_USB_MODE:
+        subprocess.call([MODE_SWITCH_SCRIPT, "rndis"])
+    else:
+        log.warn("Unknown device mode requested.")
 
 
 def setup_gpio():
@@ -62,26 +74,24 @@ def get_enc_value():
     return new_val
 
 
-def check_gpio(mode, current_enc_value):
-    new_mode = mode
+def check_gpio(current_enc_value):
     enc_button_pressed = False
 
     if GPIO.event_detected(SWITCH_MODE_BUTTON_PIN):
         log.debug('Mode switch button pressed')
-        if mode == shared_cfg.HID_USB_MODE:
-            new_mode = shared_cfg.RNDIS_USB_MODE
-        elif mode == shared_cfg.RNDIS_USB_MODE:
-            new_mode = shared_cfg.HID_USB_MODE
+        if shared_cfg.is_in_keyboard_mode():
+            set_device_mode(shared_cfg.RNDIS_USB_MODE)
+            shared_cfg.activate_web_mode()
+            return
         else:
-            log.warn("Unknown USB mode")
-        #set_usb_mode(new_mode)
+            log.warn("Switching to 'keyboard' mode must be done in web browser.")
 
     if GPIO.event_detected(SEND_PASSWORD_BUTTON_PIN):
-        if mode == shared_cfg.HID_USB_MODE:
+        if shared_cfg.is_in_keyboard_mode():
             log.debug('Send password button pressed')
-            send_password()
+            #send_password()
         else:
-            log.debug('Send password button pressed but not in HID mode')
+            log.debug('Send password button pressed but not in keyboard mode')
 
     if GPIO.event_detected(ENC_BUTTON_PIN):
         enc_button_pressed = True
@@ -96,7 +106,7 @@ def check_gpio(mode, current_enc_value):
     if encoder_changed:
         new_enc_value = get_enc_value()
 
-    return new_mode, new_enc_value, enc_button_pressed
+    return new_enc_value, enc_button_pressed
 
 
 def send_password():
