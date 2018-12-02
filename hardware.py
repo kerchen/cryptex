@@ -120,7 +120,7 @@ def check_gpio(current_enc_value):
     return new_enc_value, enc_button_pressed, hw_button_pressed
 
 
-def send_password():
+def keyboard_out(text):
     dev = io.open("/dev/hidg0","wb")
     dev.write("\0\0\4\0\0\0\0\0")
     dev.write("\0\0\0\0\0\0\0\0")

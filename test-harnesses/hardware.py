@@ -191,6 +191,10 @@ def check_gpio(current_enc_value):
     return new_enc_value, enc_button_pressed, hw_button_pressed
 
 
+def keyboard_out(text):
+    log.debug("keyboard_out() stub called with text '{0}'".format(text))
+
+
 if __name__ == "__main__":
 
     kb = KBHit()
