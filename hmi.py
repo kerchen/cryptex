@@ -19,32 +19,43 @@ BTN_LABEL_X_POS = {
 log = logging.getLogger(__name__)
 
 
+class Extent:
+    def __init__(self, min, max):
+        self.min = min
+        self.max = max
+
+    def span(self):
+        return self.max - self.min + 1
+
+
 class StoreNavigator:
     """Renders current view of password store"""
     def __init__(self, min_col, min_row, max_col, max_row):
-        self.current_level = "/"
-        self.level_container = None
+        self.level = "/"
+        self.level_container = None # Container of current_level
         self.selection = 0  # index of current selection
         self.top_row_index = 0    # index of top visible row
-        self.visible_rows = max_row - min_row + 1
-        self.min_col = min_col
-        self.min_row = min_row
-        self.max_col = max_col
-        self.max_row = max_row
-        self.max_row_len = max_col - min_col + 1
+        self.col_extent = Extent(min_col, max_col)
+        self.row_extent = Extent(min_row, max_row)
         self.level_container_names = []
         self.level_entry_names = []
-        log.debug("Creating navigator: min_row: {0}  max_row: {1}  vis_rows: {2}"
-                  .format(self.min_row, self.max_row, self.visible_rows))
-        self.change_level(None)
+        log.debug("New navigator: min_row: {0}  max_row: {1}  vis_rows: {2}\n"
+                  "min_col: {3}  max_col: {4}  vis_cols: {5}"
+                  .format(min_row, max_row, self.row_extent.span(),
+                          min_col, max_col, self.col_extent.span()))
+        self.change_level(0)
 
-    def change_level(self, new_level):
-        if new_level: # Drilling down a level to the level named new_level
-            self.current_level += "/" + new_level
-        elif not self.current_level == "/": # Popping up to parent level
-            last_slash = self.current_level.rindex("/")
-            self.current_level = self.current_level[0:last_slash]
-        self.level_container = shared_cfg.master_store.get_container_by_path(self.current_level)
+    def change_level(self, direction):
+        if direction < 0: # Drilling down to the currently-selected level
+            name, is_cont = self.get_selection()
+            if not is_cont:
+                return
+            self.level += "/" + name
+        elif direction > 0 and not self.level == "/": # Popping up to parent level
+            last_slash = self.level.rindex("/")
+            self.level = self.level[0:last_slash]
+
+        self.level_container = shared_cfg.master_store.get_container_by_path(self.level)
 
         self.level_container_names = []
         self.level_entry_names = []
@@ -54,6 +65,22 @@ class StoreNavigator:
             self.level_entry_names.append(k)
         self.level_container_names.sort()
         self.level_entry_names.sort()
+        self.selection = 0
+
+    def get_selection(self):
+        """
+        :return: Returns a tuple, containing the name of current selection and
+        a boolean indicating whether or not the selection is a container.
+        """
+        cc = len(self.level_container_names)
+        ec = len(self.level_entry_names)
+
+        if cc == 0 and ec == 0:
+            return "", False
+
+        if self.selection >= cc:
+            return self.level_entry_names[self.selection - cc], False
+        return self.level_container_names[self.selection], True
 
     def change_selection(self, stdscr, direction):
         """
@@ -71,23 +98,25 @@ class StoreNavigator:
         self.selection += direction
         if self.selection < self.top_row_index:
             self.top_row_index -= 1
-        if self.selection >= self.top_row_index + self.visible_rows:
+        if self.selection >= self.top_row_index + self.row_extent.span():
             self.top_row_index += 1
 
-        for r in range(self.top_row_index, self.top_row_index + self.visible_rows):
-            scr_row = self.min_row + r - self.top_row_index
-            scr_col = self.min_col
+        for r in range(self.top_row_index, self.top_row_index + self.row_extent.span()):
+            scr_row = self.row_extent.min + r - self.top_row_index
+            scr_col = self.col_extent.min
             entry_text = ""
             if r < cc:
-                entry_text = self.level_container_names[r]
-            elif r < cc + ec + 1:
+                entry_text = ">" + self.level_container_names[r]
+            elif r < cc + ec + 1 and r - cc < ec:
                 entry_text = self.level_entry_names[r-cc]
+            elif self.selection == 0 and cc + ec == 0 and r == self.top_row_index:
+                entry_text = "<<<<NO ENTRIES>>>>"
 
-            if self.selection == r:
+            if self.selection == r and cc + ec > 0:
                 stdscr.addstr(scr_row, scr_col,
-                    entry_text.ljust(self.max_row_len), curses.A_REVERSE)
+                    entry_text.ljust(self.col_extent.span()), curses.A_REVERSE)
             else:
-                stdscr.addstr(scr_row, scr_col, entry_text.ljust(self.max_row_len))
+                stdscr.addstr(scr_row, scr_col, entry_text.ljust(self.col_extent.span()))
 
         return self.selection
 
@@ -124,9 +153,7 @@ def cryptex(stdscr):
                               datetime.now().strftime("%Y %m %d %H:%M:%S")).ljust(maxx-2))
             row += 1
 
-            new_enc_value, eb_pressed = hardware.check_gpio(enc_value)
-            if eb_pressed:
-                log.debug("Encoder button pressed")
+            new_enc_value, eb_pressed, hw_button = hardware.check_gpio(enc_value)
 
             direction = 0
             if new_enc_value != enc_value:
@@ -148,6 +175,11 @@ def cryptex(stdscr):
                     in_keyboard_mode = True
                     navigator = StoreNavigator(1, row, maxx-2, row+5)
                 selection = navigator.change_selection(stdscr, direction)
+                if eb_pressed:
+                    navigator.change_level(-1)
+                elif hw_button == 1:
+                    navigator.change_level(1)
+
 
             stdscr.refresh()
     except KeyboardInterrupt:
