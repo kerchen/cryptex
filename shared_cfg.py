@@ -158,7 +158,7 @@ def add_entry(ent, ent_name):
 
     config_lock.acquire()
     try:
-        if master_store and master_password:
+        if master_store and master_password and session:
             master_store.add_entry(ent, ent_name, session.path)
             master_store.save(master_password, pw_store_filename)
     finally:
@@ -178,7 +178,7 @@ def update_entry(entry_path, updated_name, updated_entry):
 
 
 def remove_entry(entry_path):
-    global config_lock, master_store, pw_store_filename, master_password, session
+    global config_lock, master_store, pw_store_filename, master_password
 
     config_lock.acquire()
     try:
@@ -199,7 +199,7 @@ def add_container(cont, cont_name):
 
     config_lock.acquire()
     try:
-        if master_store and master_password:
+        if master_store and master_password and session:
             master_store.add_container(cont, cont_name, session.path)
             master_store.save(master_password, pw_store_filename)
     finally:
@@ -209,7 +209,8 @@ def add_container(cont, cont_name):
 def change_session_path(path):
     global config_lock, session
     config_lock.acquire()
-    session.path = path
+    if session:
+        session.path = path
     config_lock.release()
 
 
@@ -283,6 +284,8 @@ def lock_store():
         save_pw_store()
         master_store = None
         master_password = None
-        session.key = None
+        if session:
+            session.key = None
+        activate_web_mode()
     finally:
         config_lock.release()

@@ -1,8 +1,6 @@
 import curses
-from datetime import datetime
 import logging
 
-import pw_store
 import shared_cfg
 import hardware
 
@@ -17,6 +15,32 @@ BTN_LABEL_X_POS = {
     40: [3, 15, 26, 37],
     120: [3, 15, 26, 37]
 }
+
+
+# Maps TFT hard button ID to the action it performs
+class ButtonAction:
+    BACK = 1
+    EDIT = 2
+    BUTTON_3 = 3
+    LOCK = 4
+
+
+# Maps button ID to UI text
+HW_BTN_MAPPING = {
+    ButtonAction.EDIT: "EDIT",
+    ButtonAction.LOCK: "LOCK",
+    ButtonAction.BACK: "BACK",
+    ButtonAction.BUTTON_3: "BUTT 3"
+}
+
+
+# Color pair IDs
+class ColorPair:
+    NORMAL = 1
+    SELECTED = 2
+    NO_DATA = 3
+    NO_DATA_SELECTED = 4
+    INSTRUCTION = 5
 
 log = logging.getLogger(__name__)
 
@@ -54,8 +78,11 @@ class StoreNavigator:
                           min_col, max_col, self.col_extent.span()))
         self.entry_actions = []
         # Each action tuple holds the UI text and the corresponding Entry class
-        # function that should be invoked on an Entry instance when the action
-        # is invoked.
+        # function that should be invoked on an Entry instance to get the
+        # string that should be sent via the USB keyboard device for the action.
+        # For example, the "Send password" action invokes "get_password()" on
+        # the currently-selected Entry, and outputs the result to the USB
+        # keyboard device.
         self.entry_actions.append(["Send password", "get_password"])
         self.entry_actions.append(["Send username", "get_username"])
         self.entry_actions.append(["Send URL", "get_url"])
@@ -64,7 +91,7 @@ class StoreNavigator:
     def get_entry_action_text(self, index):
         """
         For the Entry indicated by self.level, return the result of invoking the
-        action function at index.
+        Entry member function for the action at index.
         :param index: Index into self.entry_actions, which selects the function
         to be invoked on the currently-selected Entry.
         :return: A string or None.
@@ -74,12 +101,14 @@ class StoreNavigator:
         return getattr(entry, action)()
 
     def perform_entry_action(self):
-        log.debug("Performing action {0} for {1}".format(self.get_selection(),
-                                                         self.level))
+        log.debug("Performing action '{0}' for '{1}'"
+                  .format(self.get_selection()[0], self.level))
         try:
             text_to_send = self.get_entry_action_text(self.selection)
             if text_to_send and len(text_to_send) > 0:
                 hardware.keyboard_out(text_to_send)
+            else:
+                log.warn("No data present in Entry for the selected action.")
         except Exception as ex:
             log.critical("Action '{0}' failed for entry '{1}': {2}"
                          .format(self.selection, self.level, str(ex)))
@@ -97,7 +126,7 @@ class StoreNavigator:
             if not self.level == "/":
                 self.level += "/"
             self.level += name
-        elif direction > 0 and not self.level == "/": # Popping up to parent level
+        elif direction > 0 and not self.level == "/": # Popping up to parent
             last_slash = self.level.rindex("/")
             self.level = self.level[0:last_slash]
             if len(self.level) == 0:
@@ -196,31 +225,36 @@ class StoreNavigator:
             scr_row = self.row_extent.min + r - self.top_row_index
             scr_col = self.col_extent.min
             entry_text = ""
-            text_attr = curses.A_NORMAL
+            text_attr = curses.color_pair(ColorPair.NORMAL)
             if r < cc:
                 entry_text = self.entry_actions[r][0]
                 text_to_send = self.get_entry_action_text(r)
                 if not text_to_send or len(text_to_send) == 0:
-                    text_attr = curses.color_pair(2)
-                    entry_text += " (no data)"
+                    if self.selection == r:
+                        text_attr = curses.color_pair(ColorPair.NO_DATA_SELECTED)
+                    else:
+                        text_attr = curses.color_pair(ColorPair.NO_DATA)
+                    entry_text += " (no data to send!)"
+                elif self.selection == r:
+                    text_attr = curses.color_pair(ColorPair.SELECTED)
 
-            if self.selection == r:
-                stdscr.addstr(scr_row, scr_col,
-                              entry_text.ljust(self.col_extent.span()),
-                              curses.A_REVERSE)
-            else:
                 stdscr.addstr(scr_row, scr_col,
                               entry_text.ljust(self.col_extent.span()),
                               text_attr)
+            else:
+                stdscr.addstr(scr_row, scr_col,
+                              entry_text.ljust(self.col_extent.span()))
 
 
 def cryptex(stdscr):
     curses.start_color()
-    curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK)
-    curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
+    curses.init_pair(ColorPair.NORMAL, curses.COLOR_WHITE, curses.COLOR_BLACK)
+    curses.init_pair(ColorPair.SELECTED, curses.COLOR_BLACK, curses.COLOR_WHITE)
+    curses.init_pair(ColorPair.NO_DATA, curses.COLOR_RED, curses.COLOR_BLACK)
+    curses.init_pair(ColorPair.NO_DATA_SELECTED, curses.COLOR_WHITE, curses.COLOR_RED)
+    curses.init_pair(ColorPair.INSTRUCTION, curses.COLOR_GREEN, curses.COLOR_BLACK)
     hardware.set_device_mode(shared_cfg.RNDIS_USB_MODE)
     enc_value = hardware.get_enc_value()
-    selection = 0
     in_keyboard_mode = False
     navigator = None
 
@@ -228,38 +262,55 @@ def cryptex(stdscr):
     maxy, maxx = stdscr.getmaxyx()
     stdscr.border()
 
-    for x in range(0, maxx):
-        stdscr.addstr(maxy - 2, x, "{0}".format(x % 10))
-    for b in range(0, 4):
-        stdscr.addstr(maxy - 1, BTN_LABEL_X_POS[maxx][b], "{0}".format(b + 1))
-    stdscr.refresh()
+    stdscr.addstr(maxy - 1, BTN_LABEL_X_POS[maxx][ButtonAction.LOCK-1],
+                  HW_BTN_MAPPING[ButtonAction.LOCK])
+    stdscr.addstr(maxy - 1, BTN_LABEL_X_POS[maxx][ButtonAction.EDIT-1],
+                  HW_BTN_MAPPING[ButtonAction.EDIT])
+    stdscr.addstr(maxy - 1, BTN_LABEL_X_POS[maxx][ButtonAction.BUTTON_3-1],
+                  HW_BTN_MAPPING[ButtonAction.BUTTON_3])
+    stdscr.addstr(maxy - 1, BTN_LABEL_X_POS[maxx][ButtonAction.BACK-1],
+                  HW_BTN_MAPPING[ButtonAction.BACK])
 
     try:
         while 1:
             row = 1
+            text_attr = curses.color_pair(ColorPair.INSTRUCTION)
+            text = ""
             if shared_cfg.is_in_keyboard_mode():
-                stdscr.addstr(row, 1, "Navigate entries w/jog wheel".ljust(maxx-2))
+                text = "Navigate entries with jog wheel"
             elif shared_cfg.master_store:
-                stdscr.addstr(row, 1, "In web browser mode".ljust(maxx-2))
+                text = "In web browser mode"
             else:
-                stdscr.addstr(row, 1, "Log in to https://cryptex/login".ljust(maxx-2))
-            row += 1
-            stdscr.addstr(row, 1,
-                          "{0}".format(
-                              datetime.now().strftime("%Y %m %d %H:%M:%S")).ljust(maxx-2))
+                text = "Log in to https://cryptex/login"
+            stdscr.addstr(row, 1, text.center(maxx-2), text_attr)
             row += 1
 
             new_enc_value, eb_pressed, hw_button = hardware.check_gpio(enc_value)
 
+            if hw_button == ButtonAction.LOCK:
+                log.debug("Locking it down.")
+                shared_cfg.lock_store()
+                in_keyboard_mode = False
+                navigator = None
+                continue
+            if hw_button == ButtonAction.EDIT:
+                log.debug("Going to web mode.")
+                shared_cfg.activate_web_mode()
+                in_keyboard_mode = False
+                navigator = None
+                continue
+
             direction = 0
-            if new_enc_value != enc_value:
-                if new_enc_value == CW_ORDER[enc_value]:
-                    direction = 1
-                elif new_enc_value == CCW_ORDER[enc_value]:
-                    direction = -1
-                enc_value = new_enc_value
-            stdscr.addstr(row, 1, "Selection: {0:<5}".format(selection).ljust(maxx-2))
-            row += 1
+            if hw_button == 0:
+                if new_enc_value != enc_value:
+                    if new_enc_value == CW_ORDER[enc_value]:
+                        direction = 1
+                    elif new_enc_value == CCW_ORDER[enc_value]:
+                        direction = -1
+                    enc_value = new_enc_value
+            elif hw_button == ButtonAction.BACK:
+                direction = -1
+
             stdscr.addstr(row, 1, "PW store loaded: {0}".format(
                 "Yes" if shared_cfg.master_store else "No ").ljust(maxx-2))
             row += 1
@@ -269,14 +320,17 @@ def cryptex(stdscr):
             if shared_cfg.is_in_keyboard_mode():
                 if not in_keyboard_mode:
                     in_keyboard_mode = True
-                    navigator = StoreNavigator(1, row, maxx-2, row+5)
-                selection = navigator.change_selection(direction)
+                    navigator = StoreNavigator(1, row, maxx-2, maxy-3)
+                navigator.change_selection(direction)
                 navigator.render_level(stdscr)
                 if eb_pressed:
                     navigator.change_level(-1)
                 elif hw_button == 1:
                     navigator.change_level(1)
-
+            else: # Render all remaining rows empty
+                while row < maxy - 2:
+                    stdscr.addstr(row, 1, " ".ljust(maxx-2))
+                    row += 1
 
             stdscr.refresh()
     except KeyboardInterrupt:
