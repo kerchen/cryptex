@@ -12,21 +12,21 @@
 <p>Folders</p>
 <ul>
     % for k, c in shared_cfg.get_containers_by_path(path):
-    % if path == "/":
-        <li><a href="/manage/{{k}}">{{k}}</a></li>
-        <ul>
-    %   for k1, c1 in c.get_containers():
-            <li><a href="/manage/{{k}}/{{k1}}">{{k1}}</a></li>
-        </ul>
-    %   end
-    % else:
-        <li><a href="/manage{{path}}/{{k}}">{{k}}</a></li>
-        <ul>
+        % if path == "/":
+            <li><a href="/manage/{{k}}">{{k}}(imm)</a></li>
+            <ul>
         %   for k1, c1 in c.get_containers():
-            <li><a href="/manage{{path}}/{{k}}/{{k1}}">{{k1}}</a></li>
-        </ul>
-    %   end
-    % end
+                <li><a href="/manage/{{k}}/{{k1}}">{{k1}}(sub)</a></li>
+        %   end
+            </ul>
+        % else:
+            <li><a href="/manage{{path}}/{{k}}">{{k}}</a></li>
+            <ul>
+            %   for k1, c1 in c.get_containers():
+                <li><a href="/manage{{path}}/{{k}}/{{k1}}">{{k1}}</a></li>
+        %   end
+            </ul>
+        % end
     % end
 </ul>
 <p>Entries</p>
