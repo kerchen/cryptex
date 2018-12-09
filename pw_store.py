@@ -10,7 +10,7 @@ import encryption
 log = logging.getLogger(__name__)
 
 
-ILLEGAL_NAME_CHARS = r"\\./?@#%"
+ILLEGAL_NAME_CHARS = r"\\./?@#%\'"
 LEGAL_CHAR_RE = re.compile("^[^"+ILLEGAL_NAME_CHARS+"]+$")
 
 
