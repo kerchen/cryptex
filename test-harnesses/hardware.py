@@ -137,10 +137,6 @@ def check_gpio(current_enc_value):
     CW_ORDER = [1, 3, 0, 2]
     CCW_ORDER = [2, 0, 3, 1]
 
-    BACK_KEY = '1'
-    SWITCH_MODE_KEY = '3'
-    LOCK_DEVICE_KEY = '4'
-
     # Mapping of keyboard keys to hardware buttons:
     #  Esc: no hardware equivalent; used to exit simulation
     #  -: One CCW tick of encoder knob
@@ -167,13 +163,6 @@ def check_gpio(current_enc_value):
         elif ord(c) == 13: # carriage return
             log.debug("CR pressed. Simulating encoder button press.")
             enc_button_pressed = True
-        #elif c == SWITCH_MODE_KEY:
-            #hw_button_pressed = shared_cfg.SWITCH_MODE_BUTTON
-            #if shared_cfg.is_in_keyboard_mode():
-                #log.debug("Switching mode to 'web'")
-                #shared_cfg.activate_web_mode()
-            #else:
-                #log.debug("Keyboard mode must be enabled from web browser.")
         elif c == '1':
             hw_button_pressed = 1
         elif c == '2':

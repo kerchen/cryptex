@@ -240,6 +240,10 @@ class PasswordStore:
         """Returns the EntryContainer that is the root of the store."""
         return self.root
 
+    def is_empty(self):
+        """Returns True if the store has no containers nor entries."""
+        return self.root.get_container_count() == 0 and self.root.get_entry_count() == 0
+
     def get_container_by_path(self, path):
         dest_cont = self.root
         cont_chain = path.split("/")

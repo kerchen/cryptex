@@ -22,15 +22,10 @@ ENC_COMMON_PIN = 33
 ENC_QUAD_PINS = [ ENC_B_PIN, ENC_A_PIN ]
 
 
-
 log = logging.getLogger(__name__)
 
 
 def set_device_mode(mode):
-    if True:
-        log.critical("NOT setting USB mode.")
-        return
-
     if mode == HID_USB_MODE:
         subprocess.call([MODE_SWITCH_SCRIPT, "hid"])
     elif mode == RNDIS_USB_MODE:
@@ -48,6 +43,12 @@ def setup_gpio():
 
     GPIO.setup(TFT_BUTTON_2_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.add_event_detect(TFT_BUTTON_2_PIN, GPIO.RISING, bouncetime=200)
+
+    GPIO.setup(TFT_BUTTON_3_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.add_event_detect(TFT_BUTTON_3_PIN, GPIO.RISING, bouncetime=200)
+
+    GPIO.setup(TFT_BUTTON_4_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.add_event_detect(TFT_BUTTON_4_PIN, GPIO.RISING, bouncetime=200)
 
     GPIO.setup(ENC_COMMON_PIN, GPIO.OUT)
     GPIO.output(ENC_COMMON_PIN, GPIO.LOW)
@@ -80,13 +81,6 @@ def check_gpio(current_enc_value):
 
     if GPIO.event_detected(TFT_BUTTON_1_PIN):
         hw_button_pressed = 1
-        log.debug('Mode switch button pressed')
-        if shared_cfg.is_in_keyboard_mode():
-            set_device_mode(shared_cfg.RNDIS_USB_MODE)
-            shared_cfg.activate_web_mode()
-            return
-        else:
-            log.warn("Switching to 'keyboard' mode must be done in web browser.")
 
     if GPIO.event_detected(TFT_BUTTON_2_PIN):
         hw_button_pressed = 2
@@ -96,13 +90,6 @@ def check_gpio(current_enc_value):
 
     if GPIO.event_detected(TFT_BUTTON_4_PIN):
         hw_button_pressed = 4
-
-    #if GPIO.event_detected(SEND_PASSWORD_BUTTON_PIN):
-        #if shared_cfg.is_in_keyboard_mode():
-            #log.debug('Send password button pressed')
-            #send_password()
-        #else:
-            #log.debug('Send password button pressed but not in keyboard mode')
 
     if GPIO.event_detected(ENC_BUTTON_PIN):
         enc_button_pressed = True

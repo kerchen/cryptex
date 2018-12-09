@@ -4,6 +4,7 @@ import logging
 import shared_cfg
 import hardware
 
+# Order of encoder values for each direction
 CW_ORDER = [1, 3, 0, 2]
 CCW_ORDER = [2, 0, 3, 1]
 
@@ -27,7 +28,7 @@ class ButtonAction:
 
 # Maps button ID to UI text
 HW_BTN_MAPPING = {
-    ButtonAction.EDIT: "EDIT",
+    ButtonAction.EDIT: "WEB EDIT",
     ButtonAction.LOCK: "LOCK",
     ButtonAction.BACK: "BACK",
     ButtonAction.BUTTON_3: "BUTT 3"
@@ -87,6 +88,7 @@ class StoreNavigator:
         self.entry_actions.append(["Send username", "get_username"])
         self.entry_actions.append(["Send URL", "get_url"])
         self.change_level(0)
+        self.back_stack = []
 
     def get_entry_action_text(self, index):
         """
@@ -118,9 +120,11 @@ class StoreNavigator:
             self.perform_entry_action()
             return
 
+        went_back = False
         self.entry = None
         if direction < 0: # Drilling down to the currently-selected level/entry
             name, is_cont = self.get_selection()
+            self.back_stack.append([self.selection, self.top_row_index])
             if not is_cont:
                 self.entry = name
             if not self.level == "/":
@@ -131,6 +135,10 @@ class StoreNavigator:
             self.level = self.level[0:last_slash]
             if len(self.level) == 0:
                 self.level = "/"
+            if len(self.back_stack) > 0:
+                log.debug("Stack not empty; going back to previous selection.")
+                self.selection, self.top_row_index = self.back_stack.pop(-1)
+                went_back = True
 
         self.level_container_names = []
         self.level_entry_names = []
@@ -142,8 +150,10 @@ class StoreNavigator:
                 self.level_entry_names.append(k)
             self.level_container_names.sort()
             self.level_entry_names.sort()
-        self.selection = 0
-        self.top_row_index = 0
+
+        if not went_back:
+            self.selection = 0
+            self.top_row_index = 0
 
     def get_selection(self):
         """
@@ -252,7 +262,7 @@ def cryptex(stdscr):
     curses.init_pair(ColorPair.SELECTED, curses.COLOR_BLACK, curses.COLOR_WHITE)
     curses.init_pair(ColorPair.NO_DATA, curses.COLOR_RED, curses.COLOR_BLACK)
     curses.init_pair(ColorPair.NO_DATA_SELECTED, curses.COLOR_WHITE, curses.COLOR_RED)
-    curses.init_pair(ColorPair.INSTRUCTION, curses.COLOR_GREEN, curses.COLOR_BLACK)
+    curses.init_pair(ColorPair.INSTRUCTION, curses.COLOR_WHITE, curses.COLOR_GREEN)
     hardware.set_device_mode(shared_cfg.RNDIS_USB_MODE)
     enc_value = hardware.get_enc_value()
     in_keyboard_mode = False
@@ -260,73 +270,78 @@ def cryptex(stdscr):
 
     curses.curs_set(0)  # Turn off cursor
     maxy, maxx = stdscr.getmaxyx()
-    stdscr.border()
-
-    stdscr.addstr(maxy - 1, BTN_LABEL_X_POS[maxx][ButtonAction.LOCK-1],
-                  HW_BTN_MAPPING[ButtonAction.LOCK])
-    stdscr.addstr(maxy - 1, BTN_LABEL_X_POS[maxx][ButtonAction.EDIT-1],
-                  HW_BTN_MAPPING[ButtonAction.EDIT])
-    stdscr.addstr(maxy - 1, BTN_LABEL_X_POS[maxx][ButtonAction.BUTTON_3-1],
-                  HW_BTN_MAPPING[ButtonAction.BUTTON_3])
-    stdscr.addstr(maxy - 1, BTN_LABEL_X_POS[maxx][ButtonAction.BACK-1],
-                  HW_BTN_MAPPING[ButtonAction.BACK])
 
     try:
         while 1:
+            stdscr.border()
+
+            if shared_cfg.master_store:
+                stdscr.addstr(maxy - 1, BTN_LABEL_X_POS[maxx][ButtonAction.LOCK-1],
+                              HW_BTN_MAPPING[ButtonAction.LOCK])
+
+            if shared_cfg.is_in_keyboard_mode():
+                stdscr.addstr(maxy - 1, BTN_LABEL_X_POS[maxx][ButtonAction.EDIT-1],
+                              HW_BTN_MAPPING[ButtonAction.EDIT])
+                stdscr.addstr(maxy - 1, BTN_LABEL_X_POS[maxx][ButtonAction.BUTTON_3-1],
+                              HW_BTN_MAPPING[ButtonAction.BUTTON_3])
+                stdscr.addstr(maxy - 1, BTN_LABEL_X_POS[maxx][ButtonAction.BACK-1],
+                              HW_BTN_MAPPING[ButtonAction.BACK])
+
             row = 1
             text_attr = curses.color_pair(ColorPair.INSTRUCTION)
             text = ""
             if shared_cfg.is_in_keyboard_mode():
-                text = "Navigate entries with jog wheel"
+                if shared_cfg.master_store.is_empty():
+                    text = "No passwords in database!"
+                else:
+                    text = "Navigate entries with jog wheel"
             elif shared_cfg.master_store:
-                text = "In web browser mode"
+                text = "Web browser mode"
             else:
-                text = "Log in to https://cryptex/login"
+                text = "Log in at https://cryptex/login"
             stdscr.addstr(row, 1, text.center(maxx-2), text_attr)
             row += 1
 
             new_enc_value, eb_pressed, hw_button = hardware.check_gpio(enc_value)
 
-            if hw_button == ButtonAction.LOCK:
+            if shared_cfg.master_store and hw_button == ButtonAction.LOCK:
                 log.debug("Locking it down.")
                 shared_cfg.lock_store()
                 in_keyboard_mode = False
                 navigator = None
-                continue
-            if hw_button == ButtonAction.EDIT:
-                log.debug("Going to web mode.")
-                shared_cfg.activate_web_mode()
-                in_keyboard_mode = False
-                navigator = None
-                continue
-
-            direction = 0
-            if hw_button == 0:
-                if new_enc_value != enc_value:
-                    if new_enc_value == CW_ORDER[enc_value]:
-                        direction = 1
-                    elif new_enc_value == CCW_ORDER[enc_value]:
+            elif shared_cfg.is_in_keyboard_mode():
+                if hw_button == ButtonAction.EDIT:
+                    log.debug("Going to web mode.")
+                    shared_cfg.activate_web_mode()
+                    in_keyboard_mode = False
+                    navigator = None
+                else:
+                    direction = 0
+                    if hw_button == 0:
+                        if new_enc_value != enc_value:
+                            if new_enc_value == CW_ORDER[enc_value]:
+                                direction = 1
+                            elif new_enc_value == CCW_ORDER[enc_value]:
+                                direction = -1
+                            enc_value = new_enc_value
+                    elif hw_button == ButtonAction.BACK:
                         direction = -1
-                    enc_value = new_enc_value
-            elif hw_button == ButtonAction.BACK:
-                direction = -1
 
-            stdscr.addstr(row, 1, "PW store loaded: {0}".format(
-                "Yes" if shared_cfg.master_store else "No ").ljust(maxx-2))
-            row += 1
-            stdscr.addstr(row, 1, "Screen dimensions: {0} x {1}".format(maxx, maxy).ljust(maxx-2))
-            row += 1
+                    stdscr.addstr(row, 1, "PW store loaded: {0}".format(
+                        "Yes" if shared_cfg.master_store else "No ").ljust(maxx-2))
+                    row += 1
+                    stdscr.addstr(row, 1, "Screen dimensions: {0} x {1}".format(maxx, maxy).ljust(maxx-2))
+                    row += 1
 
-            if shared_cfg.is_in_keyboard_mode():
-                if not in_keyboard_mode:
-                    in_keyboard_mode = True
-                    navigator = StoreNavigator(1, row, maxx-2, maxy-3)
-                navigator.change_selection(direction)
-                navigator.render_level(stdscr)
-                if eb_pressed:
-                    navigator.change_level(-1)
-                elif hw_button == 1:
-                    navigator.change_level(1)
+                    if not in_keyboard_mode:
+                        in_keyboard_mode = True
+                        navigator = StoreNavigator(1, row, maxx-2, maxy-3)
+                    navigator.change_selection(direction)
+                    navigator.render_level(stdscr)
+                    if eb_pressed:
+                        navigator.change_level(-1)
+                    elif hw_button == 1:
+                        navigator.change_level(1)
             else: # Render all remaining rows empty
                 while row < maxy - 2:
                     stdscr.addstr(row, 1, " ".ljust(maxx-2))
