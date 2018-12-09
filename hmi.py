@@ -18,7 +18,7 @@ BTN_LABEL_X_POS = {
 }
 
 
-# Maps TFT hard button ID to the action it performs
+# Maps TFT hard button ID to the action it performs. Button 1 is left-most.
 class ButtonAction:
     BACK = 1
     EDIT = 2
@@ -58,6 +58,8 @@ class Extent:
 def send_string_to_hardware(text):
     if text and len(text) > 0:
         hardware.keyboard_out(text)
+    else:
+        log.debug("Not sending empty string to hardware.")
 
 
 class StoreNavigator:
@@ -106,11 +108,7 @@ class StoreNavigator:
         log.debug("Performing action '{0}' for '{1}'"
                   .format(self.get_selection()[0], self.level))
         try:
-            text_to_send = self.get_entry_action_text(self.selection)
-            if text_to_send and len(text_to_send) > 0:
-                hardware.keyboard_out(text_to_send)
-            else:
-                log.warn("No data present in Entry for the selected action.")
+            send_string_to_hardware(self.get_entry_action_text(self.selection))
         except Exception as ex:
             log.critical("Action '{0}' failed for entry '{1}': {2}"
                          .format(self.selection, self.level, str(ex)))
