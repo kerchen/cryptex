@@ -13,10 +13,10 @@
 <ul>
     % for k, c in shared_cfg.get_containers_by_path(path):
         % if path == "/":
-            <li><a href="/manage/{{k}}">{{k}}(imm)</a></li>
+            <li><a href="/manage/{{k}}">{{k}}</a></li>
             <ul>
         %   for k1, c1 in c.get_containers():
-                <li><a href="/manage/{{k}}/{{k1}}">{{k1}}(sub)</a></li>
+                <li><a href="/manage/{{k}}/{{k1}}">{{k1}}</a></li>
         %   end
             </ul>
         % else:
