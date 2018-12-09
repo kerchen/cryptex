@@ -13,7 +13,7 @@ CCW_ORDER = [2, 0, 3, 1]
 # character resolution.
 # Dictionary key is max x character position.
 BTN_LABEL_X_POS = {
-    40: [3, 15, 26, 37],
+    40: [1, 13, 24, 35],
     120: [3, 15, 26, 37]
 }
 
@@ -27,8 +27,8 @@ class ButtonAction:
 
 
 # Maps button ID to UI text
-HW_BTN_MAPPING = {
-    ButtonAction.EDIT: "WEB EDIT",
+HW_BTN_LABEL = {
+    ButtonAction.EDIT: "EDIT",
     ButtonAction.LOCK: "LOCK",
     ButtonAction.BACK: "BACK",
     ButtonAction.BUTTON_3: "BUTT 3"
@@ -42,6 +42,7 @@ class ColorPair:
     NO_DATA = 3
     NO_DATA_SELECTED = 4
     INSTRUCTION = 5
+
 
 log = logging.getLogger(__name__)
 
@@ -196,9 +197,18 @@ class StoreNavigator:
 
         return self.selection
 
+    def elide_path_string(self, path):
+        if len(path) > self.col_extent.span():
+            # Show only enough characters that will fit in the span, prefixed
+            # by an ellipsis.
+            path = "..." + path[-(self.col_extent.span()-3):]
+        return path
+
     def render_level(self, stdscr):
-        stdscr.addstr(self.parent_info_row, self.col_extent.min,
-                      self.level.center(self.col_extent.span()), curses.A_BOLD)
+        stdscr.addstr(self.parent_info_row,
+                      self.col_extent.min,
+                      self.elide_path_string(self.level).center(self.col_extent.span()),
+                      curses.A_BOLD)
         if not self.entry:
             self.render_container(stdscr)
         else:
@@ -254,6 +264,39 @@ class StoreNavigator:
                               entry_text.ljust(self.col_extent.span()))
 
 
+def render_instructions(stdscr, row, maxx):
+    text_attr = curses.color_pair(ColorPair.INSTRUCTION)
+    text = ""
+    addl_text_attr = curses.color_pair(ColorPair.NORMAL)
+    addl_text = []
+    if shared_cfg.is_in_keyboard_mode():
+        text = "Keyboard Mode"
+        if shared_cfg.master_store.is_empty():
+            text += " (no data)"
+            addl_text.append("Press {0} button to".format(
+                HW_BTN_LABEL[ButtonAction.EDIT]))
+            addl_text.append("add entries.")
+        else:
+            addl_text.append("Navigate with wheel and")
+            addl_text.append("{0} button".format(
+                HW_BTN_LABEL[ButtonAction.BACK]))
+    elif shared_cfg.master_store:
+        text = "Web Browser Management Mode"
+        addl_text.append("Enable Keyboard mode from")
+        addl_text.append("web interface or go directly to")
+        addl_text.append("https://cryptex/activate")
+    else:
+        text = "Device Locked"
+        addl_text.append("Unlock at https://cryptex/login")
+    stdscr.addstr(row, 1, text.center(maxx-2), text_attr)
+    row += 1
+    for r in range(0, len(addl_text)):
+        stdscr.addstr(row, 1, addl_text[r].ljust(maxx-2), addl_text_attr)
+        row += 1
+
+    return row
+
+
 def cryptex(stdscr):
     curses.start_color()
     curses.init_pair(ColorPair.NORMAL, curses.COLOR_WHITE, curses.COLOR_BLACK)
@@ -275,30 +318,18 @@ def cryptex(stdscr):
 
             if shared_cfg.master_store:
                 stdscr.addstr(maxy - 1, BTN_LABEL_X_POS[maxx][ButtonAction.LOCK-1],
-                              HW_BTN_MAPPING[ButtonAction.LOCK])
+                              HW_BTN_LABEL[ButtonAction.LOCK])
 
             if shared_cfg.is_in_keyboard_mode():
                 stdscr.addstr(maxy - 1, BTN_LABEL_X_POS[maxx][ButtonAction.EDIT-1],
-                              HW_BTN_MAPPING[ButtonAction.EDIT])
+                              HW_BTN_LABEL[ButtonAction.EDIT])
                 stdscr.addstr(maxy - 1, BTN_LABEL_X_POS[maxx][ButtonAction.BUTTON_3-1],
-                              HW_BTN_MAPPING[ButtonAction.BUTTON_3])
+                              HW_BTN_LABEL[ButtonAction.BUTTON_3])
                 stdscr.addstr(maxy - 1, BTN_LABEL_X_POS[maxx][ButtonAction.BACK-1],
-                              HW_BTN_MAPPING[ButtonAction.BACK])
+                              HW_BTN_LABEL[ButtonAction.BACK])
 
             row = 1
-            text_attr = curses.color_pair(ColorPair.INSTRUCTION)
-            text = ""
-            if shared_cfg.is_in_keyboard_mode():
-                if shared_cfg.master_store.is_empty():
-                    text = "No passwords in database!"
-                else:
-                    text = "Navigate entries with jog wheel"
-            elif shared_cfg.master_store:
-                text = "Web browser mode"
-            else:
-                text = "Log in at https://cryptex/login"
-            stdscr.addstr(row, 1, text.center(maxx-2), text_attr)
-            row += 1
+            row = render_instructions(stdscr, row, maxx)
 
             new_enc_value, eb_pressed, hw_button = hardware.check_gpio(enc_value)
 
@@ -324,12 +355,6 @@ def cryptex(stdscr):
                             enc_value = new_enc_value
                     elif hw_button == ButtonAction.BACK:
                         direction = -1
-
-                    stdscr.addstr(row, 1, "PW store loaded: {0}".format(
-                        "Yes" if shared_cfg.master_store else "No ").ljust(maxx-2))
-                    row += 1
-                    stdscr.addstr(row, 1, "Screen dimensions: {0} x {1}".format(maxx, maxy).ljust(maxx-2))
-                    row += 1
 
                     if not in_keyboard_mode:
                         in_keyboard_mode = True
