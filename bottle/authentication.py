@@ -90,8 +90,6 @@ def login():
             return redirect("/first-time-setup")
         return template("login.tpl", retry=False)
     elif shared_cfg.is_in_keyboard_mode():
-        # We're in keyboard mode. TODO: How to get back to web interface mode?
-        log.warn("Uhh, what now? Device handshake or just slam back into web mode?")
         return template("activate_keyboard_mode.tpl", title="Keyboard Mode")
     return template("login.tpl", retry=False)
 
@@ -101,6 +99,6 @@ def handle_login_post():
     password = request.forms.get('password')
     if shared_cfg.login(password):
         shared_cfg.new_session(response)
-        return template("index.tpl", status_msg="")
+        return redirect("/manage")
     else:
         return redirect("/login-retry")
