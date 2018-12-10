@@ -34,6 +34,7 @@ config_lock = LockWrapper(True)
 
 SESSION_COOKIE_NAME = "cryptex-session-id"
 LEGAL_NAME_CHARS = pw_store.LEGAL_NAME_CHARS
+BASE_URL = "https://cryptex.local"
 
 
 class Session:

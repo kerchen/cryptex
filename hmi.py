@@ -282,12 +282,13 @@ def render_instructions(stdscr, row, maxx):
                 HW_BTN_LABEL[ButtonAction.BACK]))
     elif shared_cfg.master_store:
         text = "Web Browser Management Mode"
-        addl_text.append("Enable Keyboard mode from")
+        addl_text.append("Enable Keyboard mode from the")
         addl_text.append("web interface or go directly to")
-        addl_text.append("https://cryptex/activate")
+        addl_text.append("{}/activate".format(shared_cfg.BASE_URL))
     else:
         text = "Device Locked"
-        addl_text.append("Unlock at https://cryptex/login")
+        addl_text.append("Go to {}/login".format(shared_cfg.BASE_URL))
+        addl_text.append(("to unlock."))
     stdscr.addstr(row, 1, text.center(maxx-2), text_attr)
     row += 1
     for r in range(0, len(addl_text)):
