@@ -9,9 +9,8 @@ import encryption
 
 log = logging.getLogger(__name__)
 
-
-ILLEGAL_NAME_CHARS = r"\\./?@#%\'"
-LEGAL_CHAR_RE = re.compile("^[^"+ILLEGAL_NAME_CHARS+"]+$")
+LEGAL_NAME_CHARS = r"a-zA-Z0-9~\-_ "
+ILLEGAL_CHAR_RE = re.compile("[^"+LEGAL_NAME_CHARS+"]")
 
 
 class ECException(Exception):
@@ -67,7 +66,7 @@ class EntryContainer:
         if name in self.containers:
             raise ECDuplicateException(
                 "Duplicate container name {0}".format(name))
-        if name and not LEGAL_CHAR_RE.match(name):
+        if name and ILLEGAL_CHAR_RE.search(name):
             raise ECNaughtyCharacterException(
                 "Illegal character used in name {0}".format(name))
         self.containers[name] = cont
@@ -79,7 +78,7 @@ class EntryContainer:
         if new_name in self.containers:
             raise ECDuplicateException(
                 "Container with name '{0}' already present".format(new_name))
-        if not LEGAL_CHAR_RE.match(new_name):
+        if ILLEGAL_CHAR_RE.search(new_name):
             raise ECNaughtyCharacterException(
                 "Illegal character used in new name {0}".format(new_name))
         cont = self.containers.pop(old_name)
@@ -95,7 +94,7 @@ class EntryContainer:
         if name in self.entries:
             raise ECDuplicateException(
                 "Entry with name {0} already exists".format(name))
-        if not LEGAL_CHAR_RE.match(name):
+        if ILLEGAL_CHAR_RE.search(name):
             raise ECNaughtyCharacterException(
                 "Illegal character used in name {0}".format(name))
         self.entries[name] = entry
@@ -113,7 +112,7 @@ class EntryContainer:
         if new_name in self.entries:
             raise ECDuplicateException(
                 "Entry with name '{0}' already present".format(new_name))
-        if not LEGAL_CHAR_RE.match(new_name):
+        if ILLEGAL_CHAR_RE.search(new_name):
             raise ECNaughtyCharacterException(
                 "Illegal character used in new name {0}".format(new_name))
         entry = self.entries.pop(old_name)

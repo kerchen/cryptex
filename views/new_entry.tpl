@@ -17,7 +17,7 @@
         <p class="error">Entered entry name '{{name}}' is already used by an existing entry. Please try again.</p>
     % end
     % if retry == "bad_char":
-        <p class="error">Entered entry name '{{name}}' contains one or more of the following characters, which are not allowed: {{shared_cfg.ILLEGAL_NAME_CHARS}}. Please try again.</p>
+        <p class="error">Entered entry name '{{name}}' contains one or more disallowed characters. Please limit the characters used in entry names to these characters: {{shared_cfg.LEGAL_NAME_CHARS}}. Please try again.</p>
     % end
     % if retry == "no_name":
         <p class="error">Entries must have a name. Please try again.</p>

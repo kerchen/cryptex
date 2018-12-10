@@ -33,7 +33,7 @@ class LockWrapper:
 config_lock = LockWrapper(True)
 
 SESSION_COOKIE_NAME = "cryptex-session-id"
-ILLEGAL_NAME_CHARS = pw_store.ILLEGAL_NAME_CHARS
+LEGAL_NAME_CHARS = pw_store.LEGAL_NAME_CHARS
 
 
 class Session:

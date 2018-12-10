@@ -13,7 +13,7 @@
         <p class="error">Entered folder name '{{name}}' already exists. Please try again.</p>
     % end
     % if retry == "bad_char":
-        <p class="error">Entered folder name '{{name}}' contains one or more of the following disallowed characters: {{shared_cfg.ILLEGAL_NAME_CHARS}}. Please try again.</p>
+        <p class="error">Entered folder name '{{name}}' contains disallowed characters. Please limit the characters used in folder names to these characters: {{shared_cfg.LEGAL_NAME_CHARS}}. Please try again.</p>
     % end
     % if retry == "other_error":
         <p class="error">An error occurred adding the folder. Please try again.</p>

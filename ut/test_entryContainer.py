@@ -148,9 +148,9 @@ class TestEntryContainer(TestCase):
 
     def test_add_and_remove_entry(self):
         new_entry = Entry()
-        self.cut.add_entry(new_entry, "Rogue One")
+        self.cut.add_entry(new_entry, "~ Rogue-1")
         self.assertEqual(1, self.cut.get_entry_count())
-        self.cut.remove_entry("Rogue One")
+        self.cut.remove_entry("~ Rogue-1")
         self.assertEqual(0, self.cut.get_entry_count())
 
     def test_add_duplicate_entry(self):
