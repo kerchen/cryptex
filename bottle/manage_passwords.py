@@ -12,6 +12,15 @@ NEW_CONTAINER_TEMPLATE = "new_container.tpl"
 NEW_ENTRY_TEMPLATE = "new_entry.tpl"
 
 
+@route('/manage<path:re:/.*>')
+def manage_path(path):
+    # Redirect any manage URLs that start with a forward slash so that
+    # the user doesn't get a 404.
+    if shared_cfg.validate_session(request):
+        return redirect("/manage")
+    return redirect("/")
+
+
 @route('/manage<path:re:=.*>')
 def manage_path(path):
     if shared_cfg.validate_session(request):
@@ -27,9 +36,12 @@ def manage_path(path):
         path = path.replace("=", "/", 1)
         path = path.replace("+", "/")
         log.debug("Routing to path {0}".format(path))
-        shared_cfg.change_session_path(path)
-        return template(MANAGE_PASSWORDS_TEMPLATE,
-                        path=shared_cfg.session.path)
+        if shared_cfg.change_session_path(path):
+            return template(MANAGE_PASSWORDS_TEMPLATE,
+                            path=shared_cfg.session.path)
+        else:
+            return redirect("/manage")
+
     return redirect("/")
 
 
