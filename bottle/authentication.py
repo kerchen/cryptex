@@ -12,33 +12,29 @@ log = logging.getLogger(__name__)
 def first_time_setup():
     if not shared_cfg.master_store:
         if not os.path.exists(shared_cfg.pw_store_filename):
-            return template("first_time_setup.tpl", retry=False)
+            return template("first-time.html")
     return redirect("/")
 
 
-@get('/first-time-setup-retry')
-def first_time_setup_retry():
+@get('/create-store')
+def create_store():
     if not shared_cfg.master_store:
         if not os.path.exists(shared_cfg.pw_store_filename):
-            return template("first_time_setup.tpl", retry=True)
+            return template("create-store.html")
     return redirect("/")
 
 
-@post('/first-time-setup')
-def do_first_time_setup():
+@post('/create-store')
+def do_create_store():
     password = request.forms.get('password')
-    password2 = request.forms.get('password2')
-    if password == password2:
-        shared_cfg.login(password)
-        return redirect("/login")
-    else:
-        return redirect("/first-time-setup-retry")
+    shared_cfg.login(password)
+    return redirect("/login")
 
 
 @get('/change-master-password')
 def change_master_password():
     if shared_cfg.validate_session(request):
-        return template("change_master_password.tpl", bad_master=False, mismatch=False)
+        return template("change-master-password.html", bad_master=False, mismatch=False)
     return redirect("/")
 
 
@@ -79,7 +75,7 @@ def login_retry():
     if not shared_cfg.master_store:
         if not os.path.exists(shared_cfg.pw_store_filename):
             return redirect("/first-time-setup")
-        return template("login.tpl", retry=True)
+        return template("login.html", retry=True)
     return redirect("/")
 
 
@@ -88,10 +84,10 @@ def login():
     if not shared_cfg.master_store:
         if not os.path.exists(shared_cfg.pw_store_filename):
             return redirect("/first-time-setup")
-        return template("login.tpl", retry=False)
+        return template("login.html", retry=False)
     elif shared_cfg.is_in_keyboard_mode():
         return template("activate_keyboard_mode.tpl", title="Keyboard Mode")
-    return template("login.tpl", retry=False)
+    return template("login.html", retry=False)
 
 
 @post('/login')

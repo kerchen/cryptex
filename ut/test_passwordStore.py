@@ -1,6 +1,19 @@
 import os
 from unittest import TestCase
-from pw_store import ECNotFoundException, Entry, EntryContainer, PasswordStore
+from pw_store import (ECBadPathException, ECNotFoundException, Entry,
+                      EntryContainer, PasswordStore, simplify_path)
+
+
+class TestFreeFunctions(TestCase):
+    def test_simplify_path(self):
+        self.assertEqual('/', simplify_path('/'))
+        self.assertEqual('/', simplify_path('///'))
+        self.assertEqual('/', simplify_path(' / '))
+        self.assertEqual('/', simplify_path(' / / '))
+        self.assertEqual('/', simplify_path(' // '))
+        self.assertEqual('/foo/bar', simplify_path('/foo/bar'))
+        self.assertEqual('/foo/bar', simplify_path(' // / / foo  / / bar / '))
+        self.assertEqual('/foo bar/bas', simplify_path('/foo bar/bas'))
 
 
 class TestPasswordStore(TestCase):
@@ -25,6 +38,16 @@ class TestPasswordStore(TestCase):
         self.assertEqual(lvl1, self.cut.get_container_by_path("/lvl1"))
         self.assertEqual(lvl2, self.cut.get_container_by_path("/lvl1/lvl2"))
         self.assertEqual(lvl3, self.cut.get_container_by_path("/lvl1/lvl2/lvl3"))
+
+    def test_valid_path(self):
+        root = self.cut.get_root()
+        lvl1 = EntryContainer()
+        lvl2 = EntryContainer()
+        lvl1.add_container(lvl2, "lvl2")
+        root.add_container(lvl1, "lvl1")
+        self.assertTrue(self.cut.is_valid_path("/lvl1"))
+        self.assertTrue(self.cut.is_valid_path("/lvl1/lvl2"))
+        self.assertFalse(self.cut.is_valid_path("lvl2"))
 
     def test_invalid_container_path(self):
         with self.assertRaises(ECNotFoundException):

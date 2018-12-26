@@ -1,0 +1,506 @@
+/* Text Elements */
+
+h1 {
+  color: #fff;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 2rem;
+  font-family: 'Montserrat', sans-serif;
+}
+
+h4 {
+  margin-top: .437rem;
+  color: #fff;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 400;
+  font-size: 1rem;
+  font-family: 'Roboto Condensed', sans-serif;
+  line-height: 1.4;
+}
+
+h4.welcome-subtitle {
+  color: #fff;
+}
+
+p.paragraph {
+  color: #808080;
+  font-weight: 300;
+  font-size: .81rem;
+  font-family: 'Roboto', sans-serif;
+  line-height: 1.5rem;
+}
+
+p.paragraph.intro-paragraph {
+  margin-right: auto;
+  margin-bottom: 1.25rem;
+  margin-left: auto;
+  max-width: 50rem;
+  color: rgba(30, 30, 30, .5);
+  text-align: center;
+  font-size: 1.06rem;
+  line-height: 1.3rem;
+}
+
+p.paragraph.paragraph-2 {
+  color: #f00;
+  text-align: center;
+  font-size: .93rem;
+  line-height: 2rem;
+}
+
+span.text-element.form-input-caption {
+  color: #fc6300;
+  font-family: 'Roboto', cursive;
+}
+
+a.link-text.text-link-1 {
+  float: right;
+  padding: .5rem;
+  color: #fff;
+  text-transform: uppercase;
+  font-family: 'Roboto Condensed', cursive;
+}
+
+a.link-text.text-link-1:hover {
+  color: #fc6300;
+}
+
+/* Interaction Elements */
+
+a.link-button.btn.ignition {
+  display: block;
+  margin: .437rem auto;
+  padding: 1.375rem 1.25rem 1.25rem;
+  max-width: 50rem;
+  width: 100%;
+  background-color: #fc6300;
+  color: #fff;
+  font-weight: 300;
+  font-size: 1rem;
+  font-family: 'Roboto Condensed', sans-serif;
+}
+
+input[type=password].password-1 {
+  display: block;
+  margin-right: auto;
+  margin-bottom: 1.25rem;
+  margin-left: auto;
+  max-width: 50rem;
+}
+
+/* Layout Elements */
+
+body {
+  height: 100%;
+}
+
+body > .row > [class*='col-xs-'] {
+  padding-right: 10px;
+  padding-left: 10px;
+  min-height: 50px;
+}
+
+body > .row.nav-row {
+  width: 100%;
+  background-color: #4c4c4c;
+}
+
+body > .row.wecome-row {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  width: 100%;
+  background-color: #333;
+}
+
+body > .row.full-width-row {
+  margin-top: 60px;
+  max-width: none;
+}
+
+body > .row > [class*='col-xs-'].ignition {
+  margin-bottom: 80px;
+  padding-top: 0;
+  padding-right: .625rem;
+  padding-left: .625rem;
+}
+
+body > .row.rocket {
+  padding-top: 200px;
+  padding-bottom: 200px;
+  background-image: url('../images/lock.png');
+  background-attachment: scroll;
+  background-position: center center;
+  background-clip: border-box;
+  background-origin: padding-box;
+  background-size: cover;
+  background-repeat: repeat;
+}
+
+body > .row > [class*='col-xs-'].welcome-column {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display:    -moz-box;
+  display: -ms-flexbox;
+  display:         flex;
+  -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -ms-flex-pack: center;
+
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+     -moz-box-orient: vertical;
+     -moz-box-direction: normal;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+     -moz-box-pack: center;
+          justify-content: center;
+}
+
+.subgrid > .row > [class*='col-xs-'].subgrid-column-1 {
+  float: left;
+  text-align: right;
+}
+
+.subgrid > .row > [class*='col-xs-'].subgrid-column-2 {
+  text-align: right;
+}
+
+.container-fluid.nav-container {
+  max-width: 75rem;
+}
+
+a.responsive-picture.logo {
+  margin-top: .437rem;
+  margin-right: auto;
+  margin-left: auto;
+  max-width: 5.562rem;
+}
+
+button.btn.ignition {
+  display: block;
+  margin: .4375em auto .4375rem;
+  padding: 1.375rem 1.25rem 1.25rem;
+  max-width: 50rem;
+  width: 100%;
+  background-color: #fc6300;
+  color: #fff;
+  font-weight: 300;
+  font-family: 'Roboto Condensed', cursive;
+}
+
+@media screen and (min-width: 36rem) {
+  /* Text Elements */
+
+  p.paragraph {
+    font-size: 1.25rem;
+    line-height: 1.53rem;
+  }
+
+  p.paragraph.intro-paragraph {
+    line-height: 1.3rem;
+  }
+
+  p.paragraph.paragraph-2 {
+    color: #f00;
+    text-align: center;
+    font-size: .93rem;
+    line-height: 2rem;
+  }
+
+  span.text-element.form-input-caption {
+    color: #fc6300;
+    font-family: 'Roboto', cursive;
+  }
+
+  a.link-text.text-link-1 {
+    float: right;
+    padding: .5rem;
+    color: #fff;
+    text-transform: uppercase;
+    font-family: 'Roboto Condensed', cursive;
+  }
+
+  a.link-text.text-link-1:hover {
+    color: #fc6300;
+  }
+
+  /* Interaction Elements */
+
+  label.label.label-2 {
+    float: right;
+  }
+
+  label.label.label-3 {
+    float: right;
+  }
+
+  a.responsive-picture.logo {
+    background-image: none;
+    background-attachment: scroll;
+    background-position: left top;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: 0 0;
+    background-repeat: no-repeat;
+
+    background-blend-mode: normal;
+  }
+
+  button.btn.ignition {
+    display: block;
+    margin: .4375em auto .4375rem;
+    padding: 1.375rem 1.25rem 1.25rem;
+    max-width: 50rem;
+    width: 100%;
+    background-color: #fc6300;
+    color: #fff;
+    font-weight: 300;
+    font-family: 'Roboto Condensed', cursive;
+  }
+}
+
+@media screen and (min-width: 48rem) {
+  /* Text Elements */
+
+  p.paragraph {
+    font-weight: 300;
+    font-size: .93rem;
+    line-height: 1.7rem;
+  }
+
+  p.paragraph.intro-paragraph {
+    font-size: 1.25rem;
+  }
+
+  p.paragraph.paragraph-2 {
+    color: #f00;
+    text-align: center;
+  }
+
+  span.text-element.form-input-caption {
+    color: #fc6300;
+    font-family: 'Roboto', cursive;
+  }
+
+  a.link-text.text-link-1 {
+    float: right;
+    padding: .5rem;
+    color: #fff;
+    font-family: 'Roboto Condensed', cursive;
+  }
+
+  a.link-text.text-link-1:hover {
+    color: #fc6300;
+  }
+
+  /* Layout Elements */
+
+  body > .row.wecome-row {
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+
+  body > .row.rocket {
+    padding-top: 18.75rem;
+    padding-bottom: 18.75rem;
+  }
+
+  a.responsive-picture.logo {
+    float: left;
+    margin-top: 0;
+    width: auto;
+    background-image: none;
+    background-attachment: scroll;
+    background-position: left top;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: 0 0;
+    background-repeat: no-repeat;
+
+    background-blend-mode: normal;
+  }
+
+  button.btn.ignition {
+    position: static;
+    display: block;
+    margin: .4375em auto .4375rem;
+    padding: 1.375rem 1.25rem 1.25rem;
+    max-width: 50rem;
+    width: 100%;
+    background-color: #fc6300;
+    color: #fff;
+    font-weight: 300;
+    font-family: 'Roboto Condensed', cursive;
+  }
+}
+
+@media screen and (min-width: 62rem) {
+  /* Text Elements */
+
+  p.paragraph {
+    font-size: .93rem;
+    line-height: 2rem;
+  }
+
+  p.paragraph.intro-paragraph {
+    font-size: 1.5rem;
+    line-height: 1.93rem;
+  }
+
+  p.paragraph.paragraph-2 {
+    color: #f00;
+    text-align: center;
+  }
+
+  span.text-element.form-input-caption {
+    color: #fc6300;
+    font-family: 'Roboto', cursive;
+  }
+
+  a.link-text.text-link-1 {
+    float: right;
+    padding: .5rem;
+    color: #fff;
+    text-align: center;
+    text-transform: uppercase;
+    font-family: 'Roboto Condensed', cursive;
+  }
+
+  a.link-text.text-link-1:hover {
+    color: #fc6300;
+  }
+
+  /* Interaction Elements */
+
+  a.link-button.btn.ignition {
+    background-color: #fc6300;
+  }
+
+  a.link-button.ignition {
+    background-color: #fc5c00;
+  }
+
+  label.label.label-2 {
+    float: right;
+  }
+
+  label.label.label-3 {
+    float: right;
+  }
+
+  /* Layout Elements */
+
+  body > .row.wecome-row {
+    padding-top: 85px;
+    padding-bottom: 85px;
+  }
+
+  body > .row.rocket {
+    padding-top: 25rem;
+    padding-bottom: 25rem;
+  }
+
+  button.btn {
+    position: relative;
+    background-color: transparent;
+
+    -webkit-align-self: center;
+    -ms-flex-item-align: center;
+            align-self: center;
+  }
+
+  button.btn.ignition {
+    position: static;
+    display: block;
+    margin: .4375em auto .4375rem;
+    padding: 1.375rem 1.25rem 1.25rem;
+    max-width: 50rem;
+    width: 100%;
+    background-color: #fc6300;
+    color: #fff;
+    font-weight: 300;
+    font-family: 'Roboto Condensed', cursive;
+
+    -webkit-align-self: auto;
+    -ms-flex-item-align: auto;
+            align-self: auto;
+  }
+
+  .row > [class*='col-xs-'] .html-element.html-element-1 {
+    max-height: 1%;
+  }
+}
+
+@media screen and (min-width: 75rem) {
+  /* Text Elements */
+
+  a.link-text.text-link-1 {
+    float: right;
+    padding: .5rem;
+    color: #fff;
+    text-transform: uppercase;
+    font-family: 'Roboto Condensed', cursive;
+  }
+
+  /* Interaction Elements */
+
+  a.link-button.btn.ignition {
+    background-color: #fc6300;
+  }
+
+  input[type=password].password-1 {
+    display: block;
+    margin-right: auto;
+    margin-bottom: 1.25rem;
+    margin-left: auto;
+    max-width: 50rem;
+    width: auto;
+    text-align: center;
+    font-weight: 300;
+    font-family: 'Roboto Condensed', cursive;
+
+    -webkit-align-self: auto;
+    -ms-flex-item-align: auto;
+            align-self: auto;
+  }
+
+  label.label.label-2 {
+    float: right;
+  }
+
+  label.label.label-3 {
+    float: right;
+  }
+
+  /* Layout Elements */
+
+  body > .row > [class*='col-xs-'] {
+    padding-right: 1.25rem;
+    padding-left: 1.25rem;
+  }
+
+  body > .row.rocket {
+    padding-top: 25rem;
+    background-image: url('../images/lock.png');
+  }
+
+  a.responsive-picture.logo {
+    max-width: 5.56rem;
+    background-image: none;
+    background-attachment: scroll;
+    background-position: left top;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: 0 0;
+    background-repeat: no-repeat;
+
+    background-blend-mode: normal;
+  }
+
+  button.btn.ignition {
+    background-color: #fc6300;
+  }
+}

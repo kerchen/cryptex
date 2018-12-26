@@ -7,18 +7,19 @@ import shared_cfg
 log = logging.getLogger(__name__)
 
 
-MANAGE_PASSWORDS_TEMPLATE = "manage_passwords.tpl"
+MANAGE_PASSWORDS_TEMPLATE = "manage-store.html"
 NEW_CONTAINER_TEMPLATE = "new_container.tpl"
 NEW_ENTRY_TEMPLATE = "new_entry.tpl"
 
 
-@route('/manage<path:path>')
+@route('/manage<path:re:=.*>')
 def manage_path(path):
     if shared_cfg.validate_session(request):
+        path = path.replace("=", "/", 1)
+        path = path.replace("+", "/")
         log.debug("Routing to path {0}".format(path))
         shared_cfg.change_session_path(path)
-        return template(MANAGE_PASSWORDS_TEMPLATE, title="Manage Passwords",
-                        path=path)
+        return template(MANAGE_PASSWORDS_TEMPLATE, path=path)
     return redirect("/")
 
 
@@ -26,13 +27,21 @@ def manage_path(path):
 def handle_manage_post():
     log.debug("Handling management post")
     if shared_cfg.validate_session(request):
-        if request.forms.get("addentry"):
+        if request.forms.get('action') == 'addentry':
             log.debug("Add entry button pressed")
             return template(NEW_ENTRY_TEMPLATE, retry="")
-        elif request.forms.get("addcontainer"):
+        elif request.forms.get('action') == 'addcontainer':
             log.debug("Add container button pressed. path = "
                       "{}".format(shared_cfg.session.path))
             return template(NEW_CONTAINER_TEMPLATE, retry="")
+        #elif request.forms.get("renamecontainer"):
+            #log.debug("Rename container button pressed. path = "
+                      #"{}".format(shared_cfg.session.path))
+            #return template(RENAME_CONTAINER_TEMPLATE, retry="")
+        #elif request.forms.get("removecontainer"):
+            #log.debug("Remove container button pressed. path = "
+                      #"{}".format(shared_cfg.session.path))
+            #return template(REMOVE_CONTAINER_TEMPLATE, retry="")
     return redirect("/")
 
 

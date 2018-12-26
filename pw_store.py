@@ -29,10 +29,32 @@ class ECNaughtyCharacterException(ECException):
     pass
 
 
+class ECBadPathException(ECException):
+    pass
+
+
+def simplify_path(path):
+    """Returns the result of removing leading/trailing whitespace and
+    consecutive separators from each segment of the given path."""
+    path_parts = path.split('/')
+    simple_path = ''
+    for part in path_parts:
+        c = part.strip()
+        if len(c):
+            simple_path += '/' + c
+
+    if not simple_path and path.find('/') > -1:
+        simple_path = '/'
+    return simple_path
+
+
 class EntryContainer:
     def __init__(self):
         self.containers = dict()
         self.entries = dict()
+
+    def has_container(self, cont_name):
+        return cont_name in self.containers
 
     def get_container(self, cont_name):
         if cont_name not in self.containers:
@@ -45,6 +67,9 @@ class EntryContainer:
 
     def get_containers(self):
         return frozenset(self.containers.items())
+
+    def has_entry(self, entry_name):
+        return entry_name in self.entries
 
     def get_entry(self, entry_name):
         if entry_name not in self.entries:
@@ -229,9 +254,12 @@ class PasswordStore:
     def __init__(self, serialized_data):
         # Parse serialized (XML) store data
         if serialized_data:
-            xml_root = ET.fromstring(serialized_data)
-            store_root = xml_root.find(STORE_ROOT_TAG)
-            _, self.root = deserialize_xml(store_root)
+            try:
+                xml_root = ET.fromstring(serialized_data)
+                store_root = xml_root.find(STORE_ROOT_TAG)
+                _, self.root = deserialize_xml(store_root)
+            except ET.ParseError as ex:
+                raise ECException("Failed to open store: {0}".format(ex))
         else:
             _, self.root = deserialize_xml()
 
@@ -243,11 +271,32 @@ class PasswordStore:
         """Returns True if the store has no containers nor entries."""
         return self.root.get_container_count() == 0 and self.root.get_entry_count() == 0
 
+    def is_valid_path(self, path):
+        """Returns true if the given path is valid (i.e., is a path to a
+        container or entry in the store)."""
+        dest_cont = self.root
+        cont_chain = filter(None, simplify_path(path).split("/"))
+        cc_count = len(cont_chain)
+        for c in cont_chain:
+            cc_count -= 1
+            try:
+                if cc_count > 0:
+                    dest_cont = dest_cont.get_container(c)
+                else:
+                    if not dest_cont.has_container(c):
+                        if not dest_cont.has_entry(c):
+                            return False
+            except ECNotFoundException:
+                return False
+            except ECException as ex:
+                log.warning("Unexpected exception: {0}".format(ex))
+                return False
+        return True
+
     def get_container_by_path(self, path):
         dest_cont = self.root
-        cont_chain = path.split("/")
+        cont_chain = simplify_path(path).split("/")
         for c in cont_chain:
-            c = c.strip()
             if len(c):
                 dest_cont = dest_cont.get_container(c)
         return dest_cont
@@ -257,7 +306,7 @@ class PasswordStore:
             raise ECException("Invalid entry")
         if not entry_name or len(entry_name) == 0:
             raise ECException("Invalid entry name")
-        dest_cont = self.get_container_by_path(path)
+        dest_cont = self.get_container_by_path(simplify_path(path))
         dest_cont.add_entry(entry, entry_name)
 
     def update_entry(self, path, updated_name, updated_entry):
@@ -266,18 +315,18 @@ class PasswordStore:
         if not updated_name or len(updated_name) == 0:
             raise ECException("Invalid entry name")
         cont_path, current_name = os.path.split(path)
-        cont = self.get_container_by_path(cont_path)
+        cont = self.get_container_by_path(simplify_path(cont_path))
         if updated_name != current_name:
             cont.rename_entry(current_name, updated_name)
         cont.replace_entry(updated_entry, updated_name)
 
     def get_entry_by_path(self, path):
-        cont_path, ent_name = os.path.split(path)
+        cont_path, ent_name = os.path.split(simplify_path(path))
         cont = self.get_container_by_path(cont_path)
         return ent_name, cont.get_entry(ent_name)
 
     def get_entries_by_path(self, path):
-        cont = self.get_container_by_path(path)
+        cont = self.get_container_by_path(simplify_path(path))
         return cont.get_entries()
 
     def add_container(self, cont, cont_name, path):
@@ -285,11 +334,11 @@ class PasswordStore:
             raise ECException("Invalid container")
         if not cont_name or len(cont_name) == 0:
             raise ECException("Invalid container name")
-        dest_cont = self.get_container_by_path(path)
+        dest_cont = self.get_container_by_path(simplify_path(path))
         dest_cont.add_container(cont, cont_name)
 
     def get_containers_by_path(self, path):
-        cont = self.get_container_by_path(path)
+        cont = self.get_container_by_path(simplify_path(path))
         return cont.get_containers()
 
     def serialize_to_xml(self):

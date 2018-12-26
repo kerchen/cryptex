@@ -208,9 +208,10 @@ def add_container(cont, cont_name):
 
 
 def change_session_path(path):
-    global config_lock, session
+    global config_lock, master_store, session
     config_lock.acquire()
-    if session:
+    if session and master_store and master_store.is_valid_path(path):
+        log.debug("Changing session path to {0}".format(path))
         session.path = path
     config_lock.release()
 

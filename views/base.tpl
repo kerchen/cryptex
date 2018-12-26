@@ -5,6 +5,7 @@
     <title>{{title or 'Cryptex'}}</title>
 </head>
 <body>
+% include('script_funcs.tpl')
     {{!base}}
 
     <footer>

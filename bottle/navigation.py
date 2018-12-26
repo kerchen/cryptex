@@ -1,8 +1,8 @@
 from bottle import (post, redirect, request, route, template)
 import logging
 
-import manage_passwords
 import shared_cfg
+import manage_passwords
 
 log = logging.getLogger(__name__)
 
@@ -37,7 +37,8 @@ def master_pass():
 def manage():
     if shared_cfg.validate_session(request):
         log.debug("Managing passwords")
-        return template("manage_passwords.tpl", title="Manage Passwords", path="/")
+        return manage_passwords.manage_path("/")
+        #return template("manage-store.html", path="/")
     return redirect("/")
 
 

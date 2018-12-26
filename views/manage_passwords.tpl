@@ -39,10 +39,36 @@
         % end
     % end
 </ul>
+<br/>
+<br>
+<button onclick="add_entry()">Add Entry</button>
+<button onclick="add_container()">Add Folder</button>
+% if not path == "/":
+    <button onclick="rename_container()">Rename Folder</button>
+    <button onclick="remove_container()">Remove Folder</button>
+% end
+<script>
+    function add_entry() {
+        post('/manage', {action: 'addentry'}, 'post');
+    }
 
-<form action="/manage" method="post">
-    <input type="submit" path="{{path}}" name="addentry" value="Add Entry">
-    <input type="submit" path="{{path}}" name="addcontainer" value="Add Folder">
-    <input type="submit" path="{{path}}" name="removecontainer" value="Remove Folder">
-</form>
+    function add_container() {
+        post('/manage', {action: 'addcontainer'}, 'post');
+    }
+
+    function rename_container() {
+        //var response = confirm("Remove the entry '{{path}}'?");
+        //if (response == true) {
+            //post('/removeentry'+'{{path}}', {}, "post");
+        //}
+    }
+
+    function remove_container() {
+        //var response = confirm("Cancel editing this entry?");
+        //if (response == true) {
+            //post('/cancelupdate'+'{{path}}', {}, "post");
+        //}
+    }
+</script>
+
 <br/>

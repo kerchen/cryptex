@@ -18,7 +18,7 @@ class TestEntryContainer(TestCase):
     def test_add_container(self):
         new_cont = EntryContainer()
         self.cut.add_container(new_cont, "A New Beginning")
-        self.assertEqual(1, self.cut.get_container_count())
+        self.assertTrue(self.cut.has_container("A New Beginning"))
 
     def test_get_container(self):
         cont_name = "A New Beginning"
@@ -89,7 +89,7 @@ class TestEntryContainer(TestCase):
     def test_add_entry(self):
         new_entry = Entry()
         self.cut.add_entry(new_entry, "Rogue One")
-        self.assertEqual(1, self.cut.get_entry_count())
+        self.assertTrue(self.cut.has_entry("Rogue One"))
 
     def test_replace_entry(self):
         old_entry = Entry()
