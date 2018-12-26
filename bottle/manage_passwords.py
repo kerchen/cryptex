@@ -15,11 +15,21 @@ NEW_ENTRY_TEMPLATE = "new_entry.tpl"
 @route('/manage<path:re:=.*>')
 def manage_path(path):
     if shared_cfg.validate_session(request):
+        # If this function is invoked with any forward slashes, redirect to
+        # the root of the store. If we don't do this, the resource URIs in the
+        # generated web page (which have relative paths) will fail. Internally,
+        # we always prefix paths with '=' and use '+' for path separators,
+        # so this should only happen if the user tries to go directly to
+        # an entry or container by typing its path directly in the browser.
+        if path.find('/') > -1:
+            return redirect("/manage")
+
         path = path.replace("=", "/", 1)
         path = path.replace("+", "/")
         log.debug("Routing to path {0}".format(path))
         shared_cfg.change_session_path(path)
-        return template(MANAGE_PASSWORDS_TEMPLATE, path=path)
+        return template(MANAGE_PASSWORDS_TEMPLATE,
+                        path=shared_cfg.session.path)
     return redirect("/")
 
 

@@ -37,8 +37,7 @@ def master_pass():
 def manage():
     if shared_cfg.validate_session(request):
         log.debug("Managing passwords")
-        return manage_passwords.manage_path("/")
-        #return template("manage-store.html", path="/")
+        return manage_passwords.manage_path("=")
     return redirect("/")
 
 
