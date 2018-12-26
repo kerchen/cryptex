@@ -1,6 +1,5 @@
 -->
 % import shared_cfg
-<a class="link-text entry-link" href="/manage">Root</a>
 % folders = path.split("/")
 % accum_path = ""
 % for f in folders:
@@ -9,12 +8,8 @@
             % accum_path += "+"
         % end
         % accum_path += f
-/
-<a class="link-text entry-link" href="/manage={{accum_path}}">{{f}}</a>
     % end
 % end
-<br>
-<p>Folders</p>
 <ul>
 % for k, c in shared_cfg.get_containers_by_path(path):
     % if len(accum_path) > 0:
