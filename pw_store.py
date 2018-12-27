@@ -5,6 +5,7 @@ import re
 import xml.etree.cElementTree as ET
 
 import encryption
+from path_util import simplify_path
 
 
 log = logging.getLogger(__name__)
@@ -31,21 +32,6 @@ class ECNaughtyCharacterException(ECException):
 
 class ECBadPathException(ECException):
     pass
-
-
-def simplify_path(path):
-    """Returns the result of removing leading/trailing whitespace and
-    consecutive separators from each segment of the given path."""
-    path_parts = path.split('/')
-    simple_path = ''
-    for part in path_parts:
-        c = part.strip()
-        if len(c):
-            simple_path += '/' + c
-
-    if not simple_path and path.find('/') > -1:
-        simple_path = '/'
-    return simple_path
 
 
 class EntryContainer:

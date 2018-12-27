@@ -1,19 +1,7 @@
 import os
 from unittest import TestCase
 from pw_store import (ECBadPathException, ECNotFoundException, Entry,
-                      EntryContainer, PasswordStore, simplify_path)
-
-
-class TestFreeFunctions(TestCase):
-    def test_simplify_path(self):
-        self.assertEqual('/', simplify_path('/'))
-        self.assertEqual('/', simplify_path('///'))
-        self.assertEqual('/', simplify_path(' / '))
-        self.assertEqual('/', simplify_path(' / / '))
-        self.assertEqual('/', simplify_path(' // '))
-        self.assertEqual('/foo/bar', simplify_path('/foo/bar'))
-        self.assertEqual('/foo/bar', simplify_path(' // / / foo  / / bar / '))
-        self.assertEqual('/foo bar/bas', simplify_path('/foo bar/bas'))
+                      EntryContainer, PasswordStore)
 
 
 class TestPasswordStore(TestCase):
