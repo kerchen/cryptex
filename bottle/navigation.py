@@ -40,19 +40,3 @@ def manage():
         return manage_passwords.manage_path("=")
     return redirect("/")
 
-
-@post('/footer')
-def handle_main_menu_post():
-    log.debug("Handling main menu post")
-    if shared_cfg.validate_session(request):
-        if request.forms.get("lock"):
-            return redirect("/lock")
-        elif request.forms.get("activate"):
-            return redirect("/activate")
-        elif request.forms.get("master_pass"):
-            return redirect("/master-pass")
-        elif request.forms.get("manage"):
-            return redirect("/manage")
-    return redirect("/")
-
-
