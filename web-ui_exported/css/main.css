@@ -43,7 +43,7 @@ p.paragraph.intro-paragraph {
   line-height: 1.3rem;
 }
 
-p.paragraph.paragraph-2 {
+p.paragraph.error-msg-prompt {
   color: #f00;
   text-align: center;
   font-size: .93rem;
@@ -212,7 +212,7 @@ button.btn.ignition {
     line-height: 1.3rem;
   }
 
-  p.paragraph.paragraph-2 {
+  p.paragraph.error-msg-prompt {
     color: #f00;
     text-align: center;
     font-size: .93rem;
@@ -296,7 +296,7 @@ button.btn.ignition {
     font-size: 1.25rem;
   }
 
-  p.paragraph.paragraph-2 {
+  p.paragraph.error-msg-prompt {
     color: #f00;
     text-align: center;
   }
@@ -385,7 +385,7 @@ button.btn.ignition {
     line-height: 1.93rem;
   }
 
-  p.paragraph.paragraph-2 {
+  p.paragraph.error-msg-prompt {
     color: #f00;
     text-align: center;
   }
@@ -483,6 +483,15 @@ button.btn.ignition {
 @media screen and (min-width: 75rem) {
   /* Text Elements */
 
+  p.paragraph.error-msg-prompt {
+    text-align: center;
+  }
+
+  p.paragraph.status-msg-text {
+    color: #fc6300;
+    text-align: center;
+  }
+
   span.text-element.manage-label {
     position: static;
     display: block;
@@ -555,6 +564,10 @@ button.btn.ignition {
     padding-right: .3rem;
     padding-bottom: 0;
     height: auto;
+  }
+
+  body > .row > [class*='col-xs-'].column-2 {
+    min-height: auto;
   }
 
   a.responsive-picture.logo {

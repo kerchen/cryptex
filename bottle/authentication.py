@@ -34,39 +34,29 @@ def do_create_store():
 @get('/change-master-password')
 def change_master_password():
     if shared_cfg.validate_session(request):
-        return template("change-master-password.html", bad_master=False, mismatch=False)
+        return template("change-master-password.html", retry=False)
     return redirect("/")
 
 
-@get('/change-master-password-retry-bad-master')
-def change_master_password_retry_bad_master():
+@get('/change-master-password-retry')
+def change_master_password_retry():
     if shared_cfg.validate_session(request):
-        return template("change_master_password.tpl", bad_master=True, mismatch=False)
-    return redirect("/")
-
-
-@get('/change-master-password-retry-mismatch')
-def change_master_password_retry_mismatch():
-    if shared_cfg.validate_session(request):
-        return template("change_master_password.tpl", bad_master=False, mismatch=True)
+        return template("change-master-password.html", retry=True)
     return redirect("/")
 
 
 @post('/change-master-password')
 def change_master_password():
     if shared_cfg.validate_session(request):
-        if request.forms.get("change"):
-            existing_password = request.forms.get('existing_password')
-            new_password = request.forms.get('new_password')
-            new_password_confirm = request.forms.get('new_password_confirm')
-            if existing_password != shared_cfg.master_password:
-                return redirect("/change-master-password-retry-bad-master")
-            if new_password != new_password_confirm:
-                return redirect("/change-master-password-retry-mismatch")
-            shared_cfg.change_master_password(new_password)
-            return template("index.tpl",
-                            status_msg="Master password successfully changed.")
-        return template("index.tpl", status_msg="Master password unchanged.")
+        current_password = request.forms.get('current_password')
+        new_password = request.forms.get('new_password')
+        if current_password != shared_cfg.master_password:
+            log.debug("Current password doesn't match saved master password.")
+            return redirect("/change-master-password-retry")
+        shared_cfg.change_master_password(new_password)
+        return template("manage-store.html",
+                        path="/",
+                        status_msg="Master password successfully changed.")
     return redirect("/")
 
 

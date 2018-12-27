@@ -38,7 +38,8 @@ def manage_path(path):
         log.debug("Routing to path {0}".format(path))
         if shared_cfg.change_session_path(path):
             return template(MANAGE_PASSWORDS_TEMPLATE,
-                            path=shared_cfg.session.path)
+                            path=shared_cfg.session.path,
+                            status_msg=None)
         else:
             return redirect("/manage")
 

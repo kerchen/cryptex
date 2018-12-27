@@ -104,6 +104,8 @@ function updateMasterPassword() {
         return
     }
 
-    post('/change-master-password', {password: newPass});
+    post('/change-master-password',
+         {new_password: newPass,
+          current_password: currentPass});
 }
 
