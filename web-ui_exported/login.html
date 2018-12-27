@@ -34,19 +34,23 @@
     <div class="col-xs-12 ignition">
       <form class="form-container">
         <p class="paragraph intro-paragraph">Enter your password to unlock this Cryptex.</p><input value="" type="password" class="password-1" id="password-store-pw" autofocus="autofocus" required="required">
-        <aside class="html-element html-element-1"><!--
-% if retry:
---></aside>
-        <p class="paragraph error-msg-prompt">Sorry, that password didn't work. Try again.</p>
-        <aside class="html-element"><!--
-% end
--->
-<script src="js/login.js"></script></aside>
       </form>
     </div>
   </div>
   <div class="row">
-    <div class="col-xs-12"><button type="submit" class="btn ignition" formaction="" onclick="login()" formmethod="post" id="btn-unlock">Unlock</button>
+    <div class="col-xs-12">
+      <aside class="html-element html-element-1"><!--
+% if retry:
+--></aside>
+      <p class="paragraph error-msg-prompt">Sorry, that password didn't work. Try again.</p>
+      <aside class="html-element"><!--
+% end
+-->
+<script src="js/login.js"></script></aside>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12"><button type="button" class="btn ignition" formaction="" onclick="login()" formmethod="post" id="btn-unlock">Unlock</button>
     </div>
   </div>
   <div class="row rocket">

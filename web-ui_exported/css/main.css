@@ -59,6 +59,10 @@ span.text-element.manage-label {
   font-family: 'Roboto', cursive;
 }
 
+span.text-element#text-2 {
+  text-align: center;
+}
+
 a.link-text.text-link-1 {
   float: right;
   padding: .5rem;
@@ -125,10 +129,11 @@ body > .row.full-width-row {
 }
 
 body > .row > [class*='col-xs-'].ignition {
-  margin-bottom: 80px;
+  margin-bottom: 0;
   padding-top: 0;
   padding-right: .625rem;
   padding-left: .625rem;
+  min-height: auto;
 }
 
 body > .row.rocket {
@@ -162,6 +167,10 @@ body > .row > [class*='col-xs-'].welcome-column {
   -webkit-justify-content: center;
      -moz-box-pack: center;
           justify-content: center;
+}
+
+body > .row > [class*='col-xs-'].column-2 {
+  min-height: auto;
 }
 
 .subgrid > .row > [class*='col-xs-'].subgrid-column-1 {
@@ -200,6 +209,15 @@ button.btn.ignition {
   margin-top: 12px;
 }
 
+button.btn.manage-store-btn {
+  float: right;
+  margin: 1% 5px;
+  background-color: #fc6300;
+  color: #fff;
+  text-transform: uppercase;
+  font-family: 'Roboto Condensed', cursive;
+}
+
 @media screen and (min-width: 36rem) {
   /* Text Elements */
 
@@ -228,6 +246,10 @@ button.btn.ignition {
     font-family: 'Roboto', cursive;
   }
 
+  span.text-element#text-2 {
+    text-align: center;
+  }
+
   a.link-text.text-link-1 {
     float: right;
     padding: .5rem;
@@ -252,6 +274,17 @@ button.btn.ignition {
 
   label.label.label-3 {
     float: right;
+  }
+
+  /* Layout Elements */
+
+  body > .row > [class*='col-xs-'].column-2 {
+    min-height: auto;
+  }
+
+  body > .row > [class*='col-xs-'].ignition {
+    margin-bottom: 0;
+    min-height: auto;
   }
 
   a.responsive-picture.logo {
@@ -280,6 +313,15 @@ button.btn.ignition {
 
   .row > [class*='col-xs-'] .html-element.html-element-2 {
     margin-top: 12px;
+  }
+
+  button.btn.manage-store-btn {
+    float: right;
+    margin: 1% 5px;
+    background-color: #fc6300;
+    color: #fefefe;
+    text-transform: uppercase;
+    font-family: 'Roboto Condensed', cursive;
   }
 }
 
@@ -310,6 +352,10 @@ button.btn.ignition {
     font-family: 'Roboto', cursive;
   }
 
+  span.text-element#text-2 {
+    text-align: center;
+  }
+
   a.link-text.text-link-1 {
     float: right;
     padding: .5rem;
@@ -337,6 +383,15 @@ button.btn.ignition {
   body > .row.rocket {
     padding-top: 18.75rem;
     padding-bottom: 18.75rem;
+  }
+
+  body > .row > [class*='col-xs-'].column-2 {
+    min-height: auto;
+  }
+
+  body > .row > [class*='col-xs-'].ignition {
+    margin-bottom: 0;
+    min-height: auto;
   }
 
   a.responsive-picture.logo {
@@ -370,6 +425,15 @@ button.btn.ignition {
   .row > [class*='col-xs-'] .html-element.html-element-2 {
     margin-top: 12px;
   }
+
+  button.btn.manage-store-btn {
+    float: right;
+    margin: 1% 5px;
+    background-color: #fc6300;
+    color: #fff;
+    text-transform: uppercase;
+    font-family: 'Roboto Condensed', cursive;
+  }
 }
 
 @media screen and (min-width: 62rem) {
@@ -394,8 +458,12 @@ button.btn.ignition {
     margin-top: 15px;
     color: #fc6300;
     text-align: right;
-    font-size: 18px;
+    font-size: 17px;
     font-family: 'Roboto', cursive;
+  }
+
+  span.text-element#text-2 {
+    text-align: center;
   }
 
   a.link-text.text-link-1 {
@@ -445,6 +513,15 @@ button.btn.ignition {
     padding-bottom: 25rem;
   }
 
+  body > .row > [class*='col-xs-'].column-2 {
+    min-height: auto;
+  }
+
+  body > .row > [class*='col-xs-'].ignition {
+    margin-bottom: 0;
+    min-height: auto;
+  }
+
   button.btn {
     position: relative;
     background-color: transparent;
@@ -478,6 +555,14 @@ button.btn.ignition {
   .row > [class*='col-xs-'] .html-element.html-element-2 {
     margin-top: 12px;
   }
+
+  button.btn.manage-store-btn {
+    float: right;
+    margin: 1% 5px;
+    background-color: #fc6300;
+    color: #fff;
+    text-transform: uppercase;
+  }
 }
 
 @media screen and (min-width: 75rem) {
@@ -504,6 +589,11 @@ button.btn.ignition {
 
   span.text-element#text-1 {
     text-align: right;
+  }
+
+  span.text-element#text-2 {
+    text-align: center;
+    text-transform: uppercase;
   }
 
   a.link-text.text-link-1 {
@@ -570,6 +660,11 @@ button.btn.ignition {
     min-height: auto;
   }
 
+  body > .row > [class*='col-xs-'].ignition {
+    margin-bottom: 0;
+    min-height: auto;
+  }
+
   a.responsive-picture.logo {
     max-width: 5.56rem;
     background-image: none;
@@ -589,5 +684,14 @@ button.btn.ignition {
 
   .row > [class*='col-xs-'] .html-element.html-element-2 {
     margin-top: 12px;
+  }
+
+  button.btn.manage-store-btn {
+    float: right;
+    margin: 1% 5px;
+    background-color: #fc6300;
+    color: #fff;
+    text-transform: uppercase;
+    font-family: 'Roboto Condensed', cursive;
   }
 }
