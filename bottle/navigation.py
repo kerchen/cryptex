@@ -21,7 +21,7 @@ def activate():
     if shared_cfg.validate_session(request):
         log.debug("Activating the device")
         shared_cfg.activate_keyboard_mode()
-        return template("activate_keyboard_mode.tpl", title="Keyboard Mode")
+        return template("keyboard-mode.html")
     return redirect("/")
 
 

@@ -76,7 +76,7 @@ def login():
             return redirect("/first-time-setup")
         return template("login.html", retry=False)
     elif shared_cfg.is_in_keyboard_mode():
-        return template("activate_keyboard_mode.tpl", title="Keyboard Mode")
+        return template("keyboard-mode.html")
     return template("login.html", retry=False)
 
 

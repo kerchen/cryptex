@@ -5,6 +5,8 @@ from cheroot.ssl.builtin import BuiltinSSLAdapter
 import logging
 import ssl
 
+# Note: any modules that supply bottle functionality need to be imported
+# here even though they aren't used directly.
 import shared_cfg
 import authentication
 import navigation
@@ -44,7 +46,7 @@ def default():
     elif request.get_cookie(shared_cfg.SESSION_COOKIE_NAME) is not None:
         return template("session_timeout.tpl", title="Cryptex Session Timed Out")
     elif shared_cfg.is_in_keyboard_mode():
-        return template("activate_keyboard_mode.tpl", title="Keyboard Mode")
+        return template("keyboard-mode.html")
     else:
         return redirect("/login")
 
