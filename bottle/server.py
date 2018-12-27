@@ -38,7 +38,7 @@ def send_js(filename):
 @route('/')
 def default():
     if shared_cfg.validate_session(request):
-        return template("index.tpl", status_msg="")
+        return redirect("/manage")
     elif shared_cfg.is_session_active():
         return template("session_mismatch.tpl", title="Cryptex Session Active")
     elif request.get_cookie(shared_cfg.SESSION_COOKIE_NAME) is not None:
