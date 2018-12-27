@@ -12,7 +12,7 @@ def lock():
     if shared_cfg.validate_session(request):
         log.debug("Locking the whole thing down")
         shared_cfg.lock_store()
-        return template("lock.tpl", title="Cryptex Locked")
+        return template("locked.html")
     return redirect("/")
 
 
