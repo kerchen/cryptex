@@ -42,9 +42,9 @@ def default():
     if shared_cfg.validate_session(request):
         return redirect("/manage")
     elif shared_cfg.is_session_active():
-        return template("session_mismatch.tpl", title="Cryptex Session Active")
+        return template("session-error.html")
     elif request.get_cookie(shared_cfg.SESSION_COOKIE_NAME) is not None:
-        return template("session_timeout.tpl", title="Cryptex Session Timed Out")
+        return template("session-error.html")
     elif shared_cfg.is_in_keyboard_mode():
         return template("keyboard-mode.html")
     else:
