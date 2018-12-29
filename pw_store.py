@@ -311,6 +311,10 @@ class PasswordStore:
         cont = self.get_container_by_path(cont_path)
         return ent_name, cont.get_entry(ent_name)
 
+    def get_entry_count_by_path(self, path):
+        cont = self.get_container_by_path(simplify_path(path))
+        return len(cont.get_entries())
+
     def get_entries_by_path(self, path):
         cont = self.get_container_by_path(simplify_path(path))
         return cont.get_entries()
@@ -322,6 +326,10 @@ class PasswordStore:
             raise ECException("Invalid container name")
         dest_cont = self.get_container_by_path(simplify_path(path))
         dest_cont.add_container(cont, cont_name)
+
+    def get_container_count_by_path(self, path):
+        cont = self.get_container_by_path(simplify_path(path))
+        return len(cont.get_containers())
 
     def get_containers_by_path(self, path):
         cont = self.get_container_by_path(simplify_path(path))

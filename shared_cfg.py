@@ -229,6 +229,15 @@ def get_entry_by_path(path):
     return None
 
 
+def get_entry_count_by_path(path):
+    global master_store
+
+    if master_store:
+        return master_store.get_entry_count_by_path(path)
+
+    return 0
+
+
 def get_entries_by_path(path, reverse=False):
     global master_store
 
@@ -239,6 +248,14 @@ def get_entries_by_path(path, reverse=False):
 
     return []
 
+
+def get_container_count_by_path(path):
+    global master_store
+
+    if master_store:
+        return master_store.get_container_count_by_path(path)
+
+    return 0
 
 def get_containers_by_path(path, reverse=False):
     global master_store

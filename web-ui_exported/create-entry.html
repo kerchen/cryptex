@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="generator" content="Responsive Bootstrap Builder 2.5.308">
+  <title>Cryptex - Create Entry</title>
+  <link rel="stylesheet" href="css/bootstrap4.min.css">
+  <link rel="stylesheet" href="css/wireframe-theme.min.css">
+  <script>document.createElement( "picture" );</script>
+  <script class="picturefill" async="async" src="js/picturefill.min.js"></script>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:b%7CRoboto+Condensed:300,400%7CRoboto:300,400">
+<script src="js/cryptex.js"></script>
+
+</head>
+
+<body>
+  <div class="row nav-row">
+    <div class="col-xs-12">
+      <div class="container-fluid nav-container"><a href="/manage" class="responsive-picture logo" title="Cryptex Logo"><picture><!--[if IE 9]><video style="display: none;"><![endif]--><source srcset="./images/cryptex-logo.png" media="(min-width: 1200px)"><source srcset="./images/cryptex-logo.png" media="(min-width: 768px)"><source srcset="./images/cryptex-logo.png" media="(min-width: 576px)"><!--[if IE 9]></video><![endif]--><img alt="cryptex" src="./images/cryptex-logo.png"></picture></a>
+      </div>
+    </div>
+  </div>
+  <div class="row wecome-row">
+    <div class="col-xs-12 welcome-column">
+      <h4 class="welcome-subtitle">cryptex management</h4>
+      <h1>create an entry</h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-4 col-sm-3 col-lg-3 col-xl-3">
+      <span class="text-element manage-label">Current folder:</span>
+    </div>
+    <div class="col-xs-8 col-sm-9 col-lg-9 col-xl-9">
+      <span class="text-element manage-label" id="text-3">{{path}}</span>
+    </div>
+  </div>
+  <div class="row full-width-row">
+    <div class="col-xs-12 ignition">
+      <form class="form-container">
+        <p class="paragraph intro-paragraph">The entry name cannot be empty and it must be different from all other entries in the same folder. All the other fields are optional.</p>
+        <div class="subgrid">
+          <div class="row">
+            <div class="col-xs-6 subgrid-column-3"><label class="label label-2">Entry Name</label>
+            </div>
+            <div class="col-xs-6"><input value="" type="text" id="entry-name-input" required="required" title="" pattern="" autofocus="autofocus">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-6 subgrid-column-4"><label class="label label-2">User Name</label>
+            </div>
+            <div class="col-xs-6"><input value="" type="text" id="user-name-input">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-6 subgrid-column-5"><label class="label label-2">Password</label>
+            </div>
+            <div class="col-xs-6"><input value="" type="password" id="password-input">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-6 subgrid-column-6"><label class="label label-2">Re-enter Password</label>
+            </div>
+            <div class="col-xs-6"><input value="" type="password" id="password-confirm-input">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-6 subgrid-column-7"><label class="label label-2" id="entry-url">URL</label>
+            </div>
+            <div class="col-xs-6"><input value="" type="text" id="url-input">
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12">
+      <aside class="html-element"><!--
+% entryname = ""
+% username = ""
+% url = ""
+% if data:
+%   entryname = data["entryname"]
+%   username = data["username"]
+%   url = data["url"]
+% end
+-->
+  <script>
+  document.getElementById("entry-name-input").value = "{{entryname}}";
+  document.getElementById("user-name-input").value = "{{username}}";
+  document.getElementById("url-input").value = "{{url}}";
+</script>
+<!--
+% if status_msg:
+-->
+      <p class="paragraph error-msg-prompt">{{status_msg}}</p>
+<!--
+% end
+--></aside>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12"><button type="submit" class="btn ignition" formaction="" onclick="createEntry()">Save</button><button type="submit" class="btn ignition" formaction="" onclick="manageStore()">Cancel</button>
+    </div>
+  </div>
+  <div class="row rocket">
+    <div class="col-xs-12"></div>
+  </div>
+  <script src="js/jquery.min.js"></script>
+  <script src="js/outofview.js"></script>
+  <script src="js/tether.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+</body>
+
+</html>

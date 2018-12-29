@@ -53,14 +53,20 @@ p.paragraph.error-msg-prompt {
 span.text-element.manage-label {
   margin-top: 16px;
   color: #fc6300;
-  text-align: right;
+  text-align: center;
   text-transform: uppercase;
   font-size: 14px;
   font-family: 'Roboto', cursive;
 }
 
-span.text-element#text-2 {
+span.text-element#text-3 {
+  text-align: left;
+}
+
+span.text-element.status-msg {
+  color: #fc6300;
   text-align: center;
+  font-family: 'Roboto', cursive;
 }
 
 a.link-text.text-link-1 {
@@ -103,12 +109,6 @@ input[type=password].password-1 {
 
 body {
   height: 100%;
-}
-
-body > .row > [class*='col-xs-'] {
-  padding-right: 10px;
-  padding-left: 10px;
-  min-height: 50px;
 }
 
 body > .row.nav-row {
@@ -173,6 +173,14 @@ body > .row > [class*='col-xs-'].column-2 {
   min-height: auto;
 }
 
+body > .row > [class*='col-xs-'].column-4 {
+  background-color: #dfeef0;
+}
+
+body > .row > [class*='col-xs-'].column-7 {
+  background-color: #dfeef0;
+}
+
 .subgrid > .row > [class*='col-xs-'].subgrid-column-1 {
   float: left;
   text-align: right;
@@ -182,12 +190,33 @@ body > .row > [class*='col-xs-'].column-2 {
   text-align: right;
 }
 
+.subgrid > .row > [class*='col-xs-'].subgrid-column-3 {
+  text-align: right;
+}
+
+.subgrid > .row > [class*='col-xs-'].subgrid-column-4 {
+  text-align: right;
+}
+
+.subgrid > .row > [class*='col-xs-'].subgrid-column-5 {
+  text-align: right;
+}
+
+.subgrid > .row > [class*='col-xs-'].subgrid-column-6 {
+  text-align: right;
+}
+
+.subgrid > .row > [class*='col-xs-'].subgrid-column-7 {
+  text-align: right;
+}
+
 .container-fluid.nav-container {
   max-width: 75rem;
 }
 
 a.responsive-picture.logo {
-  margin-top: .437rem;
+  float: left;
+  margin-top: 0;
   margin-right: auto;
   margin-left: auto;
   max-width: 5.562rem;
@@ -210,11 +239,13 @@ button.btn.ignition {
 }
 
 button.btn.manage-store-btn {
-  float: right;
-  margin: 1% 5px;
+  float: left;
+  margin: 1% 3px;
+  padding: .11rem .1rem .1rem;
   background-color: #fc6300;
   color: #fff;
   text-transform: uppercase;
+  font-size: 12px;
   font-family: 'Roboto Condensed', cursive;
 }
 
@@ -240,14 +271,9 @@ button.btn.manage-store-btn {
   span.text-element.manage-label {
     margin-top: 17px;
     color: #fc6300;
-    text-align: right;
     text-transform: uppercase;
     font-size: 14px;
     font-family: 'Roboto', cursive;
-  }
-
-  span.text-element#text-2 {
-    text-align: center;
   }
 
   a.link-text.text-link-1 {
@@ -288,6 +314,7 @@ button.btn.manage-store-btn {
   }
 
   a.responsive-picture.logo {
+    margin-top: 0;
     background-image: none;
     background-attachment: scroll;
     background-position: left top;
@@ -316,11 +343,13 @@ button.btn.manage-store-btn {
   }
 
   button.btn.manage-store-btn {
-    float: right;
-    margin: 1% 5px;
+    float: left;
+    margin: 1% 3px;
+    padding: .11rem .2rem .1rem;
     background-color: #fc6300;
     color: #fefefe;
     text-transform: uppercase;
+    font-size: 12px;
     font-family: 'Roboto Condensed', cursive;
   }
 }
@@ -346,14 +375,9 @@ button.btn.manage-store-btn {
   span.text-element.manage-label {
     margin-top: 15px;
     color: #fc6300;
-    text-align: right;
     text-transform: uppercase;
     font-size: 16px;
     font-family: 'Roboto', cursive;
-  }
-
-  span.text-element#text-2 {
-    text-align: center;
   }
 
   a.link-text.text-link-1 {
@@ -427,11 +451,13 @@ button.btn.manage-store-btn {
   }
 
   button.btn.manage-store-btn {
-    float: right;
-    margin: 1% 5px;
+    float: left;
+    margin: 1% 3px;
+    padding: .11rem .1rem .1rem;
     background-color: #fc6300;
     color: #fff;
     text-transform: uppercase;
+    font-size: 12px;
     font-family: 'Roboto Condensed', cursive;
   }
 }
@@ -457,13 +483,14 @@ button.btn.manage-store-btn {
   span.text-element.manage-label {
     margin-top: 15px;
     color: #fc6300;
-    text-align: right;
     font-size: 17px;
     font-family: 'Roboto', cursive;
   }
 
-  span.text-element#text-2 {
+  span.text-element.status-msg {
+    color: #fc6300;
     text-align: center;
+    font-family: 'Roboto', cursive;
   }
 
   a.link-text.text-link-1 {
@@ -557,11 +584,13 @@ button.btn.manage-store-btn {
   }
 
   button.btn.manage-store-btn {
-    float: right;
-    margin: 1% 5px;
+    float: left;
+    margin: 1% 3px;
+    padding: .11rem .2rem .1rem;
     background-color: #fc6300;
     color: #fff;
     text-transform: uppercase;
+    font-size: 12px;
   }
 }
 
@@ -569,11 +598,6 @@ button.btn.manage-store-btn {
   /* Text Elements */
 
   p.paragraph.error-msg-prompt {
-    text-align: center;
-  }
-
-  p.paragraph.status-msg-text {
-    color: #fc6300;
     text-align: center;
   }
 
@@ -587,13 +611,8 @@ button.btn.manage-store-btn {
     font-family: 'Roboto', cursive;
   }
 
-  span.text-element#text-1 {
-    text-align: right;
-  }
-
-  span.text-element#text-2 {
-    text-align: center;
-    text-transform: uppercase;
+  span.text-element#text-3 {
+    text-align: left;
   }
 
   a.link-text.text-link-1 {
@@ -628,6 +647,8 @@ button.btn.manage-store-btn {
 
   label.label.label-2 {
     float: right;
+    text-transform: uppercase;
+    font-family: 'Roboto', cursive;
   }
 
   label.label.label-3 {
@@ -636,33 +657,39 @@ button.btn.manage-store-btn {
 
   /* Layout Elements */
 
-  body > .row > [class*='col-xs-'] {
-    padding-right: 1.25rem;
-    padding-left: 1.25rem;
-  }
-
   body > .row.rocket {
     padding-top: 25rem;
     background-image: url('../images/lock.png');
   }
 
-  body > .row.row-1 {
-    height: 50px;
-  }
-
-  body > .row > [class*='col-xs-'].column-1 {
-    padding-right: .3rem;
-    padding-bottom: 0;
-    height: auto;
-  }
-
   body > .row > [class*='col-xs-'].column-2 {
+    padding-right: 10px;
+    padding-left: 10px;
     min-height: auto;
   }
 
   body > .row > [class*='col-xs-'].ignition {
     margin-bottom: 0;
     min-height: auto;
+  }
+
+  body > .row.full-width-row {
+    margin-top: 20px;
+  }
+
+  body > .row > [class*='col-xs-'].column-5 {
+    background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, .5) 0%, rgba(29, 30, 33, .5) 100%);
+    background-image:    -moz-linear-gradient(top, rgba(255, 255, 255, .5) 0%, rgba(29, 30, 33, .5) 100%);
+    background-image:      -o-linear-gradient(top, rgba(255, 255, 255, .5) 0%, rgba(29, 30, 33, .5) 100%);
+    background-image:         linear-gradient(180deg, rgba(255, 255, 255, .5) 0%, rgba(29, 30, 33, .5) 100%);
+    background-attachment: scroll;
+    background-position: left top;
+    background-clip: border-box;
+    background-origin: padding-box;
+    background-size: auto auto;
+    background-repeat: no-repeat;
+
+    background-blend-mode: normal;
   }
 
   a.responsive-picture.logo {
@@ -680,18 +707,22 @@ button.btn.manage-store-btn {
 
   button.btn.ignition {
     background-color: #fc6300;
+    text-transform: uppercase;
   }
 
   .row > [class*='col-xs-'] .html-element.html-element-2 {
-    margin-top: 12px;
+    margin-top: 15px;
+    min-height: 0;
+    max-height: 35px;
   }
 
   button.btn.manage-store-btn {
-    float: right;
-    margin: 1% 5px;
+    float: left;
+    padding: .11rem .2rem .1rem;
     background-color: #fc6300;
     color: #fff;
     text-transform: uppercase;
+    font-size: 12px;
     font-family: 'Roboto Condensed', cursive;
   }
 }

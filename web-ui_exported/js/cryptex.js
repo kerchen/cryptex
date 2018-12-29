@@ -109,3 +109,59 @@ function updateMasterPassword() {
           current_password: currentPass});
 }
 
+function addFolder() {
+    post('/manage',
+         {action: 'addcontainer'});
+}
+
+function deleteFolder(path) {
+    if (confirm("Delete this folder and all of the entries it contains?\n"+path)) {
+        alert("Not implemented yet.")
+        //post('/remove-container',
+             //{encoded_path: path});
+    }
+}
+
+function editFolder(path) {
+    //if (confirm("Delete this folder and all of the entries it contains?\n"+path)) {
+        alert("Not implemented yet.")
+        //post('/remove-container',
+             //{encoded_path: path});
+    //}
+}
+
+function addEntry() {
+    post('/manage',
+         {action: 'addentry'});
+}
+
+function createEntry() {
+    var entryName = document.getElementById("entry-name-input").value;
+    var userName = document.getElementById("user-name-input").value;
+    var password1 = document.getElementById("password-input").value;
+    var password2 = document.getElementById("password-confirm-input").value;
+    var url = document.getElementById("url-input").value;
+
+    post('/manage-new-entry',
+         {entryname: entryName,
+          username: userName,
+          password1: password1,
+          password2: password2,
+          url: url})
+}
+
+function updateEntry() {
+    var entryName = document.getElementById("entry-name-input").value;
+    var userName = document.getElementById("user-name-input").value;
+    var password1 = document.getElementById("password-input").value;
+    var password2 = document.getElementById("password-confirm-input").value;
+    var url = document.getElementById("url-input").value;
+
+    post('/manage-update-entry',
+         {entryname: entryName,
+          username: userName,
+          password1: password1,
+          password2: password2,
+          url: url})
+}
+

@@ -1,7 +1,7 @@
 from bottle import (post, redirect, request, route, template)
 import logging
 
-from path_util import decode_path
+from path_util import decode_path, encode_path
 import pw_store
 import shared_cfg
 
@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 
 MANAGE_PASSWORDS_TEMPLATE = "manage-store.html"
 NEW_CONTAINER_TEMPLATE = "new_container.tpl"
-NEW_ENTRY_TEMPLATE = "new_entry.tpl"
+CREATE_ENTRY_TEMPLATE = "create-entry.html"
 
 
 @route('/manage<path:re:/.*>')
@@ -52,7 +52,10 @@ def handle_manage_post():
     if shared_cfg.validate_session(request):
         if request.forms.get('action') == 'addentry':
             log.debug("Add entry button pressed")
-            return template(NEW_ENTRY_TEMPLATE, retry="")
+            return template(CREATE_ENTRY_TEMPLATE,
+                            path=shared_cfg.session.path,
+                            status_msg=None,
+                            data=None)
         elif request.forms.get('action') == 'addcontainer':
             log.debug("Add container button pressed. path = "
                       "{}".format(shared_cfg.session.path))
@@ -68,49 +71,82 @@ def handle_manage_post():
     return redirect("/")
 
 
+def process_entry_input(template_name):
+    ent_name = request.forms.get('entryname').strip()
+    username = request.forms.get('username').strip()
+    password1 = request.forms.get('password1')
+    password2 = request.forms.get('password2')
+    url = request.forms.get('url').strip()
+    retry_data = {"entryname": ent_name, "username": username, "url": url}
+    log.debug("New entry confirmed")
+    log.debug("Entry Name: {}".format(ent_name))
+    log.debug("Username: {}".format(username))
+    log.debug("Password 1: {}".format(password1))
+    log.debug("Password 2: {}".format(password2))
+    log.debug("URL: {}".format(url))
+    if not ent_name:
+        return None, template(template_name,
+                        path=shared_cfg.session.path,
+                        status_msg="Entry name is required.",
+                        data=retry_data)
+    if password1 != password2:
+        return None, template(template_name,
+                        path=shared_cfg.session.path,
+                        status_msg="Passwords do not match.",
+                        data=retry_data)
+
+    ent = pw_store.Entry(username=username, password=password1, url=url)
+    return (ent, ent_name), None
+
+
 @post('/manage-new-entry')
 def handle_new_entry_post():
     log.debug("Handling new entry post")
+    status_msg = None
     if shared_cfg.validate_session(request):
-        if request.forms.get("create"):
-            templ_name = NEW_ENTRY_TEMPLATE
-            retry_reason = None
-            ent_name = request.forms.get('name').strip()
-            username = request.forms.get('username').strip()
-            password = request.forms.get('password')
-            password2 = request.forms.get('password2')
-            url = request.forms.get('url').strip()
-            retry_data = {"name": ent_name, "username": username, "url": url}
-            log.debug("New entry confirmed")
-            log.debug("Entry Name: {}".format(ent_name))
-            log.debug("Username: {}".format(username))
-            log.debug("Password: {}".format(password))
-            log.debug("Password 2: {}".format(password2))
-            log.debug("URL: {}".format(url))
-            if not ent_name:
-                return template(templ_name, retry="no_name", data=retry_data)
-            if password != password2:
-                return template(templ_name, retry="mismatch", data=retry_data)
-            ent = pw_store.Entry(username=username, password=password, url=url)
-            try:
-                shared_cfg.add_entry(ent, ent_name)
-            except pw_store.ECDuplicateException:
-                log.debug("Duplicate entry name {0}".format(ent_name))
-                retry_reason = "duplicate"
-            except pw_store.ECNaughtyCharacterException:
-                log.debug("Bad character in entry name {0}".format(ent_name))
-                retry_reason = "bad_char"
-            except pw_store.ECException:
-                log.debug("Exception while adding entry {0}".format(ent_name))
-                retry_reason = "other_error"
-            finally:
-                if retry_reason:
-                    return template(templ_name, retry=retry_reason, data=retry_data)
+        template_name = CREATE_ENTRY_TEMPLATE
+        entry, retry_entry = process_entry_input(template_name)
+        if not entry:
+            return retry_entry
 
-            return redirect("/manage"+shared_cfg.session.path)
-        elif request.forms.get("cancel"):
-            log.debug("New entry cancelled")
-            return redirect("/manage"+shared_cfg.session.path)
+        retry_data = {"entryname": entry[1],
+                      "username": entry[0].get_username(),
+                      "url": entry[0].get_url()}
+        try:
+            shared_cfg.add_entry(entry[0], entry[1])
+        except pw_store.ECDuplicateException:
+            log.debug("Duplicate entry name {0}".format(entry[1]))
+            status_msg = ("'{0}' is already in use by another "
+                          "entry.".format(entry[1]))
+        except pw_store.ECNaughtyCharacterException:
+            log.debug("Bad character in entry name {0}".format(entry[1]))
+            status_msg = ("Entry names can only contain spaces and these "
+                          "characters: "
+                          "{0}".format(" ".join(shared_cfg.LEGAL_NAME_CHARS)))
+        except pw_store.ECException as ex:
+            log.debug("Unexpected problem while adding entry "
+                      "{0}".format(entry[1]))
+            status_msg = "The entry could not be added. Reason: {0}".format(ex)
+        finally:
+            if status_msg:
+                return template(template_name,
+                                path=shared_cfg.session.path,
+                                status_msg=status_msg,
+                                data=retry_data)
+
+        return redirect("/manage"+encode_path(shared_cfg.session.path))
+        #elif request.forms.get("cancel"):
+            #log.debug("New entry cancelled")
+            #return redirect("/manage"+encode_path(shared_cfg.session.path))
+    return redirect("/")
+
+
+@post('/manage-update-entry')
+def handle_update_entry_post():
+    log.debug("Handling update entry post")
+    status_msg = None
+    if shared_cfg.validate_session(request):
+        print("nah")
     return redirect("/")
 
 
