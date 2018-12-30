@@ -171,7 +171,7 @@ def handle_new_container_post():
                           "characters:{0}. Please enter a name "
                           "containing only those characters."
                           .format(" ".join(shared_cfg.LEGAL_NAME_CHARS)))
-        except pw_store.ECException:
+        except pw_store.ECException as ex:
             log.debug("Exception while adding container {0}".format(cont_name))
             status_msg = "The folder could not be added. Reason: {0}".format(ex)
         finally:
