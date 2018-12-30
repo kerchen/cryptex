@@ -65,12 +65,6 @@ span.text-element#text-3 {
   text-align: left;
 }
 
-span.text-element.status-msg {
-  color: #fc6300;
-  text-align: center;
-  font-family: 'Roboto', cursive;
-}
-
 span.text-element#text-1-copy-3 {
   margin-top: 1px;
 }
@@ -125,6 +119,14 @@ input[type=password].password-1 {
   margin-left: auto;
   max-width: 50rem;
   text-align: center;
+}
+
+label.label.entry-label {
+  float: right;
+  color: #fc6300;
+  text-align: right;
+  text-transform: uppercase;
+  font-family: 'Roboto', cursive;
 }
 
 /* Layout Elements */
@@ -359,14 +361,6 @@ button#button-2 {
     text-align: center;
   }
 
-  label.label.label-2 {
-    float: right;
-  }
-
-  label.label.label-3 {
-    float: right;
-  }
-
   /* Layout Elements */
 
   body > .row > [class*='col-xs-'].ignition {
@@ -555,14 +549,6 @@ button#button-2 {
     text-align: center;
   }
 
-  label.label.label-2 {
-    float: right;
-  }
-
-  label.label.label-3 {
-    float: right;
-  }
-
   /* Layout Elements */
 
   body > .row.wecome-row {
@@ -654,16 +640,6 @@ button#button-2 {
     -webkit-align-self: auto;
     -ms-flex-item-align: auto;
             align-self: auto;
-  }
-
-  label.label.label-2 {
-    float: right;
-    text-transform: uppercase;
-    font-family: 'Roboto', cursive;
-  }
-
-  label.label.label-3 {
-    float: right;
   }
 
   /* Layout Elements */

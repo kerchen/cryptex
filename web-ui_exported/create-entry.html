@@ -31,6 +31,12 @@
     </div>
   </div>
   <div class="row">
+    <div class="col-xs-12">
+      <p class="paragraph status-msg-text">{{status_msg}}<br>
+      </p>
+    </div>
+  </div>
+  <div class="row">
     <div class="col-xs-4 col-sm-3 col-lg-3 col-xl-3">
       <span class="text-element manage-label">Current folder:</span>
     </div>
@@ -44,31 +50,31 @@
         <p class="paragraph intro-paragraph">The entry name cannot be empty and it must be different from all other entries in the same folder. All the other fields are optional.</p>
         <div class="subgrid">
           <div class="row">
-            <div class="col-xs-6 subgrid-column-3"><label class="label label-2">Entry Name</label>
+            <div class="col-xs-6 subgrid-column-3"><label class="label entry-label">Entry Name</label>
             </div>
             <div class="col-xs-6"><input value="" type="text" id="entry-name-input" required="required" title="" pattern="" autofocus="autofocus">
             </div>
           </div>
           <div class="row">
-            <div class="col-xs-6 subgrid-column-4"><label class="label label-2">User Name</label>
+            <div class="col-xs-6 subgrid-column-4"><label class="label entry-label">User Name</label>
             </div>
             <div class="col-xs-6"><input value="" type="text" id="user-name-input">
             </div>
           </div>
           <div class="row">
-            <div class="col-xs-6 subgrid-column-5"><label class="label label-2">Password</label>
+            <div class="col-xs-6 subgrid-column-5"><label class="label entry-label">Password</label>
             </div>
             <div class="col-xs-6"><input value="" type="password" id="password-input">
             </div>
           </div>
           <div class="row">
-            <div class="col-xs-6 subgrid-column-6"><label class="label label-2">Re-enter Password</label>
+            <div class="col-xs-6 subgrid-column-6"><label class="label entry-label">Re-enter Password</label>
             </div>
             <div class="col-xs-6"><input value="" type="password" id="password-confirm-input">
             </div>
           </div>
           <div class="row">
-            <div class="col-xs-6 subgrid-column-7"><label class="label label-2" id="entry-url">URL</label>
+            <div class="col-xs-6 subgrid-column-7"><label class="label entry-label" id="entry-url">URL</label>
             </div>
             <div class="col-xs-6"><input value="" type="text" id="url-input">
             </div>
@@ -93,14 +99,7 @@
   document.getElementById("entry-name-input").value = "{{entryname}}";
   document.getElementById("user-name-input").value = "{{username}}";
   document.getElementById("url-input").value = "{{url}}";
-</script>
-<!--
-% if status_msg:
--->
-      <p class="paragraph error-msg-prompt">{{status_msg}}</p>
-<!--
-% end
---></aside>
+</script></aside>
     </div>
   </div>
   <div class="row">
