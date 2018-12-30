@@ -37,14 +37,8 @@ function setReturnButton(textElementID, buttonID) {
     );
 }
 
-
 function login() {
     var password = document.getElementById("password-store-pw").value;
-
-    if (password.length < 1) {
-        alert("Password cannot be empty.")
-        return
-    }
 
     post('/login', {password: password});
 }

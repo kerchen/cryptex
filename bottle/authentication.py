@@ -25,7 +25,7 @@ def create_store():
 
 
 @post('/create-store')
-def do_create_store():
+def create_store_post():
     password = request.forms.get('password')
     shared_cfg.login(password)
     return redirect("/login")
@@ -66,31 +66,26 @@ def change_master_password_post():
     return redirect("/")
 
 
-@get('/login-retry')
-def login_retry():
-    if not shared_cfg.master_store:
-        if not os.path.exists(shared_cfg.pw_store_filename):
-            return redirect("/first-time-setup")
-        return template("login.html", retry=True)
-    return redirect("/")
-
-
 @get('/login')
-def login():
+def login(status_msg=None):
     if not shared_cfg.master_store:
         if not os.path.exists(shared_cfg.pw_store_filename):
             return redirect("/first-time-setup")
-        return template("login.html", retry=False)
+        log.debug("Doing normal login flow.")
+        return template("login.html", status_msg=status_msg)
     elif shared_cfg.is_in_keyboard_mode():
         return template("keyboard-mode.html")
-    return template("login.html", retry=False)
+    return template("login.html", status_msg=status_msg)
 
 
 @post('/login')
-def handle_login_post():
+def login_post():
     password = request.forms.get('password')
     if shared_cfg.login(password):
         shared_cfg.new_session(response)
         return redirect("/manage")
     else:
-        return redirect("/login-retry")
+        log.debug("Login failed. Back for another round.")
+        return login(status_msg="Sorry, that password didn't work. Please "
+                                "try again.")
+

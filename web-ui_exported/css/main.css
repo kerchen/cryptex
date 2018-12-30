@@ -43,13 +43,6 @@ p.paragraph.intro-paragraph {
   line-height: 1.3rem;
 }
 
-p.paragraph.error-msg-prompt {
-  color: #f00;
-  text-align: center;
-  font-size: .93rem;
-  line-height: 2rem;
-}
-
 p.paragraph.status-msg-text {
   color: #f00;
   text-align: center;
@@ -330,13 +323,6 @@ button#button-2 {
     line-height: 1.3rem;
   }
 
-  p.paragraph.error-msg-prompt {
-    color: #f00;
-    text-align: center;
-    font-size: .93rem;
-    line-height: 2rem;
-  }
-
   p.paragraph.status-msg-text {
     color: #f00;
     text-align: center;
@@ -425,11 +411,6 @@ button#button-2 {
 
   p.paragraph.intro-paragraph {
     font-size: 1.25rem;
-  }
-
-  p.paragraph.error-msg-prompt {
-    color: #f00;
-    text-align: center;
   }
 
   p.paragraph.status-msg-text {
@@ -528,11 +509,6 @@ button#button-2 {
     line-height: 1.93rem;
   }
 
-  p.paragraph.error-msg-prompt {
-    color: #f00;
-    text-align: center;
-  }
-
   p.paragraph.status-msg-text {
     color: #f00;
     text-align: center;
@@ -620,18 +596,10 @@ button#button-2 {
     -ms-flex-item-align: auto;
             align-self: auto;
   }
-
-  .row > [class*='col-xs-'] .html-element.html-element-1 {
-    max-height: 1%;
-  }
 }
 
 @media screen and (min-width: 75rem) {
   /* Text Elements */
-
-  p.paragraph.error-msg-prompt {
-    text-align: center;
-  }
 
   p.paragraph.status-msg-text {
     text-align: center;

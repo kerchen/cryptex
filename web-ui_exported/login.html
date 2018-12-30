@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:b%7CRoboto+Condensed:300,400%7CRoboto:300,400">
 <script src="js/cryptex.js"></script>
+
 </head>
 
 <body>
@@ -30,27 +31,18 @@
       <h1>enter your password</h1>
     </div>
   </div>
-  <div class="row full-width-row">
-    <div class="col-xs-12 ignition">
-      <form class="form-container">
-        <p class="paragraph intro-paragraph">Enter your password to unlock this Cryptex.</p><input value="" type="password" class="password-1" id="password-store-pw" autofocus="autofocus" required="required">
-      </form>
-    </div>
-  </div>
   <div class="row">
     <div class="col-xs-12">
-      <aside class="html-element html-element-1"><!--
-% if retry:
---></aside>
-      <p class="paragraph error-msg-prompt">Sorry, that password didn't work. Try again.</p>
-      <aside class="html-element"><!--
-% end
--->
-<script src="js/login.js"></script></aside>
+      <p class="paragraph status-msg-text">{{status_msg}}</p>
+    </div>
+  </div>
+  <div class="row full-width-row">
+    <div class="col-xs-12 ignition">
+      <p class="paragraph intro-paragraph">Enter your password to unlock this Cryptex.</p><input value="" type="password" class="password-1" id="password-store-pw" autofocus="autofocus">
     </div>
   </div>
   <div class="row">
-    <div class="col-xs-12"><button type="button" class="btn ignition" formaction="" onclick="login()" formmethod="post" id="btn-unlock">Unlock</button>
+    <div class="col-xs-12"><button type="reset" class="btn ignition" formaction="" id="btn-unlock" formenctype="text/plain" onclick="login()">Unlock</button>
     </div>
   </div>
   <div class="row rocket">
@@ -60,6 +52,7 @@
   <script src="js/outofview.js"></script>
   <script src="js/tether.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
+<script src="js/login.js"></script>
 </body>
 
 </html>
