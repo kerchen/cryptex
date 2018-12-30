@@ -32,27 +32,33 @@ def do_create_store():
 
 
 @get('/change-master-password')
-def change_master_password():
+def change_master_password(status_msg=None):
     if shared_cfg.validate_session(request):
-        return template("change-master-password.html", retry=False)
-    return redirect("/")
-
-
-@get('/change-master-password-retry')
-def change_master_password_retry():
-    if shared_cfg.validate_session(request):
-        return template("change-master-password.html", retry=True)
+        return template("change-master-password.html", status_msg=status_msg)
     return redirect("/")
 
 
 @post('/change-master-password')
-def change_master_password():
+def change_master_password_post():
     if shared_cfg.validate_session(request):
         current_password = request.forms.get('current_password')
         new_password = request.forms.get('new_password')
+        new_password_confirm = request.forms.get('new_password_confirm')
         if current_password != shared_cfg.master_password:
             log.debug("Current password doesn't match saved master password.")
-            return redirect("/change-master-password-retry")
+            return change_master_password(
+                status_msg="The entered password does not match the current "
+                           "password. Please try again.")
+        if len(new_password) == 0:
+            log.debug("New password is empty.")
+            return change_master_password(
+                status_msg="The new password cannot be empty. "
+                           "Please try again.")
+        if new_password_confirm != new_password:
+            log.debug("New passwords don't match.")
+            return change_master_password(
+                status_msg="The new passwords do not match. "
+                           "Please try again.")
         shared_cfg.change_master_password(new_password)
         return template("manage-store.html",
                         path="/",

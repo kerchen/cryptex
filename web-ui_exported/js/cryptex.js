@@ -94,18 +94,9 @@ function updateMasterPassword() {
     var newPass = document.getElementById("password-new").value;
     var newPassReenter = document.getElementById("password-new-reenter").value;
 
-    if (newPass.length < 1) {
-        alert("Password cannot be empty.")
-        return
-    }
-
-    if (newPass != newPassReenter) {
-        alert("New passwords do not match. Please try again.")
-        return
-    }
-
     post('/change-master-password',
          {new_password: newPass,
+          new_password_confirm: newPassReenter,
           current_password: currentPass});
 }
 
