@@ -69,17 +69,7 @@ function createStore() {
     var pw1 = document.getElementById("password-store-pw").value;
     var pw2 = document.getElementById("password-store-pw2").value;
 
-    if (pw1.length < 1) {
-        alert("Password cannot be empty.")
-        return
-    }
-
-    if (pw1 != pw2) {
-        alert("Entered passwords do not match. Please try again.")
-        return
-    }
-
-    post('/create-store', {password: pw1});
+    post('/create-store', {password: pw1, password_confirm: pw2});
 }
 
 

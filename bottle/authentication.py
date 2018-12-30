@@ -17,16 +17,26 @@ def first_time_setup():
 
 
 @get('/create-store')
-def create_store():
+def create_store(status_msg=None):
     if not shared_cfg.master_store:
         if not os.path.exists(shared_cfg.pw_store_filename):
-            return template("create-store.html")
+            return template("create-store.html", status_msg=status_msg)
     return redirect("/")
 
 
 @post('/create-store')
 def create_store_post():
     password = request.forms.get('password')
+    password_confirm = request.forms.get('password_confirm')
+    status_msg = None
+    if len(password) < 1:
+        status_msg = "The master password cannot be empty. Please try again."
+    elif password_confirm != password:
+        status_msg = "The entered passwords do not match. Please try again."
+
+    if status_msg:
+        return create_store(status_msg)
+
     shared_cfg.login(password)
     return redirect("/login")
 
