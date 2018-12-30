@@ -56,9 +56,8 @@ def handle_manage_post():
                             path=shared_cfg.session.path,
                             status_msg=None,
                             data=None)
-        elif request.forms.get('action') == 'showpath':
-            path = request.forms.get('path')
-            return manage_path(encode_path(path))
+        elif request.forms.get('action') == 'showsessionpath':
+            return manage_path(encode_path(shared_cfg.session.path))
         elif request.forms.get('action') == 'addcontainer':
             log.debug("Add container button pressed. path = "
                       "{}".format(shared_cfg.session.path))

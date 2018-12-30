@@ -54,8 +54,9 @@ function createStore() {
 }
 
 
-function manageShowPath(path) {
-    post('/manage', {action: 'showpath', path: path});
+function manageShowSessionPath() {
+    // Returns to the management page, showing the current session path.
+    post('/manage', {action: 'showsessionpath'});
 }
 
 
