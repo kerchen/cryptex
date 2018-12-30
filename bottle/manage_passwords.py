@@ -9,7 +9,7 @@ log = logging.getLogger(__name__)
 
 
 MANAGE_PASSWORDS_TEMPLATE = "manage-store.html"
-NEW_CONTAINER_TEMPLATE = "new_container.tpl"
+NEW_CONTAINER_TEMPLATE = "create-folder.html"
 CREATE_ENTRY_TEMPLATE = "create-entry.html"
 
 
@@ -56,18 +56,15 @@ def handle_manage_post():
                             path=shared_cfg.session.path,
                             status_msg=None,
                             data=None)
+        elif request.forms.get('action') == 'showpath':
+            path = request.forms.get('path')
+            return manage_path(encode_path(path))
         elif request.forms.get('action') == 'addcontainer':
             log.debug("Add container button pressed. path = "
                       "{}".format(shared_cfg.session.path))
-            return template(NEW_CONTAINER_TEMPLATE, retry="")
-        #elif request.forms.get("renamecontainer"):
-            #log.debug("Rename container button pressed. path = "
-                      #"{}".format(shared_cfg.session.path))
-            #return template(RENAME_CONTAINER_TEMPLATE, retry="")
-        #elif request.forms.get("removecontainer"):
-            #log.debug("Remove container button pressed. path = "
-                      #"{}".format(shared_cfg.session.path))
-            #return template(REMOVE_CONTAINER_TEMPLATE, retry="")
+            return template(NEW_CONTAINER_TEMPLATE,
+                            path=shared_cfg.session.path,
+                            status_msg=None)
     return redirect("/")
 
 
@@ -135,9 +132,6 @@ def handle_new_entry_post():
                                 data=retry_data)
 
         return redirect("/manage"+encode_path(shared_cfg.session.path))
-        #elif request.forms.get("cancel"):
-            #log.debug("New entry cancelled")
-            #return redirect("/manage"+encode_path(shared_cfg.session.path))
     return redirect("/")
 
 
@@ -154,33 +148,38 @@ def handle_update_entry_post():
 def handle_new_container_post():
     log.debug("Handling new container post")
     if shared_cfg.validate_session(request):
-        if request.forms.get("create"):
-            templ_name = NEW_CONTAINER_TEMPLATE
-            retry_reason = None
-            cont_name = request.forms.get('name').strip()
-            log.debug("New container confirmed")
-            log.debug("Name: {}".format(cont_name))
-            if not cont_name:
-                return template(templ_name, retry="no_name",
-                                data={"name": cont_name})
-            cont = pw_store.EntryContainer()
-            try:
-                shared_cfg.add_container(cont, cont_name)
-            except pw_store.ECDuplicateException:
-                log.debug("Duplicate container name {0}".format(cont_name))
-                retry_reason = "duplicate"
-            except pw_store.ECNaughtyCharacterException:
-                log.debug("Bad character in container name {0}".format(cont_name))
-                retry_reason = "bad_char"
-            except pw_store.ECException:
-                log.debug("Exception while adding container {0}".format(cont_name))
-                retry_reason = "other_error"
-            finally:
-                if retry_reason:
-                    return template(templ_name, retry=retry_reason,
-                                    data={"name": cont_name})
-            return redirect("/manage"+shared_cfg.session.path+"/"+cont_name)
-        elif request.forms.get("cancel"):
-            log.debug("New container cancelled")
-            return redirect("/manage"+shared_cfg.session.path)
+        template_name = NEW_CONTAINER_TEMPLATE
+        cont_name = request.forms.get('name').strip()
+        log.debug("New container post for name {}".format(cont_name))
+        if not cont_name:
+            return template(template_name,
+                            path=shared_cfg.session.path,
+                            status_msg="Folder names cannot be empty. "
+                                       "Please try again.")
+        cont = pw_store.EntryContainer()
+        status_msg = None
+        try:
+            shared_cfg.add_container(cont, cont_name)
+        except pw_store.ECDuplicateException:
+            log.debug("Duplicate container name {0}".format(cont_name))
+            status_msg = ("There is already a folder with the name {0} "
+                          "in the current folder. Please enter a different "
+                          "name.".format(cont_name))
+        except pw_store.ECNaughtyCharacterException:
+            log.debug("Bad character in container name {0}".format(cont_name))
+            status_msg = ("Folder names can only contain spaces and these "
+                          "characters:{0}. Please enter a name "
+                          "containing only those characters."
+                          .format(" ".join(shared_cfg.LEGAL_NAME_CHARS)))
+        except pw_store.ECException:
+            log.debug("Exception while adding container {0}".format(cont_name))
+            status_msg = "The folder could not be added. Reason: {0}".format(ex)
+        finally:
+            if status_msg:
+                return template(template_name,
+                                path=shared_cfg.session.path,
+                                status_msg=status_msg)
+        return redirect("/manage{0}+{1}".format(
+            encode_path(shared_cfg.session.path),
+            cont_name))
     return redirect("/")

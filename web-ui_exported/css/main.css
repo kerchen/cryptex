@@ -79,6 +79,14 @@ span.text-element.manage-label.manage-msg {
   font-size: 12px;
 }
 
+span.text-element#text-1 {
+  text-align: right;
+}
+
+span.text-element#text-2 {
+  text-align: right;
+}
+
 a.link-text.text-link-1 {
   float: right;
   padding: .5rem;
@@ -112,12 +120,18 @@ a.link-button.btn.ignition {
   font-family: 'Roboto Condensed', sans-serif;
 }
 
-input[type=password].password-1 {
+input[type=text].form-input {
+  font-family: 'Roboto', cursive;
+}
+
+input[type=password].form-password-input {
+  font-family: 'Roboto', cursive;
+}
+
+input[type=password]#password-store-pw {
   display: block;
   margin-right: auto;
-  margin-bottom: 1.25rem;
   margin-left: auto;
-  max-width: 50rem;
   text-align: center;
 }
 
@@ -355,12 +369,6 @@ button#button-2 {
     color: #fc6300;
   }
 
-  /* Interaction Elements */
-
-  input[type=password].password-1 {
-    text-align: center;
-  }
-
   /* Layout Elements */
 
   body > .row > [class*='col-xs-'].ignition {
@@ -436,12 +444,6 @@ button#button-2 {
 
   a.link-text.text-link-1:hover {
     color: #fc6300;
-  }
-
-  /* Interaction Elements */
-
-  input[type=password].password-1 {
-    text-align: center;
   }
 
   /* Layout Elements */
@@ -545,10 +547,6 @@ button#button-2 {
     background-color: #fc5c00;
   }
 
-  input[type=password].password-1 {
-    text-align: center;
-  }
-
   /* Layout Elements */
 
   body > .row.wecome-row {
@@ -624,22 +622,6 @@ button#button-2 {
 
   a.link-button.btn.ignition {
     background-color: #fc6300;
-  }
-
-  input[type=password].password-1 {
-    display: block;
-    margin-right: auto;
-    margin-bottom: 1.25rem;
-    margin-left: auto;
-    max-width: 50rem;
-    width: auto;
-    text-align: center;
-    font-weight: 300;
-    font-family: 'Roboto Condensed', cursive;
-
-    -webkit-align-self: auto;
-    -ms-flex-item-align: auto;
-            align-self: auto;
   }
 
   /* Layout Elements */

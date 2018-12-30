@@ -37,6 +37,7 @@ function setReturnButton(textElementID, buttonID) {
     );
 }
 
+
 function login() {
     var password = document.getElementById("password-store-pw").value;
 
@@ -44,11 +45,17 @@ function login() {
 }
 
 
+
 function createStore() {
     var pw1 = document.getElementById("password-store-pw").value;
     var pw2 = document.getElementById("password-store-pw2").value;
 
     post('/create-store', {password: pw1, password_confirm: pw2});
+}
+
+
+function manageShowPath(path) {
+    post('/manage', {action: 'showpath', path: path});
 }
 
 
@@ -64,12 +71,21 @@ function updateMasterPassword() {
 }
 
 function addFolder() {
+    // Causes transition to folder name entry interface
     post('/manage', {action: 'addcontainer'});
 }
 
+
+function createFolder() {
+    var folderName = document.getElementById("folder-name-input").value;
+
+    post('/manage-new-container', {name: folderName});
+}
+
+
 function deleteFolder(path) {
     if (confirm("Delete this folder and all of the entries it contains?\n"+path)) {
-        alert("Not implemented yet.")
+        alert("Not implemented yet.");
         //post('/remove-container',
              //{encoded_path: path});
     }
@@ -77,13 +93,14 @@ function deleteFolder(path) {
 
 function editFolder(path) {
     //if (confirm("Delete this folder and all of the entries it contains?\n"+path)) {
-        alert("Not implemented yet.")
+        alert("Not implemented yet.");
         //post('/remove-container',
              //{encoded_path: path});
     //}
 }
 
 function addEntry() {
+    // Causes transition to Entry data input interface
     post('/manage', {action: 'addentry'});
 }
 
@@ -99,7 +116,7 @@ function createEntry() {
           username: userName,
           password1: password1,
           password2: password2,
-          url: url})
+          url: url});
 }
 
 function updateEntry() {
@@ -114,6 +131,6 @@ function updateEntry() {
           username: userName,
           password1: password1,
           password2: password2,
-          url: url})
+          url: url});
 }
 

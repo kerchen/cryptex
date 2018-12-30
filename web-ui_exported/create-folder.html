@@ -7,7 +7,7 @@
   <meta name="description" content="">
   <meta name="keywords" content="">
   <meta name="generator" content="Responsive Bootstrap Builder 2.5.308">
-  <title>Cryptex - Change Password</title>
+  <title>Cryptex - Create Folder</title>
   <link rel="stylesheet" href="css/bootstrap4.min.css">
   <link rel="stylesheet" href="css/wireframe-theme.min.css">
   <script>document.createElement( "picture" );</script>
@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:b%7CRoboto+Condensed:300,400%7CRoboto:300,400">
 <script src="js/cryptex.js"></script>
+
 </head>
 
 <body>
@@ -26,36 +27,32 @@
   </div>
   <div class="row wecome-row">
     <div class="col-xs-12 welcome-column">
-      <h4 class="welcome-subtitle">cryptex settings</h4>
-      <h1>change your password</h1>
+      <h1>create a folder</h1>
     </div>
   </div>
   <div class="row">
     <div class="col-xs-12">
-      <p class="paragraph status-msg-text">{{status_msg}}</p>
+      <p class="paragraph status-msg-text">{{status_msg}}<br>
+      </p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-4 col-sm-3 col-lg-3 col-xl-3 offset-lg-1 offset-xl-2 offset-md-1">
+      <span class="text-element manage-label" id="text-2">Current folder:</span>
+    </div>
+    <div class="col-xs-8 col-sm-9 col-lg-7 col-xl-5 col-md-7">
+      <span class="text-element manage-label" id="text-3">{{path}}</span>
     </div>
   </div>
   <div class="row full-width-row">
     <div class="col-xs-12 ignition">
       <form class="form-container">
-        <p class="paragraph intro-paragraph">Enter both your current password and a new password.</p>
+        <p class="paragraph intro-paragraph">The folder name cannot be empty and it must be different from all other folders in the current folder.</p>
         <div class="subgrid">
           <div class="row">
-            <div class="col-xs-6"><label class="label entry-label">Current Password</label>
+            <div class="col-xs-6 subgrid-column-3"><label class="label entry-label">Folder Name</label>
             </div>
-            <div class="col-xs-6"><input value="" type="password" id="password-current" autofocus="autofocus" class="form-password-input">
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-xs-6"><label class="label entry-label">New Password</label>
-            </div>
-            <div class="col-xs-6"><input value="" type="password" id="password-new" class="form-password-input">
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-xs-6"><label class="label entry-label">Re-enter New Password</label>
-            </div>
-            <div class="col-xs-6"><input value="" type="password" id="password-new-reenter" class="form-password-input">
+            <div class="col-xs-6"><input value="" type="text" id="folder-name-input" required="required" title="" pattern="" autofocus="autofocus" class="form-input">
             </div>
           </div>
         </div>
@@ -63,7 +60,7 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-xs-12"><button type="submit" class="btn ignition" formaction="" onclick="updateMasterPassword()">Update</button><a class="link-button btn ignition" href="/manage">Cancel</a>
+    <div class="col-xs-12"><button type="submit" class="btn ignition" formaction="" onclick="createFolder()">Save</button><button type="submit" class="btn ignition" formaction="" onclick="manageShowPath(&quot;{{path}}&quot;)">Cancel</button>
     </div>
   </div>
   <div class="row rocket">
