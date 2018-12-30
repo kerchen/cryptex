@@ -44,27 +44,6 @@ function login() {
 }
 
 
-function lock() {
-    post('/lock', {});
-}
-
-
-function changeMasterPassword() {
-    post('/master-pass', {});
-}
-
-
-function manageStore() {
-    post('/manage', {});
-}
-
-
-function activate() {
-    post('/activate', {});
-}
-
-
-
 function createStore() {
     var pw1 = document.getElementById("password-store-pw").value;
     var pw2 = document.getElementById("password-store-pw2").value;
@@ -85,8 +64,7 @@ function updateMasterPassword() {
 }
 
 function addFolder() {
-    post('/manage',
-         {action: 'addcontainer'});
+    post('/manage', {action: 'addcontainer'});
 }
 
 function deleteFolder(path) {
@@ -106,8 +84,7 @@ function editFolder(path) {
 }
 
 function addEntry() {
-    post('/manage',
-         {action: 'addentry'});
+    post('/manage', {action: 'addentry'});
 }
 
 function createEntry() {
