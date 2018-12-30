@@ -50,9 +50,18 @@ p.paragraph.error-msg-prompt {
   line-height: 2rem;
 }
 
+p.paragraph.status-msg-text {
+  color: #f00;
+  text-align: center;
+  font-size: .93rem;
+  line-height: 2rem;
+}
+
 span.text-element.manage-label {
-  margin-top: 16px;
+  padding-top: .25rem;
+  padding-bottom: .25rem;
   color: #fc6300;
+  vertical-align: middle;
   text-align: center;
   text-transform: uppercase;
   font-size: 14px;
@@ -69,12 +78,32 @@ span.text-element.status-msg {
   font-family: 'Roboto', cursive;
 }
 
+span.text-element#text-1-copy-3 {
+  margin-top: 1px;
+}
+
+span.text-element#text-1-copy-2 {
+  text-align: right;
+}
+
+span.text-element.manage-label.manage-msg {
+  text-align: left;
+  text-transform: none;
+  font-size: 12px;
+}
+
 a.link-text.text-link-1 {
   float: right;
   padding: .5rem;
   color: #fff;
   text-transform: uppercase;
   font-family: 'Roboto Condensed', cursive;
+}
+
+a.link-text.path-component-link {
+  color: #0062a4;
+  font-size: 14px;
+  font-family: 'Roboto', cursive;
 }
 
 a.link-text.text-link-1:hover {
@@ -124,7 +153,8 @@ body > .row.wecome-row {
 }
 
 body > .row.full-width-row {
-  margin-top: 60px;
+  margin-top: 25px;
+  margin-bottom: 25px;
   max-width: none;
 }
 
@@ -169,16 +199,44 @@ body > .row > [class*='col-xs-'].welcome-column {
           justify-content: center;
 }
 
+body > .row.row-1 {
+  min-height: 20px;
+}
+
+body > .row#row-1 {
+  background-image: url('../images/Drawers.png');
+}
+
+body > .row.row-2 {
+  margin-bottom: 15px;
+}
+
+body > .row > [class*='col-xs-'].column-1 {
+  min-height: 30px;
+  background-color: #dfeef0;
+}
+
 body > .row > [class*='col-xs-'].column-2 {
-  min-height: auto;
+  min-height: 30px;
+  background-color: #dfeef0;
+}
+
+body > .row > [class*='col-xs-'].column-3 {
+  min-height: 30px;
+  background-color: #dfeef0;
 }
 
 body > .row > [class*='col-xs-'].column-4 {
+  min-height: 30px;
   background-color: #dfeef0;
 }
 
-body > .row > [class*='col-xs-'].column-7 {
-  background-color: #dfeef0;
+body > .row.row-3 {
+  min-height: 30px;
+}
+
+body > .row > [class*='col-xs-'].column-5 {
+  padding-right: 0;
 }
 
 .subgrid > .row > [class*='col-xs-'].subgrid-column-1 {
@@ -235,18 +293,29 @@ button.btn.ignition {
 }
 
 .row > [class*='col-xs-'] .html-element.html-element-2 {
-  margin-top: 12px;
+  margin-top: 0;
 }
 
-button.btn.manage-store-btn {
-  float: left;
-  margin: 1% 3px;
-  padding: .11rem .1rem .1rem;
+button.btn.icon-btn {
+  padding: .6rem .35rem .5rem 1.25rem;
   background-color: #fc6300;
-  color: #fff;
-  text-transform: uppercase;
-  font-size: 12px;
-  font-family: 'Roboto Condensed', cursive;
+  background-image: url('../images/BlankIcon.png');
+  background-attachment: scroll;
+  background-position: center center;
+  background-clip: border-box;
+  background-origin: padding-box;
+  background-size: auto auto;
+  background-repeat: no-repeat;
+
+  background-blend-mode: normal;
+}
+
+button#button-1 {
+  background-image: url('../images/AddIcon.png');
+}
+
+button#button-2 {
+  background-image: url('../images/AddIcon.png');
 }
 
 @media screen and (min-width: 36rem) {
@@ -268,12 +337,22 @@ button.btn.manage-store-btn {
     line-height: 2rem;
   }
 
+  p.paragraph.status-msg-text {
+    color: #f00;
+    text-align: center;
+    font-size: .93rem;
+    line-height: 2rem;
+  }
+
   span.text-element.manage-label {
-    margin-top: 17px;
     color: #fc6300;
     text-transform: uppercase;
     font-size: 14px;
     font-family: 'Roboto', cursive;
+  }
+
+  span.text-element.manage-label.manage-msg {
+    font-size: 13px;
   }
 
   a.link-text.text-link-1 {
@@ -304,10 +383,6 @@ button.btn.manage-store-btn {
 
   /* Layout Elements */
 
-  body > .row > [class*='col-xs-'].column-2 {
-    min-height: auto;
-  }
-
   body > .row > [class*='col-xs-'].ignition {
     margin-bottom: 0;
     min-height: auto;
@@ -337,21 +412,6 @@ button.btn.manage-store-btn {
     font-weight: 300;
     font-family: 'Roboto Condensed', cursive;
   }
-
-  .row > [class*='col-xs-'] .html-element.html-element-2 {
-    margin-top: 12px;
-  }
-
-  button.btn.manage-store-btn {
-    float: left;
-    margin: 1% 3px;
-    padding: .11rem .2rem .1rem;
-    background-color: #fc6300;
-    color: #fefefe;
-    text-transform: uppercase;
-    font-size: 12px;
-    font-family: 'Roboto Condensed', cursive;
-  }
 }
 
 @media screen and (min-width: 48rem) {
@@ -372,12 +432,20 @@ button.btn.manage-store-btn {
     text-align: center;
   }
 
+  p.paragraph.status-msg-text {
+    color: #f00;
+    text-align: center;
+  }
+
   span.text-element.manage-label {
-    margin-top: 15px;
     color: #fc6300;
     text-transform: uppercase;
     font-size: 16px;
     font-family: 'Roboto', cursive;
+  }
+
+  span.text-element.manage-label.manage-msg {
+    font-size: 14px;
   }
 
   a.link-text.text-link-1 {
@@ -385,6 +453,10 @@ button.btn.manage-store-btn {
     padding: .5rem;
     color: #fff;
     font-family: 'Roboto Condensed', cursive;
+  }
+
+  a.link-text.path-component-link {
+    font-size: 16px;
   }
 
   a.link-text.text-link-1:hover {
@@ -407,10 +479,6 @@ button.btn.manage-store-btn {
   body > .row.rocket {
     padding-top: 18.75rem;
     padding-bottom: 18.75rem;
-  }
-
-  body > .row > [class*='col-xs-'].column-2 {
-    min-height: auto;
   }
 
   body > .row > [class*='col-xs-'].ignition {
@@ -445,21 +513,6 @@ button.btn.manage-store-btn {
     font-weight: 300;
     font-family: 'Roboto Condensed', cursive;
   }
-
-  .row > [class*='col-xs-'] .html-element.html-element-2 {
-    margin-top: 12px;
-  }
-
-  button.btn.manage-store-btn {
-    float: left;
-    margin: 1% 3px;
-    padding: .11rem .1rem .1rem;
-    background-color: #fc6300;
-    color: #fff;
-    text-transform: uppercase;
-    font-size: 12px;
-    font-family: 'Roboto Condensed', cursive;
-  }
 }
 
 @media screen and (min-width: 62rem) {
@@ -480,17 +533,19 @@ button.btn.manage-store-btn {
     text-align: center;
   }
 
+  p.paragraph.status-msg-text {
+    color: #f00;
+    text-align: center;
+  }
+
   span.text-element.manage-label {
-    margin-top: 15px;
     color: #fc6300;
     font-size: 17px;
     font-family: 'Roboto', cursive;
   }
 
-  span.text-element.status-msg {
-    color: #fc6300;
-    text-align: center;
-    font-family: 'Roboto', cursive;
+  span.text-element.manage-label.manage-msg {
+    font-size: 15px;
   }
 
   a.link-text.text-link-1 {
@@ -500,6 +555,10 @@ button.btn.manage-store-btn {
     text-align: center;
     text-transform: uppercase;
     font-family: 'Roboto Condensed', cursive;
+  }
+
+  a.link-text.path-component-link {
+    font-size: 17px;
   }
 
   a.link-text.text-link-1:hover {
@@ -540,22 +599,9 @@ button.btn.manage-store-btn {
     padding-bottom: 25rem;
   }
 
-  body > .row > [class*='col-xs-'].column-2 {
-    min-height: auto;
-  }
-
   body > .row > [class*='col-xs-'].ignition {
     margin-bottom: 0;
     min-height: auto;
-  }
-
-  button.btn {
-    position: relative;
-    background-color: transparent;
-
-    -webkit-align-self: center;
-    -ms-flex-item-align: center;
-            align-self: center;
   }
 
   button.btn.ignition {
@@ -578,20 +624,6 @@ button.btn.manage-store-btn {
   .row > [class*='col-xs-'] .html-element.html-element-1 {
     max-height: 1%;
   }
-
-  .row > [class*='col-xs-'] .html-element.html-element-2 {
-    margin-top: 12px;
-  }
-
-  button.btn.manage-store-btn {
-    float: left;
-    margin: 1% 3px;
-    padding: .11rem .2rem .1rem;
-    background-color: #fc6300;
-    color: #fff;
-    text-transform: uppercase;
-    font-size: 12px;
-  }
 }
 
 @media screen and (min-width: 75rem) {
@@ -601,11 +633,14 @@ button.btn.manage-store-btn {
     text-align: center;
   }
 
+  p.paragraph.status-msg-text {
+    text-align: center;
+  }
+
   span.text-element.manage-label {
     position: static;
     display: block;
     float: none;
-    margin-top: 15px;
     color: #fc6300;
     font-size: 18px;
     font-family: 'Roboto', cursive;
@@ -615,12 +650,20 @@ button.btn.manage-store-btn {
     text-align: left;
   }
 
+  span.text-element.manage-label.manage-msg {
+    font-size: 16px;
+  }
+
   a.link-text.text-link-1 {
     float: right;
     padding: .5rem;
     color: #fff;
     text-transform: uppercase;
     font-family: 'Roboto Condensed', cursive;
+  }
+
+  a.link-text.path-component-link {
+    font-size: 18px;
   }
 
   /* Interaction Elements */
@@ -662,12 +705,6 @@ button.btn.manage-store-btn {
     background-image: url('../images/lock.png');
   }
 
-  body > .row > [class*='col-xs-'].column-2 {
-    padding-right: 10px;
-    padding-left: 10px;
-    min-height: auto;
-  }
-
   body > .row > [class*='col-xs-'].ignition {
     margin-bottom: 0;
     min-height: auto;
@@ -675,21 +712,6 @@ button.btn.manage-store-btn {
 
   body > .row.full-width-row {
     margin-top: 20px;
-  }
-
-  body > .row > [class*='col-xs-'].column-5 {
-    background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, .5) 0%, rgba(29, 30, 33, .5) 100%);
-    background-image:    -moz-linear-gradient(top, rgba(255, 255, 255, .5) 0%, rgba(29, 30, 33, .5) 100%);
-    background-image:      -o-linear-gradient(top, rgba(255, 255, 255, .5) 0%, rgba(29, 30, 33, .5) 100%);
-    background-image:         linear-gradient(180deg, rgba(255, 255, 255, .5) 0%, rgba(29, 30, 33, .5) 100%);
-    background-attachment: scroll;
-    background-position: left top;
-    background-clip: border-box;
-    background-origin: padding-box;
-    background-size: auto auto;
-    background-repeat: no-repeat;
-
-    background-blend-mode: normal;
   }
 
   a.responsive-picture.logo {
@@ -708,21 +730,5 @@ button.btn.manage-store-btn {
   button.btn.ignition {
     background-color: #fc6300;
     text-transform: uppercase;
-  }
-
-  .row > [class*='col-xs-'] .html-element.html-element-2 {
-    margin-top: 15px;
-    min-height: 0;
-    max-height: 35px;
-  }
-
-  button.btn.manage-store-btn {
-    float: left;
-    padding: .11rem .2rem .1rem;
-    background-color: #fc6300;
-    color: #fff;
-    text-transform: uppercase;
-    font-size: 12px;
-    font-family: 'Roboto Condensed', cursive;
   }
 }

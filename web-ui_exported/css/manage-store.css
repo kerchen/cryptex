@@ -1,0 +1,12 @@
+button.btn.icon-btn.move-item-btn {
+  background-image: url('../images/MoveIcon.png');
+}
+
+button.btn.icon-btn.edit-item-btn {
+  background-image: url('../images/EditIcon.png');
+}
+
+button.btn.icon-btn.delete-item-btn {
+  background-image: url('../images/TrashIcon.png');
+}
+
