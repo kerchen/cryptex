@@ -2,6 +2,7 @@ from bottle import (get, post, redirect, request, response, template)
 import logging
 import os
 
+from path_util import encode_path
 import shared_cfg
 
 
@@ -70,9 +71,7 @@ def change_master_password_post():
                 status_msg="The new passwords do not match. "
                            "Please try again.")
         shared_cfg.change_master_password(new_password)
-        return template("manage-store.html",
-                        path="/",
-                        status_msg="Master password successfully changed.")
+        return redirect("/manage"+encode_path(shared_cfg.session.path))
     return redirect("/")
 
 
