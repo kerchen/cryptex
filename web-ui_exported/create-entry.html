@@ -37,10 +37,10 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-xs-4 col-sm-3 col-lg-3 col-xl-3 offset-lg-1 offset-xl-2">
+    <div class="col-xs-4 col-sm-3 col-lg-3 col-xl-3 offset-lg-1 offset-xl-2 column-8">
       <span class="text-element manage-label" id="text-1">Current folder:</span>
     </div>
-    <div class="col-xs-8 col-sm-9 col-lg-7 col-xl-5">
+    <div class="col-xs-8 col-sm-9 col-lg-7 col-xl-5 column-9">
       <span class="text-element manage-label" id="text-3">{{path}}</span>
     </div>
   </div>
@@ -86,20 +86,8 @@
   <div class="row">
     <div class="col-xs-12">
       <aside class="html-element"><!--
-% entryname = ""
-% username = ""
-% url = ""
-% if data:
-%   entryname = data["entryname"]
-%   username = data["username"]
-%   url = data["url"]
-% end
--->
-  <script>
-  document.getElementById("entry-name-input").value = "{{entryname}}";
-  document.getElementById("user-name-input").value = "{{username}}";
-  document.getElementById("url-input").value = "{{url}}";
-</script></aside>
+% include('create_entry.tpl')
+--></aside>
     </div>
   </div>
   <div class="row">

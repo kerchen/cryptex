@@ -38,6 +38,16 @@ function setReturnButton(textElementID, buttonID) {
 }
 
 
+// Sets the value of a text input control, converting from HTML.
+function setHTMLInputValue(id, value) {
+  if (value) {
+      document.getElementById(id).value = jQuery.parseHTML(value)[0].textContent;
+  } else {
+      document.getElementById(id).value = "";
+  }
+}
+
+
 function login() {
     var password = document.getElementById("password-store-pw").value;
 
@@ -105,6 +115,11 @@ function addEntry() {
     post('/manage', {action: 'addentry'});
 }
 
+function editEntry(itemPath) {
+    // Causes transition to Entry data edit interface
+    post('/manage', {action: 'editentry', item_path: itemPath});
+}
+
 function createEntry() {
     var entryName = document.getElementById("entry-name-input").value;
     var userName = document.getElementById("user-name-input").value;
@@ -121,6 +136,7 @@ function createEntry() {
 }
 
 function updateEntry() {
+    var currentEntryName = document.getElementById("current-entry-name-text").getAttribute("data-original-entry-name");
     var entryName = document.getElementById("entry-name-input").value;
     var userName = document.getElementById("user-name-input").value;
     var password1 = document.getElementById("password-input").value;
@@ -128,7 +144,8 @@ function updateEntry() {
     var url = document.getElementById("url-input").value;
 
     post('/manage-update-entry',
-         {entryname: entryName,
+         {current_entry_name: currentEntryName,
+          entryname: entryName,
           username: userName,
           password1: password1,
           password2: password2,

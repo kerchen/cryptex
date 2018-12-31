@@ -11,6 +11,7 @@ log = logging.getLogger(__name__)
 MANAGE_PASSWORDS_TEMPLATE = "manage-store.html"
 NEW_CONTAINER_TEMPLATE = "create-folder.html"
 CREATE_ENTRY_TEMPLATE = "create-entry.html"
+EDIT_ENTRY_TEMPLATE = "edit-entry.html"
 
 
 @route('/manage<path:re:/.*>')
@@ -56,6 +57,24 @@ def handle_manage_post():
                             path=shared_cfg.session.path,
                             status_msg=None,
                             data=None)
+        elif request.forms.get('action') == 'editentry':
+            log.debug("Edit entry button pressed")
+            entry_path = decode_path(request.forms.get('item_path'))
+            entry_name, entry = shared_cfg.get_entry_by_path(entry_path)
+            data = dict()
+            data['current_entry_name'] = entry_name
+            data['entryname'] = entry_name
+            data['username'] = entry.get_username()
+            data['password1'] = entry.get_password()
+            data['password2'] = entry.get_password()
+            data['url'] = entry.get_url()
+            for k, v in data.iteritems():
+                log.debug("'{0}': '{1}'".format(k, v))
+
+            return template(EDIT_ENTRY_TEMPLATE,
+                            path=shared_cfg.session.path,
+                            status_msg=None,
+                            data=data)
         elif request.forms.get('action') == 'showsessionpath':
             return manage_path(encode_path(shared_cfg.session.path))
         elif request.forms.get('action') == 'addcontainer':
@@ -67,19 +86,14 @@ def handle_manage_post():
     return redirect("/")
 
 
-def process_entry_input(template_name):
+def process_new_entry_input(template_name):
+    log.debug("Checking new Entry input data.")
     ent_name = request.forms.get('entryname').strip()
     username = request.forms.get('username').strip()
     password1 = request.forms.get('password1')
     password2 = request.forms.get('password2')
     url = request.forms.get('url').strip()
     retry_data = {"entryname": ent_name, "username": username, "url": url}
-    log.debug("New entry confirmed")
-    log.debug("Entry Name: {}".format(ent_name))
-    log.debug("Username: {}".format(username))
-    log.debug("Password 1: {}".format(password1))
-    log.debug("Password 2: {}".format(password2))
-    log.debug("URL: {}".format(url))
     if not ent_name:
         return None, template(template_name,
                         path=shared_cfg.session.path,
@@ -101,7 +115,7 @@ def handle_new_entry_post():
     status_msg = None
     if shared_cfg.validate_session(request):
         template_name = CREATE_ENTRY_TEMPLATE
-        entry, retry_entry = process_entry_input(template_name)
+        entry, retry_entry = process_new_entry_input(template_name)
         if not entry:
             return retry_entry
 
@@ -139,7 +153,67 @@ def handle_update_entry_post():
     log.debug("Handling update entry post")
     status_msg = None
     if shared_cfg.validate_session(request):
-        print("nah")
+        template_name = EDIT_ENTRY_TEMPLATE
+        current_entry_name = request.forms.get('current_entry_name')
+        entry_name = request.forms.get('entryname').strip()
+        username = request.forms.get('username').strip()
+        password1 = request.forms.get('password1')
+        password2 = request.forms.get('password2')
+        url = request.forms.get('url').strip()
+        retry_data = {
+            "current_entry_name": current_entry_name,
+            "entryname": entry_name,
+            "username": username,
+            "password1": password1,
+            "password2": password2,
+            "url": url
+        }
+
+        if not entry_name:
+            return template(template_name,
+                            path=shared_cfg.session.path,
+                            status_msg=("Entry name cannot be empty. Please "
+                                        "try again."),
+                            data=retry_data)
+
+        if password1 != password2:
+            retry_data["password1"] = ""
+            retry_data["password2"] = ""
+            return template(template_name,
+                            path=shared_cfg.session.path,
+                            status_msg=("The entered passwords do not match. "
+                                        "Please try again"),
+                            data=retry_data)
+
+        updated_entry = pw_store.Entry(username=username,
+                                       password=password1,
+                                       url=url)
+        entry_path = shared_cfg.session.path + '/' + current_entry_name
+        try:
+            shared_cfg.update_entry(entry_path, entry_name, updated_entry)
+        except pw_store.ECDuplicateException:
+            log.debug("Duplicate entry name {0}".format(entry_name))
+            status_msg = ("'{0}' is already the name of another "
+                          "entry in the current folder. Please try again."
+                          .format(entry_name))
+        except pw_store.ECNaughtyCharacterException:
+            log.debug("Bad character in entry name {0}".format(entry_name))
+            status_msg = ("Entry names can only contain spaces and these "
+                          "characters: "
+                          "{0}. Please try again."
+                          .format(" ".join(shared_cfg.LEGAL_NAME_CHARS)))
+        except pw_store.ECException as ex:
+            log.debug("Unexpected problem while updating entry "
+                      "{0}".format(current_entry_name))
+            status_msg = "The entry could not be updated. Reason: {0}".format(ex)
+        finally:
+            if status_msg:
+                return template(template_name,
+                                path=shared_cfg.session.path,
+                                status_msg=status_msg,
+                                data=retry_data)
+
+        return redirect("/manage"+encode_path(shared_cfg.session.path))
     return redirect("/")
 
 

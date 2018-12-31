@@ -257,6 +257,7 @@ def get_container_count_by_path(path):
 
     return 0
 
+
 def get_containers_by_path(path, reverse=False):
     global master_store
 
