@@ -207,6 +207,23 @@ def add_container(cont, cont_name):
         config_lock.release()
 
 
+def remove_container(container_path):
+    global config_lock, master_store, pw_store_filename, master_password
+
+    config_lock.acquire()
+    try:
+        if master_store and master_password:
+            try:
+                parent_container, container_name = os.path.split(container_path)
+                parent_container = master_store.get_container_by_path(parent_container)
+                parent_container.remove_container(container_name)
+                master_store.save(master_password, pw_store_filename)
+            finally:
+                pass
+    finally:
+        config_lock.release()
+
+
 def change_session_path(path):
     global config_lock, master_store, session
     success = False

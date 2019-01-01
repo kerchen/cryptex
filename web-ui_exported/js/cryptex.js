@@ -66,7 +66,7 @@ function createStore() {
 
 function manageShowSessionPath() {
     // Returns to the management page, showing the current session path.
-    post('/manage', {action: 'showsessionpath'});
+    post('/manage', {action: 'show-session-path'});
 }
 
 
@@ -81,26 +81,25 @@ function updateMasterPassword() {
           current_password: currentPass});
 }
 
-function addFolder() {
-    // Causes transition to folder name entry interface
-    post('/manage', {action: 'addcontainer'});
+
+function createFolder() {
+    // Causes a transition to the create-folder page.
+    post('/manage', {action: 'add-folder'});
 }
 
 
-function createFolder() {
+function createFolderCommit() {
     var folderName = document.getElementById("folder-name-input").value;
 
     post('/manage-new-container', {name: folderName});
 }
 
 
-function deleteFolder(path) {
-    if (confirm("Delete this folder and all of the entries it contains?\n"+path)) {
-        alert("Not implemented yet.");
-        //post('/remove-container',
-             //{encoded_path: path});
-    }
+function deleteFolder(encodedPath) {
+    // Causes a transition to the delete-folder page.
+    post('/manage', {action: 'delete-folder', encoded_path: encodedPath});
 }
+
 
 function editFolder(path) {
     //if (confirm("Delete this folder and all of the entries it contains?\n"+path)) {
@@ -109,6 +108,13 @@ function editFolder(path) {
              //{encoded_path: path});
     //}
 }
+
+
+function deleteFolderCommit(folderPath) {
+    // Causes a folder to be deleted using data from the delete-folder page.
+    post('/manage-delete-folder', {folder_path: folderPath});
+}
+
 
 function createEntry() {
     // Causes a transition to the create-entry page.
@@ -122,7 +128,7 @@ function editEntry(encodedPath) {
 
 function deleteEntry(encodedPath) {
     // Causes a transition to the delete-entry page.
-    post('/manage', {action: 'deleteentry', encoded_path: encodedPath});
+    post('/manage', {action: 'delete-entry', encoded_path: encodedPath});
 }
 
 function createEntryCommit() {
@@ -162,5 +168,8 @@ function editEntryCommit() {
 }
 
 function deleteEntryCommit(entryPath) {
+    // Causes an Entry to be deleted using data from the delete-entry page.
     post('/manage-delete-entry', {entry_path: entryPath});
 }
+
+

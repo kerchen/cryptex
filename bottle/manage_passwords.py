@@ -10,6 +10,7 @@ log = logging.getLogger(__name__)
 
 MANAGE_PASSWORDS_TEMPLATE = "manage-store.html"
 NEW_CONTAINER_TEMPLATE = "create-folder.html"
+DELETE_FOLDER_TEMPLATE = "delete-folder.html"
 CREATE_ENTRY_TEMPLATE = "create-entry.html"
 EDIT_ENTRY_TEMPLATE = "edit-entry.html"
 DELETE_ENTRY_TEMPLATE = "delete-entry.html"
@@ -76,14 +77,12 @@ def handle_manage_post():
                             path=shared_cfg.session.path,
                             status_msg=None,
                             data=data)
-        elif request.forms.get('action') == 'deleteentry':
+        elif request.forms.get('action') == 'delete-entry':
             log.debug("Delete entry button pressed")
             return template(DELETE_ENTRY_TEMPLATE,
                             path=decode_path(
-                                request.forms.get('encoded_path')),
-                            status_msg=None,
-                            data=None)
-        elif request.forms.get('action') == 'showsessionpath':
+                                request.forms.get('encoded_path')))
+        elif request.forms.get('action') == 'show-session-path':
             return manage_path(encode_path(shared_cfg.session.path))
         elif request.forms.get('action') == 'addcontainer':
             log.debug("Add container button pressed. path = "
@@ -91,6 +90,11 @@ def handle_manage_post():
             return template(NEW_CONTAINER_TEMPLATE,
                             path=shared_cfg.session.path,
                             status_msg=None)
+        elif request.forms.get('action') == 'delete-folder':
+            log.debug("Delete folder button pressed")
+            return template(DELETE_FOLDER_TEMPLATE,
+                            path=decode_path(
+                                request.forms.get('encoded_path')))
     return redirect("/")
 
 
@@ -278,4 +282,19 @@ def handle_new_container_post():
             encode_path(shared_cfg.session.path),
             cont_name))
     return redirect("/")
+
+
+@post('/manage-delete-folder')
+def handle_delete_folder_post():
+    log.debug("Handling delete folder post")
+    if shared_cfg.validate_session(request):
+        folder_path = request.forms.get('folder_path')
+        try:
+            shared_cfg.remove_container(folder_path)
+        except pw_store.ECException as ex:
+            log.debug("Unexpected problem while deleting folder "
+                      "{0}:{1}".format(folder_path, ex))
+        return redirect("/manage"+encode_path(shared_cfg.session.path))
+    return redirect("/")
+
 
