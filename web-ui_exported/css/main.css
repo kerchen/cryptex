@@ -51,6 +51,7 @@ p.paragraph.status-msg-text {
 }
 
 span.text-element.manage-label {
+  float: left;
   padding-top: .25rem;
   padding-bottom: .25rem;
   color: #fc6300;
@@ -62,12 +63,17 @@ span.text-element.manage-label {
 }
 
 span.text-element#text-3 {
+  padding-top: 4px;
   text-align: left;
+  font-size: 14px;
 }
 
 span.text-element#text-1-copy-3 {
   margin-top: 1px;
-  text-align: left;
+  margin-right: 12px;
+  padding-right: 6px;
+  padding-left: 0;
+  text-align: right;
 }
 
 span.text-element#text-1-copy-2 {
@@ -85,11 +91,13 @@ span.text-element#text-1 {
 }
 
 span.text-element#text-2 {
+  float: right;
   text-align: right;
 }
 
 span.text-element#text-1-copy-1 {
-  text-align: left;
+  padding-right: 12px;
+  text-align: right;
 }
 
 span.text-element#text-4 {
@@ -236,17 +244,7 @@ body > .row.row-2 {
   margin-bottom: 15px;
 }
 
-body > .row > [class*='col-xs-'].column-1 {
-  min-height: 30px;
-  background-color: #dfeef0;
-}
-
 body > .row > [class*='col-xs-'].column-2 {
-  min-height: 30px;
-  background-color: #dfeef0;
-}
-
-body > .row > [class*='col-xs-'].column-3 {
   min-height: 30px;
   background-color: #dfeef0;
 }
@@ -279,6 +277,10 @@ body > .row > [class*='col-xs-'].column-8 {
 
 body > .row > [class*='col-xs-'].column-9 {
   padding-left: 4px;
+}
+
+body > .row.row-4 {
+  margin-top: 7px;
 }
 
 .subgrid > .row > [class*='col-xs-'].subgrid-column-1 {
@@ -339,6 +341,7 @@ button.btn.ignition {
 }
 
 button.btn.icon-btn {
+  float: right;
   padding: .6rem .35rem .5rem 1.25rem;
   background-color: #fc6300;
   background-image: url('../images/BlankIcon.png');
@@ -353,10 +356,12 @@ button.btn.icon-btn {
 }
 
 button#button-1 {
+  margin-top: 4px;
   background-image: url('../images/AddIcon.png');
 }
 
 button#button-2 {
+  margin-top: 4px;
   background-image: url('../images/AddIcon.png');
 }
 
@@ -464,6 +469,10 @@ button#button-2 {
     font-size: 14px;
   }
 
+  span.text-element#text-3 {
+    font-size: 16px;
+  }
+
   a.link-text.text-link-1 {
     float: right;
     padding: .5rem;
@@ -553,6 +562,10 @@ button#button-2 {
     font-size: 15px;
   }
 
+  span.text-element#text-3 {
+    font-size: 17px;
+  }
+
   a.link-text.text-link-1 {
     float: right;
     padding: .5rem;
@@ -625,7 +638,6 @@ button#button-2 {
   span.text-element.manage-label {
     position: static;
     display: block;
-    float: none;
     color: #fc6300;
     font-size: 18px;
     font-family: 'Roboto', cursive;
@@ -633,6 +645,7 @@ button#button-2 {
 
   span.text-element#text-3 {
     text-align: left;
+    font-size: 18px;
   }
 
   span.text-element.manage-label.manage-msg {

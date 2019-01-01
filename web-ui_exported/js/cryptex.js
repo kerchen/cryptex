@@ -110,24 +110,31 @@ function editFolder(path) {
     //}
 }
 
-function addEntry() {
-    // Causes transition to Entry data input interface
-    post('/manage', {action: 'addentry'});
-}
-
-function editEntry(itemPath) {
-    // Causes transition to Entry data edit interface
-    post('/manage', {action: 'editentry', item_path: itemPath});
-}
-
 function createEntry() {
+    // Causes a transition to the create-entry page.
+    post('/manage', {action: 'create-entry'});
+}
+
+function editEntry(encodedPath) {
+    // Causes a transition to the edit-entry page.
+    post('/manage', {action: 'edit-entry', encoded_path: encodedPath});
+}
+
+function deleteEntry(encodedPath) {
+    // Causes a transition to the delete-entry page.
+    post('/manage', {action: 'deleteentry', encoded_path: encodedPath});
+}
+
+function createEntryCommit() {
+    // Causes an Entry to be created using data from fields in the
+    // create-entry page.
     var entryName = document.getElementById("entry-name-input").value;
     var userName = document.getElementById("user-name-input").value;
     var password1 = document.getElementById("password-input").value;
     var password2 = document.getElementById("password-confirm-input").value;
     var url = document.getElementById("url-input").value;
 
-    post('/manage-new-entry',
+    post('/manage-create-entry',
          {entryname: entryName,
           username: userName,
           password1: password1,
@@ -135,7 +142,9 @@ function createEntry() {
           url: url});
 }
 
-function updateEntry() {
+function editEntryCommit() {
+    // Causes an Entry to be updated using data from fields in the
+    // edit-entry page.
     var currentEntryName = document.getElementById("current-entry-name-text").getAttribute("data-original-entry-name");
     var entryName = document.getElementById("entry-name-input").value;
     var userName = document.getElementById("user-name-input").value;
@@ -143,7 +152,7 @@ function updateEntry() {
     var password2 = document.getElementById("password-confirm-input").value;
     var url = document.getElementById("url-input").value;
 
-    post('/manage-update-entry',
+    post('/manage-edit-entry',
          {current_entry_name: currentEntryName,
           entryname: entryName,
           username: userName,
@@ -152,3 +161,6 @@ function updateEntry() {
           url: url});
 }
 
+function deleteEntryCommit(entryPath) {
+    post('/manage-delete-entry', {entry_path: entryPath});
+}

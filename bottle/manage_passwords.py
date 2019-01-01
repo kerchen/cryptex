@@ -12,6 +12,7 @@ MANAGE_PASSWORDS_TEMPLATE = "manage-store.html"
 NEW_CONTAINER_TEMPLATE = "create-folder.html"
 CREATE_ENTRY_TEMPLATE = "create-entry.html"
 EDIT_ENTRY_TEMPLATE = "edit-entry.html"
+DELETE_ENTRY_TEMPLATE = "delete-entry.html"
 
 
 @route('/manage<path:re:/.*>')
@@ -51,15 +52,15 @@ def manage_path(path):
 def handle_manage_post():
     log.debug("Handling management post")
     if shared_cfg.validate_session(request):
-        if request.forms.get('action') == 'addentry':
-            log.debug("Add entry button pressed")
+        if request.forms.get('action') == 'create-entry':
+            log.debug("Create entry button pressed")
             return template(CREATE_ENTRY_TEMPLATE,
                             path=shared_cfg.session.path,
                             status_msg=None,
                             data=None)
-        elif request.forms.get('action') == 'editentry':
+        elif request.forms.get('action') == 'edit-entry':
             log.debug("Edit entry button pressed")
-            entry_path = decode_path(request.forms.get('item_path'))
+            entry_path = decode_path(request.forms.get('encoded_path'))
             entry_name, entry = shared_cfg.get_entry_by_path(entry_path)
             data = dict()
             data['current_entry_name'] = entry_name
@@ -75,6 +76,13 @@ def handle_manage_post():
                             path=shared_cfg.session.path,
                             status_msg=None,
                             data=data)
+        elif request.forms.get('action') == 'deleteentry':
+            log.debug("Delete entry button pressed")
+            return template(DELETE_ENTRY_TEMPLATE,
+                            path=decode_path(
+                                request.forms.get('encoded_path')),
+                            status_msg=None,
+                            data=None)
         elif request.forms.get('action') == 'showsessionpath':
             return manage_path(encode_path(shared_cfg.session.path))
         elif request.forms.get('action') == 'addcontainer':
@@ -109,9 +117,9 @@ def process_new_entry_input(template_name):
     return (ent, ent_name), None
 
 
-@post('/manage-new-entry')
-def handle_new_entry_post():
-    log.debug("Handling new entry post")
+@post('/manage-create-entry')
+def handle_create_entry_post():
+    log.debug("Handling create entry post")
     status_msg = None
     if shared_cfg.validate_session(request):
         template_name = CREATE_ENTRY_TEMPLATE
@@ -148,9 +156,9 @@ def handle_new_entry_post():
     return redirect("/")
 
 
-@post('/manage-update-entry')
-def handle_update_entry_post():
-    log.debug("Handling update entry post")
+@post('/manage-edit-entry')
+def handle_edit_entry_post():
+    log.debug("Handling edit entry post")
     status_msg = None
     if shared_cfg.validate_session(request):
         template_name = EDIT_ENTRY_TEMPLATE
@@ -204,7 +212,7 @@ def handle_update_entry_post():
                           .format(" ".join(shared_cfg.LEGAL_NAME_CHARS)))
         except pw_store.ECException as ex:
             log.debug("Unexpected problem while updating entry "
-                      "{0}".format(current_entry_name))
+                      "{0}:{1}".format(current_entry_name, ex))
             status_msg = "The entry could not be updated. Reason: {0}".format(ex)
         finally:
             if status_msg:
@@ -213,6 +221,20 @@ def handle_update_entry_post():
                                 status_msg=status_msg,
                                 data=retry_data)
 
+        return redirect("/manage"+encode_path(shared_cfg.session.path))
+    return redirect("/")
+
+
+@post('/manage-delete-entry')
+def handle_delete_entry_post():
+    log.debug("Handling delete entry post")
+    if shared_cfg.validate_session(request):
+        entry_path = request.forms.get('entry_path')
+        try:
+            shared_cfg.remove_entry(entry_path)
+        except pw_store.ECException as ex:
+            log.debug("Unexpected problem while deleting entry "
+                      "{0}:{1}".format(entry_path, ex))
         return redirect("/manage"+encode_path(shared_cfg.session.path))
     return redirect("/")
 
@@ -256,3 +278,4 @@ def handle_new_container_post():
             encode_path(shared_cfg.session.path),
             cont_name))
     return redirect("/")
+
