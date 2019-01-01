@@ -207,6 +207,20 @@ def add_container(cont, cont_name):
         config_lock.release()
 
 
+def rename_container(container_path, updated_name):
+    global config_lock, master_store, pw_store_filename, master_password
+
+    config_lock.acquire()
+    try:
+        if master_store and master_password:
+            parent_path, current_name = os.path.split(container_path)
+            parent_container = master_store.get_container_by_path(parent_path)
+            parent_container.rename_container(current_name, updated_name)
+            master_store.save(master_password, pw_store_filename)
+    finally:
+        config_lock.release()
+
+
 def remove_container(container_path):
     global config_lock, master_store, pw_store_filename, master_password
 
@@ -264,6 +278,16 @@ def get_entries_by_path(path, reverse=False):
                       reverse=reverse)
 
     return []
+
+
+def get_container_name_from_path(path):
+    global master_store
+
+    if master_store:
+        _, container_name = os.path.split(path)
+        return container_name
+
+    return None
 
 
 def get_container_count_by_path(path):

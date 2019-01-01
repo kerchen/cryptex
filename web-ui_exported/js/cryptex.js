@@ -1,4 +1,3 @@
-
 function post(path, params, method) {
     method = method || "post"; // Set method to post by default if not specified.
 
@@ -55,7 +54,6 @@ function login() {
 }
 
 
-
 function createStore() {
     var pw1 = document.getElementById("password-store-pw").value;
     var pw2 = document.getElementById("password-store-pw2").value;
@@ -66,7 +64,7 @@ function createStore() {
 
 function manageShowSessionPath() {
     // Returns to the management page, showing the current session path.
-    post('/manage', {action: 'show-session-path'});
+    post('/manage-command', {action: 'show-session-path'});
 }
 
 
@@ -84,7 +82,19 @@ function updateMasterPassword() {
 
 function createFolder() {
     // Causes a transition to the create-folder page.
-    post('/manage', {action: 'add-folder'});
+    post('/manage-command', {action: 'create-folder'});
+}
+
+
+function editFolder(encodedPath) {
+    // Causes a transition to the edit-folder page.
+    post('/manage-command', {action: 'edit-folder', encoded_path: encodedPath});
+}
+
+
+function deleteFolder(encodedPath) {
+    // Causes a transition to the delete-folder page.
+    post('/manage-command', {action: 'delete-folder', encoded_path: encodedPath});
 }
 
 
@@ -95,18 +105,16 @@ function createFolderCommit() {
 }
 
 
-function deleteFolder(encodedPath) {
-    // Causes a transition to the delete-folder page.
-    post('/manage', {action: 'delete-folder', encoded_path: encodedPath});
-}
+function editFolderCommit() {
+    // Causes a folder to be updated using data from fields in the edit-folder page.
+    // Note that the current folder name is stashed in the element that displays
+    // the current name, using a custom attribute named 'data-current-folder-name'.
+    var currentFolderName = document.getElementById("current-folder-name-text").getAttribute("data-current-folder-name");
+    var newFolderName = document.getElementById("folder-name-input").value;
 
-
-function editFolder(path) {
-    //if (confirm("Delete this folder and all of the entries it contains?\n"+path)) {
-        alert("Not implemented yet.");
-        //post('/remove-container',
-             //{encoded_path: path});
-    //}
+    post('/manage-edit-folder',
+         {current_folder_name: currentFolderName,
+          new_folder_name: newFolderName});
 }
 
 
@@ -118,18 +126,21 @@ function deleteFolderCommit(folderPath) {
 
 function createEntry() {
     // Causes a transition to the create-entry page.
-    post('/manage', {action: 'create-entry'});
+    post('/manage-command', {action: 'create-entry'});
 }
+
 
 function editEntry(encodedPath) {
     // Causes a transition to the edit-entry page.
-    post('/manage', {action: 'edit-entry', encoded_path: encodedPath});
+    post('/manage-command', {action: 'edit-entry', encoded_path: encodedPath});
 }
+
 
 function deleteEntry(encodedPath) {
     // Causes a transition to the delete-entry page.
-    post('/manage', {action: 'delete-entry', encoded_path: encodedPath});
+    post('/manage-command', {action: 'delete-entry', encoded_path: encodedPath});
 }
+
 
 function createEntryCommit() {
     // Causes an Entry to be created using data from fields in the
@@ -148,10 +159,12 @@ function createEntryCommit() {
           url: url});
 }
 
+
 function editEntryCommit() {
-    // Causes an Entry to be updated using data from fields in the
-    // edit-entry page.
-    var currentEntryName = document.getElementById("current-entry-name-text").getAttribute("data-original-entry-name");
+    // Causes an Entry to be updated using data from fields in the edit-entry page.
+    // Note that the current entry name is stashed in the element that displays
+    // the current name, using a custom attribute named 'data-current-entry-name'.
+    var currentEntryName = document.getElementById("current-entry-name-text").getAttribute("data-current-entry-name");
     var entryName = document.getElementById("entry-name-input").value;
     var userName = document.getElementById("user-name-input").value;
     var password1 = document.getElementById("password-input").value;
@@ -166,6 +179,7 @@ function editEntryCommit() {
           password2: password2,
           url: url});
 }
+
 
 function deleteEntryCommit(entryPath) {
     // Causes an Entry to be deleted using data from the delete-entry page.

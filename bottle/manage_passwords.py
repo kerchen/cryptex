@@ -10,6 +10,7 @@ log = logging.getLogger(__name__)
 
 MANAGE_PASSWORDS_TEMPLATE = "manage-store.html"
 NEW_CONTAINER_TEMPLATE = "create-folder.html"
+EDIT_FOLDER_TEMPLATE = "edit-folder.html"
 DELETE_FOLDER_TEMPLATE = "delete-folder.html"
 CREATE_ENTRY_TEMPLATE = "create-entry.html"
 EDIT_ENTRY_TEMPLATE = "edit-entry.html"
@@ -49,9 +50,9 @@ def manage_path(path):
     return redirect("/")
 
 
-@post('/manage')
-def handle_manage_post():
-    log.debug("Handling management post")
+@post('/manage-command')
+def handle_manage_command_post():
+    log.debug("Handling management command post")
     if shared_cfg.validate_session(request):
         if request.forms.get('action') == 'create-entry':
             log.debug("Create entry button pressed")
@@ -70,8 +71,6 @@ def handle_manage_post():
             data['password1'] = entry.get_password()
             data['password2'] = entry.get_password()
             data['url'] = entry.get_url()
-            for k, v in data.iteritems():
-                log.debug("'{0}': '{1}'".format(k, v))
 
             return template(EDIT_ENTRY_TEMPLATE,
                             path=shared_cfg.session.path,
@@ -84,12 +83,24 @@ def handle_manage_post():
                                 request.forms.get('encoded_path')))
         elif request.forms.get('action') == 'show-session-path':
             return manage_path(encode_path(shared_cfg.session.path))
-        elif request.forms.get('action') == 'addcontainer':
-            log.debug("Add container button pressed. path = "
+        elif request.forms.get('action') == 'create-folder':
+            log.debug("Create folder button pressed. path = "
                       "{}".format(shared_cfg.session.path))
             return template(NEW_CONTAINER_TEMPLATE,
                             path=shared_cfg.session.path,
                             status_msg=None)
+        elif request.forms.get('action') == 'edit-folder':
+            log.debug("Edit folder button pressed")
+            folder_path = decode_path(request.forms.get('encoded_path'))
+            folder_name = shared_cfg.get_container_name_from_path(folder_path)
+            data = dict()
+            data['current_folder_name'] = folder_name
+            data['new_folder_name'] = folder_name
+
+            return template(EDIT_FOLDER_TEMPLATE,
+                            path=shared_cfg.session.path,
+                            status_msg=None,
+                            data=data)
         elif request.forms.get('action') == 'delete-folder':
             log.debug("Delete folder button pressed")
             return template(DELETE_FOLDER_TEMPLATE,
@@ -281,6 +292,54 @@ def handle_new_container_post():
         return redirect("/manage{0}+{1}".format(
             encode_path(shared_cfg.session.path),
             cont_name))
+    return redirect("/")
+
+
+@post('/manage-edit-folder')
+def handle_edit_folder_post():
+    log.debug("Handling edit folder post")
+    status_msg = None
+    if shared_cfg.validate_session(request):
+        template_name = EDIT_FOLDER_TEMPLATE
+        current_folder_name = request.forms.get('current_folder_name')
+        new_folder_name = request.forms.get('new_folder_name').strip()
+        retry_data = {
+            "current_folder_name": current_folder_name,
+            "new_folder_name": new_folder_name
+        }
+
+        if not new_folder_name:
+            return template(template_name,
+                            path=shared_cfg.session.path,
+                            status_msg=("Folder names cannot be empty. Please "
+                                        "try again."),
+                            data=retry_data)
+        container_path = shared_cfg.session.path + "/" + current_folder_name
+        try:
+            shared_cfg.rename_container(container_path, new_folder_name)
+        except pw_store.ECDuplicateException:
+            log.debug("Duplicate folder name {0}".format(new_folder_name))
+            status_msg = ("'{0}' is already the name of another "
+                          "folder in the current folder. Please try again."
+                          .format(new_folder_name))
+        except pw_store.ECNaughtyCharacterException:
+            log.debug("Bad character in folder name {0}".format(new_folder_name))
+            status_msg = ("Folder names can only contain spaces and these "
+                          "characters: "
+                          "{0}. Please try again."
+                          .format(" ".join(shared_cfg.LEGAL_NAME_CHARS)))
+        except pw_store.ECException as ex:
+            log.debug("Unexpected problem while updating folder "
+                      "{0}:{1}".format(current_folder_name, ex))
+            status_msg = "The folder could not be updated. Reason: {0}".format(ex)
+        finally:
+            if status_msg:
+                return template(template_name,
+                                path=shared_cfg.session.path,
+                                status_msg=status_msg,
+                                data=retry_data)
+
+        return redirect("/manage"+encode_path(shared_cfg.session.path))
     return redirect("/")
 
 

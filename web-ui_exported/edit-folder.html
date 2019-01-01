@@ -7,7 +7,7 @@
   <meta name="description" content="">
   <meta name="keywords" content="">
   <meta name="generator" content="Responsive Bootstrap Builder 2.5.308">
-  <title>Cryptex - Edit Entry</title>
+  <title>Cryptex - Edit Folder</title>
   <link rel="stylesheet" href="css/bootstrap4.min.css">
   <link rel="stylesheet" href="css/wireframe-theme.min.css">
   <script>document.createElement( "picture" );</script>
@@ -27,7 +27,7 @@
   </div>
   <div class="row wecome-row">
     <div class="col-xs-12 welcome-column">
-      <h1>edit an entry</h1>
+      <h1>edit a folder</h1>
     </div>
   </div>
   <div class="row">
@@ -45,49 +45,25 @@
   </div>
   <div class="row full-width-row">
     <div class="col-xs-12 ignition">
-      <p class="paragraph intro-paragraph">The entry name cannot be empty and it must be different from all other entries in the same folder. All the other fields are optional.</p>
+      <p class="paragraph intro-paragraph">The folder name cannot be empty and it must be different from all other folders in the current folder.</p>
       <div class="html-element"><!--
-% current_entry_name = ''
+% current_folder_name = ''
 % if data:
-%    current_entry_name = data['current_entry_name']
+%    current_folder_name = data['current_folder_name']
 % end
 --></div>
       <div class="subgrid">
         <div class="row">
-          <div class="col-xs-6 subgrid-column-3"><label class="label entry-label">Current Entry Name</label>
+          <div class="col-xs-6 subgrid-column-3"><label class="label entry-label">Current Folder Name</label>
           </div>
           <div class="col-xs-6">
-            <span class="text-element read-only-value-text" id="current-entry-name-text" data-current-entry-name="{{current_entry_name}}">{{current_entry_name}}</span>
+            <span class="text-element read-only-value-text" id="current-folder-name-text" data-current-folder-name="{{current_folder_name}}">{{current_folder_name}}</span>
           </div>
         </div>
         <div class="row">
-          <div class="col-xs-6 subgrid-column-3"><label class="label entry-label">New Entry Name</label>
+          <div class="col-xs-6 subgrid-column-3"><label class="label entry-label">New Folder Name</label>
           </div>
-          <div class="col-xs-6"><input value="" type="text" id="entry-name-input" title="" pattern="" class="form-input">
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-6 subgrid-column-4"><label class="label entry-label">User Name</label>
-          </div>
-          <div class="col-xs-6"><input value="" type="text" id="user-name-input" class="form-input">
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-6 subgrid-column-5"><label class="label entry-label">Password</label>
-          </div>
-          <div class="col-xs-6"><input value="" type="password" id="password-input" class="form-password-input">
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-6 subgrid-column-6"><label class="label entry-label">Re-enter Password</label>
-          </div>
-          <div class="col-xs-6"><input value="" type="password" id="password-confirm-input" class="form-password-input">
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-xs-6 subgrid-column-7"><label class="label entry-label" id="entry-url">URL</label>
-          </div>
-          <div class="col-xs-6"><input value="" type="text" id="url-input" class="form-input">
+          <div class="col-xs-6"><input value="" type="text" id="folder-name-input" title="" pattern="" class="form-input">
           </div>
         </div>
       </div>
@@ -96,12 +72,12 @@
   <div class="row">
     <div class="col-xs-12">
       <aside class="html-element"><!--
-% include('edit_entry.tpl')
+% include('edit_folder.tpl')
 --></aside>
     </div>
   </div>
   <div class="row">
-    <div class="col-xs-12"><button type="submit" class="btn ignition" formaction="" onclick="editEntryCommit()">Update</button><button type="submit" class="btn ignition" formaction="" onclick="manageShowSessionPath()">Cancel</button>
+    <div class="col-xs-12"><button type="submit" class="btn ignition" formaction="" onclick="editFolderCommit()">Update</button><button type="submit" class="btn ignition" formaction="" onclick="manageShowSessionPath()">Cancel</button>
     </div>
   </div>
   <div class="row rocket">
