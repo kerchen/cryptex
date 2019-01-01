@@ -92,6 +92,12 @@ function editFolder(encodedPath) {
 }
 
 
+function moveFolder(encodedPath) {
+    // Causes a transition to the move-folder page.
+    post('/manage-command', {action: 'move-folder', encoded_path: encodedPath});
+}
+
+
 function deleteFolder(encodedPath) {
     // Causes a transition to the delete-folder page.
     post('/manage-command', {action: 'delete-folder', encoded_path: encodedPath});
@@ -118,7 +124,17 @@ function editFolderCommit() {
 }
 
 
-function deleteFolderCommit(folderPath) {
+function moveFolderCommit() {
+    // Causes a folder to be moved using data from the move-folder page.
+    var itemPath = document.getElementById("item-path-text").innerHTML;
+    var destinationPath = document.getElementById("destination-path-text").innerHTML;
+
+    alert("Itempath: " + itemPath + "   dest path: " + destinationPath);
+    post('/manage-move-folder', {item_path: itemPath, destination_path: destinationPath});
+}
+
+
+function deleteFolderCommit() {
     // Causes a folder to be deleted using data from the delete-folder page.
     post('/manage-delete-folder', {folder_path: folderPath});
 }

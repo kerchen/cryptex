@@ -11,7 +11,6 @@ import shared_cfg
 import authentication
 import navigation
 import manage_passwords
-import edit_entry
 
 
 log = logging.getLogger(__name__)

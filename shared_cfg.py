@@ -221,6 +221,30 @@ def rename_container(container_path, updated_name):
         config_lock.release()
 
 
+def move_container(container_path, new_parent_path):
+    global config_lock, master_store, pw_store_filename, master_password
+
+    config_lock.acquire()
+    try:
+        if master_store and master_password:
+            parent_path, container_name = os.path.split(container_path)
+            parent_container = master_store.get_container_by_path(parent_path)
+            moving_container = master_store.get_container_by_path(container_path)
+            new_parent_container = master_store.\
+                get_container_by_path(new_parent_path)
+            if new_parent_container.has_container(container_name):
+                ex_text = ("Destination folder already has a folder with "
+                           "the name {0} in it.".format(container_name))
+                raise pw_store.ECDuplicateException(ex_text)
+            # If this raises an exception, the container hasn't been removed
+            # from the old parent yet, so we shouldn't lose the container.
+            new_parent_container.add_container(moving_container, container_name)
+            parent_container.remove_container(container_name)
+            master_store.save(master_password, pw_store_filename)
+    finally:
+        config_lock.release()
+
+
 def remove_container(container_path):
     global config_lock, master_store, pw_store_filename, master_password
 

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="generator" content="Responsive Bootstrap Builder 2.5.308">
+  <title>Cryptex - Move Folder</title>
+  <link rel="stylesheet" href="css/bootstrap4.min.css">
+  <link rel="stylesheet" href="css/wireframe-theme.min.css">
+  <script>document.createElement( "picture" );</script>
+  <script class="picturefill" async="async" src="js/picturefill.min.js"></script>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:b%7CRoboto+Condensed:300,400%7CRoboto:300,400">
+<script src="js/cryptex.js"></script>
+<link rel="stylesheet" href="css/tree-view.css">
+</head>
+
+<body>
+  <div class="row nav-row">
+    <div class="col-xs-12">
+      <div class="container-fluid nav-container"><a href="/manage" class="responsive-picture logo" title="Cryptex Logo"><picture><!--[if IE 9]><video style="display: none;"><![endif]--><source srcset="./images/cryptex-logo.png" media="(min-width: 1200px)"><source srcset="./images/cryptex-logo.png" media="(min-width: 768px)"><source srcset="./images/cryptex-logo.png" media="(min-width: 576px)"><!--[if IE 9]></video><![endif]--><img alt="cryptex" src="./images/cryptex-logo.png"></picture></a>
+      </div>
+    </div>
+  </div>
+  <div class="row wecome-row">
+    <div class="col-xs-12 welcome-column">
+      <h1>move folder</h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12">
+      <p class="paragraph status-msg-text">{{status_msg}}</p>
+    </div>
+  </div>
+  <div class="row full-width-row">
+    <div class="col-xs-12 ignition">
+      <p class="paragraph intro-paragraph">Select the destination folder to where you would like to move the folder.</p>
+    </div>
+  </div>
+  <div class="row row-4">
+    <div class="col-xs-4 col-sm-3 col-lg-3 col-xl-3 offset-lg-1 offset-xl-2 offset-md-1">
+      <span class="text-element manage-label" id="text-2-copy-1">folder to move:</span>
+    </div>
+    <div class="col-xs-8 col-sm-9 col-lg-7 col-xl-5 col-md-7">
+      <span class="text-element read-only-value-text" id="item-path-text">{{item_path}}</span>
+    </div>
+  </div>
+  <div class="row row-4">
+    <div class="col-xs-4 col-sm-3 col-lg-3 col-xl-3 offset-lg-1 offset-xl-2 offset-md-1">
+      <span class="text-element manage-label" id="text-2">Destination Folder:</span>
+    </div>
+    <div class="col-xs-8 col-sm-9 col-lg-7 col-xl-5 col-md-7">
+      <span class="text-element read-only-value-text" id="destination-path-text">{{destination_path}}</span>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-8 offset-xs-4 offset-sm-3 col-sm-9 offset-md-4 col-md-8 col-lg-7 col-xl-5 offset-xl-5">
+      <div class="html-element"><!--
+% include('folder_picker.tpl', selection_display_id='destination-path-text', exclude_path=item_path)
+--></div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12"><button type="submit" class="btn ignition" formaction="" onclick="moveFolderCommit()">Move</button><button type="submit" class="btn ignition" formaction="" onclick="manageShowSessionPath()">Cancel</button>
+    </div>
+  </div>
+  <div class="row rocket">
+    <div class="col-xs-12"></div>
+  </div>
+  <script src="js/jquery.min.js"></script>
+  <script src="js/outofview.js"></script>
+  <script src="js/tether.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+</body>
+
+</html>

@@ -11,6 +11,7 @@ log = logging.getLogger(__name__)
 MANAGE_PASSWORDS_TEMPLATE = "manage-store.html"
 NEW_CONTAINER_TEMPLATE = "create-folder.html"
 EDIT_FOLDER_TEMPLATE = "edit-folder.html"
+MOVE_FOLDER_TEMPLATE = "move-folder.html"
 DELETE_FOLDER_TEMPLATE = "delete-folder.html"
 CREATE_ENTRY_TEMPLATE = "create-entry.html"
 EDIT_ENTRY_TEMPLATE = "edit-entry.html"
@@ -88,6 +89,14 @@ def handle_manage_command_post():
                       "{}".format(shared_cfg.session.path))
             return template(NEW_CONTAINER_TEMPLATE,
                             path=shared_cfg.session.path,
+                            status_msg=None)
+        elif request.forms.get('action') == 'move-folder':
+            log.debug("Move folder button pressed. path = "
+                      "{}".format(request.forms.get('encoded_path')))
+            return template(MOVE_FOLDER_TEMPLATE,
+                            item_path=decode_path(
+                                request.forms.get('encoded_path')),
+                            destination_path='/',
                             status_msg=None)
         elif request.forms.get('action') == 'edit-folder':
             log.debug("Edit folder button pressed")
@@ -338,6 +347,40 @@ def handle_edit_folder_post():
                                 path=shared_cfg.session.path,
                                 status_msg=status_msg,
                                 data=retry_data)
+
+        return redirect("/manage"+encode_path(shared_cfg.session.path))
+    return redirect("/")
+
+
+@post('/manage-move-folder')
+def handle_move_folder_post():
+    log.debug("Handling move folder post")
+    if shared_cfg.validate_session(request):
+        item_path = request.forms.get('item_path')
+        destination_path = request.forms.get('destination_path')
+        status_msg = None
+        try:
+            shared_cfg.move_container(item_path, destination_path)
+        except pw_store.ECDuplicateException:
+            log.debug("Destination folder {0} already has a folder with the "
+                      "same name as the one being moved there "
+                      "({1}).".format(destination_path, item_path))
+            status_msg = ("The destination folder {0} already has a folder "
+                          "with the same name as the one you're trying to "
+                          "move there. You'll need to rename one of those "
+                          "folders.".format(destination_path))
+        except pw_store.ECException as ex:
+            log.debug("Unexpected problem while moving folder "
+                      "{0}: {1}".format(item_path, ex))
+            status_msg = ("An unexpected error occurred while trying to "
+                          "move {0} to {1}. The folder was not moved."
+                          .format(item_path, destination_path))
+        finally:
+            if status_msg:
+                return template(MOVE_FOLDER_TEMPLATE,
+                                item_path=item_path,
+                                destination_path=destination_path,
+                                status_msg=status_msg)
 
         return redirect("/manage"+encode_path(shared_cfg.session.path))
     return redirect("/")
