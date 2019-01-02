@@ -175,6 +175,11 @@ input[type=password]#password-store-pw {
   text-align: center;
 }
 
+input[type=password].password-1 {
+  display: block;
+  font-family: 'Roboto', cursive;
+}
+
 label.label.entry-label {
   float: right;
   color: #fc6300;
