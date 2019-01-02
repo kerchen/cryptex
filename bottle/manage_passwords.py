@@ -2,7 +2,8 @@ from bottle import (post, redirect, request, route, template)
 import logging
 
 from path_util import decode_path, encode_path
-import pw_store
+from pw_store import (Entry, EntryContainer, ECDuplicateException,
+                      ECException, ECNaughtyCharacterException)
 import shared_cfg
 
 log = logging.getLogger(__name__)
@@ -146,7 +147,7 @@ def process_new_entry_input(template_name):
                         status_msg="Passwords do not match.",
                         data=retry_data)
 
-    ent = pw_store.Entry(username=username, password=password1, url=url)
+    ent = Entry(username=username, password=password1, url=url)
     return (ent, ent_name), None
 
 
@@ -165,16 +166,16 @@ def handle_create_entry_post():
                       "url": entry[0].get_url()}
         try:
             shared_cfg.add_entry(entry[0], entry[1])
-        except pw_store.ECDuplicateException:
+        except ECDuplicateException:
             log.debug("Duplicate entry name {0}".format(entry[1]))
             status_msg = ("'{0}' is already in use by another "
                           "entry.".format(entry[1]))
-        except pw_store.ECNaughtyCharacterException:
+        except ECNaughtyCharacterException:
             log.debug("Bad character in entry name {0}".format(entry[1]))
             status_msg = ("Entry names can only contain spaces and these "
                           "characters: "
                           "{0}".format(" ".join(shared_cfg.LEGAL_NAME_CHARS)))
-        except pw_store.ECException as ex:
+        except ECException as ex:
             log.debug("Unexpected problem while adding entry "
                       "{0}".format(entry[1]))
             status_msg = "The entry could not be added. Reason: {0}".format(ex)
@@ -226,24 +227,24 @@ def handle_edit_entry_post():
                                         "Please try again"),
                             data=retry_data)
 
-        updated_entry = pw_store.Entry(username=username,
+        updated_entry = Entry(username=username,
                                        password=password1,
                                        url=url)
         entry_path = shared_cfg.session.path + '/' + current_entry_name
         try:
             shared_cfg.update_entry(entry_path, entry_name, updated_entry)
-        except pw_store.ECDuplicateException:
+        except ECDuplicateException:
             log.debug("Duplicate entry name {0}".format(entry_name))
             status_msg = ("'{0}' is already the name of another "
                           "entry in the current folder. Please try again."
                           .format(entry_name))
-        except pw_store.ECNaughtyCharacterException:
+        except ECNaughtyCharacterException:
             log.debug("Bad character in entry name {0}".format(entry_name))
             status_msg = ("Entry names can only contain spaces and these "
                           "characters: "
                           "{0}. Please try again."
                           .format(" ".join(shared_cfg.LEGAL_NAME_CHARS)))
-        except pw_store.ECException as ex:
+        except ECException as ex:
             log.debug("Unexpected problem while updating entry "
                       "{0}:{1}".format(current_entry_name, ex))
             status_msg = "The entry could not be updated. Reason: {0}".format(ex)
@@ -267,7 +268,7 @@ def handle_move_entry_post():
         status_msg = None
         try:
             shared_cfg.move_entry(item_path, destination_path)
-        except pw_store.ECDuplicateException:
+        except ECDuplicateException:
             log.debug("Destination folder {0} already has an entry with the "
                       "same name as the entry being moved there "
                       "({1}).".format(destination_path, item_path))
@@ -275,7 +276,7 @@ def handle_move_entry_post():
                           "with the same name as the one you're trying to "
                           "move there. You'll need to rename one of those "
                           "entries.".format(destination_path))
-        except pw_store.ECException as ex:
+        except ECException as ex:
             log.debug("Unexpected problem while moving entry "
                       "{0}: {1}".format(item_path, ex))
             status_msg = ("An unexpected error occurred while trying to "
@@ -299,7 +300,7 @@ def handle_delete_entry_post():
         entry_path = request.forms.get('entry_path')
         try:
             shared_cfg.remove_entry(entry_path)
-        except pw_store.ECException as ex:
+        except ECException as ex:
             log.debug("Unexpected problem while deleting entry "
                       "{0}:{1}".format(entry_path, ex))
         return redirect("/manage"+encode_path(shared_cfg.session.path))
@@ -318,22 +319,22 @@ def handle_new_container_post():
                             path=shared_cfg.session.path,
                             status_msg="Folder names cannot be empty. "
                                        "Please try again.")
-        cont = pw_store.EntryContainer()
+        cont = EntryContainer()
         status_msg = None
         try:
             shared_cfg.add_container(cont, cont_name)
-        except pw_store.ECDuplicateException:
+        except ECDuplicateException:
             log.debug("Duplicate container name {0}".format(cont_name))
             status_msg = ("There is already a folder with the name {0} "
                           "in the current folder. Please enter a different "
                           "name.".format(cont_name))
-        except pw_store.ECNaughtyCharacterException:
+        except ECNaughtyCharacterException:
             log.debug("Bad character in container name {0}".format(cont_name))
             status_msg = ("Folder names can only contain spaces and these "
                           "characters:{0}. Please enter a name "
                           "containing only those characters."
                           .format(" ".join(shared_cfg.LEGAL_NAME_CHARS)))
-        except pw_store.ECException as ex:
+        except ECException as ex:
             log.debug("Exception while adding container {0}".format(cont_name))
             status_msg = "The folder could not be added. Reason: {0}".format(ex)
         finally:
@@ -369,18 +370,18 @@ def handle_edit_folder_post():
         container_path = shared_cfg.session.path + "/" + current_folder_name
         try:
             shared_cfg.rename_container(container_path, new_folder_name)
-        except pw_store.ECDuplicateException:
+        except ECDuplicateException:
             log.debug("Duplicate folder name {0}".format(new_folder_name))
             status_msg = ("'{0}' is already the name of another "
                           "folder in the current folder. Please try again."
                           .format(new_folder_name))
-        except pw_store.ECNaughtyCharacterException:
+        except ECNaughtyCharacterException:
             log.debug("Bad character in folder name {0}".format(new_folder_name))
             status_msg = ("Folder names can only contain spaces and these "
                           "characters: "
                           "{0}. Please try again."
                           .format(" ".join(shared_cfg.LEGAL_NAME_CHARS)))
-        except pw_store.ECException as ex:
+        except ECException as ex:
             log.debug("Unexpected problem while updating folder "
                       "{0}:{1}".format(current_folder_name, ex))
             status_msg = "The folder could not be updated. Reason: {0}".format(ex)
@@ -404,7 +405,7 @@ def handle_move_folder_post():
         status_msg = None
         try:
             shared_cfg.move_container(item_path, destination_path)
-        except pw_store.ECDuplicateException:
+        except ECDuplicateException:
             log.debug("Destination folder {0} already has a folder with the "
                       "same name as the one being moved there "
                       "({1}).".format(destination_path, item_path))
@@ -412,7 +413,7 @@ def handle_move_folder_post():
                           "with the same name as the one you're trying to "
                           "move there. You'll need to rename one of those "
                           "folders.".format(destination_path))
-        except pw_store.ECException as ex:
+        except ECException as ex:
             log.debug("Unexpected problem while moving folder "
                       "{0}: {1}".format(item_path, ex))
             status_msg = ("An unexpected error occurred while trying to "
@@ -436,7 +437,7 @@ def handle_delete_folder_post():
         folder_path = request.forms.get('folder_path')
         try:
             shared_cfg.remove_container(folder_path)
-        except pw_store.ECException as ex:
+        except ECException as ex:
             log.debug("Unexpected problem while deleting folder "
                       "{0}:{1}".format(folder_path, ex))
         return redirect("/manage"+encode_path(shared_cfg.session.path))
