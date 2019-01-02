@@ -9,12 +9,13 @@ log = logging.getLogger(__name__)
 
 
 MANAGE_PASSWORDS_TEMPLATE = "manage-store.html"
-NEW_CONTAINER_TEMPLATE = "create-folder.html"
+CREATE_FOLDER_TEMPLATE = "create-folder.html"
 EDIT_FOLDER_TEMPLATE = "edit-folder.html"
 MOVE_FOLDER_TEMPLATE = "move-folder.html"
 DELETE_FOLDER_TEMPLATE = "delete-folder.html"
 CREATE_ENTRY_TEMPLATE = "create-entry.html"
 EDIT_ENTRY_TEMPLATE = "edit-entry.html"
+MOVE_ENTRY_TEMPLATE = "move-entry.html"
 DELETE_ENTRY_TEMPLATE = "delete-entry.html"
 
 
@@ -77,6 +78,14 @@ def handle_manage_command_post():
                             path=shared_cfg.session.path,
                             status_msg=None,
                             data=data)
+        elif request.forms.get('action') == 'move-entry':
+            log.debug("Move entry button pressed. path = "
+                      "{}".format(request.forms.get('encoded_path')))
+            return template(MOVE_ENTRY_TEMPLATE,
+                            item_path=decode_path(
+                                request.forms.get('encoded_path')),
+                            destination_path='/',
+                            status_msg=None)
         elif request.forms.get('action') == 'delete-entry':
             log.debug("Delete entry button pressed")
             return template(DELETE_ENTRY_TEMPLATE,
@@ -87,7 +96,7 @@ def handle_manage_command_post():
         elif request.forms.get('action') == 'create-folder':
             log.debug("Create folder button pressed. path = "
                       "{}".format(shared_cfg.session.path))
-            return template(NEW_CONTAINER_TEMPLATE,
+            return template(CREATE_FOLDER_TEMPLATE,
                             path=shared_cfg.session.path,
                             status_msg=None)
         elif request.forms.get('action') == 'move-folder':
@@ -249,6 +258,40 @@ def handle_edit_entry_post():
     return redirect("/")
 
 
+@post('/manage-move-entry')
+def handle_move_entry_post():
+    log.debug("Handling move entry post")
+    if shared_cfg.validate_session(request):
+        item_path = request.forms.get('item_path')
+        destination_path = request.forms.get('destination_path')
+        status_msg = None
+        try:
+            shared_cfg.move_entry(item_path, destination_path)
+        except pw_store.ECDuplicateException:
+            log.debug("Destination folder {0} already has an entry with the "
+                      "same name as the entry being moved there "
+                      "({1}).".format(destination_path, item_path))
+            status_msg = ("The destination folder {0} already has an entry "
+                          "with the same name as the one you're trying to "
+                          "move there. You'll need to rename one of those "
+                          "entries.".format(destination_path))
+        except pw_store.ECException as ex:
+            log.debug("Unexpected problem while moving entry "
+                      "{0}: {1}".format(item_path, ex))
+            status_msg = ("An unexpected error occurred while trying to "
+                          "move {0} to {1}. The entry was not moved."
+                          .format(item_path, destination_path))
+        finally:
+            if status_msg:
+                return template(MOVE_ENTRY_TEMPLATE,
+                                item_path=item_path,
+                                destination_path=destination_path,
+                                status_msg=status_msg)
+
+        return redirect("/manage"+encode_path(shared_cfg.session.path))
+    return redirect("/")
+
+
 @post('/manage-delete-entry')
 def handle_delete_entry_post():
     log.debug("Handling delete entry post")
@@ -267,7 +310,7 @@ def handle_delete_entry_post():
 def handle_new_container_post():
     log.debug("Handling new container post")
     if shared_cfg.validate_session(request):
-        template_name = NEW_CONTAINER_TEMPLATE
+        template_name = CREATE_FOLDER_TEMPLATE
         cont_name = request.forms.get('name').strip()
         log.debug("New container post for name {}".format(cont_name))
         if not cont_name:

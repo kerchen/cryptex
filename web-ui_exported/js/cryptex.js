@@ -47,14 +47,17 @@ function setHTMLInputValue(id, value) {
 }
 
 
-function login() {
+function loginCommit() {
+    // Uses the entered password to try to log in.
     var password = document.getElementById("password-store-pw").value;
 
     post('/login', {password: password});
 }
 
 
-function createStore() {
+function createStoreCommit() {
+    // Requests an empty master store to be created, encrypted with the entered
+    // passwords.
     var pw1 = document.getElementById("password-store-pw").value;
     var pw2 = document.getElementById("password-store-pw2").value;
 
@@ -68,7 +71,8 @@ function manageShowSessionPath() {
 }
 
 
-function updateMasterPassword() {
+function updateMasterPasswordCommit() {
+    // Updates the master password, using the entered passwords.
     var currentPass = document.getElementById("password-current").value;
     var newPass = document.getElementById("password-new").value;
     var newPassReenter = document.getElementById("password-new-reenter").value;
@@ -105,6 +109,7 @@ function deleteFolder(encodedPath) {
 
 
 function createFolderCommit() {
+    // Causes a new folder to be created, named according to what the user entered.
     var folderName = document.getElementById("folder-name-input").value;
 
     post('/manage-new-container', {name: folderName});
@@ -129,7 +134,6 @@ function moveFolderCommit() {
     var itemPath = document.getElementById("item-path-text").innerHTML;
     var destinationPath = document.getElementById("destination-path-text").innerHTML;
 
-    alert("Itempath: " + itemPath + "   dest path: " + destinationPath);
     post('/manage-move-folder', {item_path: itemPath, destination_path: destinationPath});
 }
 
@@ -149,6 +153,12 @@ function createEntry() {
 function editEntry(encodedPath) {
     // Causes a transition to the edit-entry page.
     post('/manage-command', {action: 'edit-entry', encoded_path: encodedPath});
+}
+
+
+function moveEntry(encodedPath) {
+    // Causes a transition to the move-entry page.
+    post('/manage-command', {action: 'move-entry', encoded_path: encodedPath});
 }
 
 
@@ -194,6 +204,15 @@ function editEntryCommit() {
           password1: password1,
           password2: password2,
           url: url});
+}
+
+
+function moveEntryCommit() {
+    // Causes an entry to be moved according to data entered in the move-entry page.
+    var itemPath = document.getElementById("item-path-text").innerHTML;
+    var destinationPath = document.getElementById("destination-path-text").innerHTML;
+
+    post('/manage-move-entry', {item_path: itemPath, destination_path: destinationPath});
 }
 
 

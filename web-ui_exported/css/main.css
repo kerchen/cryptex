@@ -170,7 +170,6 @@ input[type=password].form-password-input {
 }
 
 input[type=password]#password-store-pw {
-  display: block;
   margin-right: auto;
   margin-left: auto;
   text-align: center;
@@ -744,6 +743,5 @@ button#button-2 {
 
   button.btn.ignition {
     background-color: #fc6300;
-    text-transform: uppercase;
   }
 }

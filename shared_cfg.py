@@ -178,6 +178,30 @@ def update_entry(entry_path, updated_name, updated_entry):
         config_lock.release()
 
 
+def move_entry(entry_path, new_parent_path):
+    global config_lock, master_store, pw_store_filename, master_password
+
+    config_lock.acquire()
+    try:
+        if master_store and master_password:
+            parent_path, _ = os.path.split(entry_path)
+            parent_container = master_store.get_container_by_path(parent_path)
+            entry_name, entry = master_store.get_entry_by_path(entry_path)
+            new_parent_container = master_store. \
+                get_container_by_path(new_parent_path)
+            if new_parent_container.has_entry(entry_name):
+                ex_text = ("Destination folder already has an entry with "
+                           "the name {0} in it.".format(entry_name))
+                raise pw_store.ECDuplicateException(ex_text)
+            # If this raises an exception, the entry hasn't been removed
+            # from the old parent yet, so we shouldn't lose it.
+            new_parent_container.add_entry(entry, entry_name)
+            parent_container.remove_entry(entry_name)
+            master_store.save(master_password, pw_store_filename)
+    finally:
+        config_lock.release()
+
+
 def remove_entry(entry_path):
     global config_lock, master_store, pw_store_filename, master_password
 

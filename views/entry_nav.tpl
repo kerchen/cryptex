@@ -18,7 +18,7 @@
                 <button type="button" class="btn icon-btn edit-item-btn" formmethod="post" onclick="editEntry('{{entry_path}}')"></button>
             </td>
             <td style="width:5%">
-                <button type="button" class="btn icon-btn move-item-btn" formmethod="post" onclick="moveFolder('{{entry_path}}')"></button>
+                <button type="button" class="btn icon-btn move-item-btn" formmethod="post" onclick="moveEntry('{{entry_path}}')"></button>
             </td>
             <td>
                 <span class="text-element list-entry">{{k}}</span>
