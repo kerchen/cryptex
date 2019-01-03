@@ -161,6 +161,30 @@ a.link-button.btn.ignition {
   font-family: 'Roboto Condensed', sans-serif;
 }
 
+a.link-button.tree-entry-link-btn {
+  margin: 2px;
+  padding: 2px 8px;
+  border-width: .0625rem;
+  border-radius: 15px;
+  background-color: #ff944e;
+  color: #fff;
+  text-align: center;
+  font-size: 14px;
+  font-family: 'Roboto', cursive;
+}
+
+a.link-button.tree-folder-link-btn {
+  margin: 2px;
+  padding: 2px 8px;
+  border-width: .0625rem;
+  border-radius: 15px;
+  background-color: #fc6300;
+  color: #fff;
+  text-align: center;
+  font-size: 14px;
+  font-family: 'Roboto', cursive;
+}
+
 input[type=text].form-input {
   font-family: 'Roboto', cursive;
 }
@@ -386,6 +410,15 @@ button#button-2 {
   background-image: url('../images/AddIcon.png');
 }
 
+button.dropdown-btn {
+  min-width: 160px;
+  border-style: none;
+  background-color: #dfeef0;
+  text-align: left;
+  text-transform: uppercase;
+  font-family: 'Roboto', cursive;
+}
+
 @media screen and (min-width: 36rem) {
   /* Text Elements */
 
@@ -517,6 +550,16 @@ button#button-2 {
     color: #fc6300;
   }
 
+  /* Interaction Elements */
+
+  a.link-button.tree-entry-link-btn {
+    font-size: 16px;
+  }
+
+  a.link-button.tree-folder-link-btn {
+    font-size: 16px;
+  }
+
   /* Layout Elements */
 
   body > .row.wecome-row {
@@ -630,6 +673,14 @@ button#button-2 {
     background-color: #fc5c00;
   }
 
+  a.link-button.tree-entry-link-btn {
+    font-size: 17px;
+  }
+
+  a.link-button.tree-folder-link-btn {
+    font-size: 17px;
+  }
+
   /* Layout Elements */
 
   body > .row.wecome-row {
@@ -715,6 +766,14 @@ button#button-2 {
 
   a.link-button.btn.ignition {
     background-color: #fc6300;
+  }
+
+  a.link-button.tree-entry-link-btn {
+    font-size: 18px;
+  }
+
+  a.link-button.tree-folder-link-btn {
+    font-size: 18px;
   }
 
   /* Layout Elements */

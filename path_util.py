@@ -23,6 +23,7 @@ def encode_path(path):
     simp_path = simplify_path(path)
     return simp_path.replace('/', '+')
 
+
 def decode_path(path):
     """Performs the reverse of encode_path(), namely, replacing '+' with
     '/' in the given path."""

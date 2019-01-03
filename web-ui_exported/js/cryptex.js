@@ -84,9 +84,9 @@ function updateMasterPasswordCommit() {
 }
 
 
-function createFolder() {
+function createFolder(encodedParentPath) {
     // Causes a transition to the create-folder page.
-    post('/manage-command', {action: 'create-folder'});
+    post('/manage-command', {action: 'create-folder', encoded_parent_path: encodedParentPath});
 }
 
 
@@ -144,9 +144,9 @@ function deleteFolderCommit() {
 }
 
 
-function createEntry() {
+function createEntry(encodedParentPath) {
     // Causes a transition to the create-entry page.
-    post('/manage-command', {action: 'create-entry'});
+    post('/manage-command', {action: 'create-entry', encoded_parent_path: encodedParentPath});
 }
 
 
