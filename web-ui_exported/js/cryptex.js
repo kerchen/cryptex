@@ -166,7 +166,7 @@ function moveFolderCommit() {
 }
 
 
-function deleteFolderCommit() {
+function deleteFolderCommit(folderPath) {
     // Causes a folder to be deleted using data from the delete-folder page.
     post('/manage-delete-folder', {folder_path: folderPath});
 }
