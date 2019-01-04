@@ -2,7 +2,6 @@ from bottle import (post, redirect, request, route, template)
 import logging
 
 import shared_cfg
-import manage_passwords
 
 log = logging.getLogger(__name__)
 
@@ -32,11 +31,4 @@ def master_pass():
         return redirect("/change-master-password")
     return redirect("/")
 
-
-@route('/manage')
-def manage():
-    if shared_cfg.validate_session(request):
-        log.debug("Managing passwords")
-        return manage_passwords.manage_path("+")
-    return redirect("/")
 

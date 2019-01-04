@@ -27,20 +27,10 @@ def manage_path(path):
     return redirect("/")
 
 
-@route('/manage<path:re:\+.*>')
-def manage_path(path):
+@route('/manage')
+def manage_path():
     if shared_cfg.validate_session(request):
-        # If this function is invoked with any forward slashes, redirect to
-        # the root of the store. If we don't do this, the resource URIs in the
-        # generated web page (which have relative paths) will fail. Internally,
-        # we always prefix paths with '+' and use '+' for path separators,
-        # so this should only happen if the user tries to go directly to
-        # an entry or container by typing its path directly in the browser.
-        if path.find('/') > -1:
-            return redirect("/manage")
-
-        return template(MANAGE_PASSWORDS_TEMPLATE,
-                        status_msg=None)
+        return template(MANAGE_PASSWORDS_TEMPLATE, status_msg=None)
 
     return redirect("/")
 
