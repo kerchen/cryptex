@@ -130,9 +130,13 @@ function moveFolder(encodedPath) {
 }
 
 
-function deleteFolder(encodedPath) {
-    // Causes a transition to the delete-folder page.
-    post('/manage-command', {action: 'delete-folder', encoded_path: encodedPath});
+function deleteFolder(folderPath) {
+    // Prompt the user for confirmation and have onConfirmAction run if the
+    // user confirms.
+    header = 'Delete Folder?';
+    body = 'Delete ' + folderPath + ' and all sub-folders and entries it contains? This action cannot be undone.';
+    onConfirmAction = 'deleteFolderCommit("' + folderPath + '")'
+    confirmAction(header, body, onConfirmAction)
 }
 
 
@@ -190,9 +194,13 @@ function moveEntry(encodedPath) {
 }
 
 
-function deleteEntry(encodedPath) {
-    // Causes a transition to the delete-entry page.
-    post('/manage-command', {action: 'delete-entry', encoded_path: encodedPath});
+function deleteEntry(entryPath) {
+    // Prompt the user for confirmation and have onConfirmAction run if the
+    // user confirms.
+    header = 'Delete Entry?';
+    body = 'Delete ' + entryPath + '? This action cannot be undone.';
+    onConfirmAction = 'deleteEntryCommit("' + entryPath + '")'
+    confirmAction(header, body, onConfirmAction)
 }
 
 

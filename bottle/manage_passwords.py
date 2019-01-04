@@ -14,11 +14,9 @@ MANAGE_PASSWORDS_TEMPLATE = "manage-store.html"
 CREATE_FOLDER_TEMPLATE = "create-folder.html"
 EDIT_FOLDER_TEMPLATE = "edit-folder.html"
 MOVE_FOLDER_TEMPLATE = "move-folder.html"
-DELETE_FOLDER_TEMPLATE = "delete-folder.html"
 CREATE_ENTRY_TEMPLATE = "create-entry.html"
 EDIT_ENTRY_TEMPLATE = "edit-entry.html"
 MOVE_ENTRY_TEMPLATE = "move-entry.html"
-DELETE_ENTRY_TEMPLATE = "delete-entry.html"
 
 
 @route('/manage<path:re:/.*>')
@@ -88,13 +86,6 @@ def handle_manage_command_post():
                             item_path=entry_path,
                             destination_path='/',
                             status_msg=None)
-        elif request.forms.get('action') == 'delete-entry':
-            log.debug("Delete entry button pressed")
-            entry_path = decode_path(request.forms.get('encoded_path'))
-            parent_path, _ = os.path.split(entry_path)
-            shared_cfg.change_session_path(parent_path)
-            return template(DELETE_ENTRY_TEMPLATE,
-                            path=entry_path)
         elif request.forms.get('action') == 'show-session-path':
             return redirect("/manage")
         elif request.forms.get('action') == 'create-folder':
@@ -128,13 +119,6 @@ def handle_manage_command_post():
                             path=parent_path,
                             status_msg=None,
                             data=data)
-        elif request.forms.get('action') == 'delete-folder':
-            log.debug("Delete folder button pressed")
-            folder_path = decode_path(request.forms.get('encoded_path'))
-            parent_path, _ = os.path.split(folder_path)
-            shared_cfg.change_session_path(parent_path)
-            return template(DELETE_FOLDER_TEMPLATE,
-                            path=folder_path)
     return redirect("/")
 
 

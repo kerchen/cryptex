@@ -44,7 +44,7 @@
         % if level != "/":
             % folder_drop_items.append(("move folder", "moveFolder", "{0}".format(encoded_folder_path)))
             % folder_drop_items.append(("edit folder", "editFolder", "{0}".format(encoded_folder_path)))
-            % folder_drop_items.append(("delete folder", "deleteFolder", "{0}".format(encoded_folder_path)))
+            % folder_drop_items.append(("delete folder", "deleteFolder", "{0}".format(level)))
         % end
     % end
     % if item_count > 0:
@@ -81,13 +81,14 @@
             <li>
                 <span style="display:inline-block; width: 12px;"></span>
             % if use_dropdowns:
-                % encoded_entry_path = path_util.encode_path(level + "/" + e)
+                % entry_path = path_util.simplify_path(level + "/" + e)
+                % encoded_entry_path = path_util.encode_path(entry_path)
                 % entry_drop_items = [ ]
                 % if show_move:
                     % entry_drop_items.append(("move entry", "moveEntry", "{0}".format(encoded_entry_path)))
                 % end
                 % entry_drop_items.append(("edit entry", "editEntry", "{0}".format(encoded_entry_path)))
-                % entry_drop_items.append(("delete entry", "deleteEntry", "{0}".format(encoded_entry_path)))
+                % entry_drop_items.append(("delete entry", "deleteEntry", "{0}".format(entry_path)))
 
                 % dropdown_id = "edd{0}".format(sha1(encoded_entry_path).hexdigest())
                 % include('dropdown.tpl',
