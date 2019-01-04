@@ -2,7 +2,6 @@ from bottle import (post, redirect, request, route, template)
 import logging
 import os
 
-from path_util import decode_path, encode_path
 from pw_store import (Entry, EntryContainer, ECDuplicateException,
                       ECException, ECNaughtyCharacterException)
 import shared_cfg
@@ -54,15 +53,17 @@ def handle_manage_command_post():
             return redirect("/manage")
         elif request.forms.get('action') == 'create-entry':
             log.debug("Create entry button pressed")
-            shared_cfg.change_session_path(
-                decode_path(request.forms.get('encoded_parent_path')))
-            return template(CREATE_ENTRY_TEMPLATE,
-                            path=shared_cfg.session.path,
-                            status_msg=None,
-                            data=None)
+            if shared_cfg.change_session_path(request.forms.get('parent_path')):
+                return template(CREATE_ENTRY_TEMPLATE,
+                                path=shared_cfg.session.path,
+                                status_msg=None,
+                                data=None)
+            log.warning("Create entry failed: Couldn't set session path "
+                        "to {0}".format(request.forms.get('parent_path')))
+            return redirect("/manage")
         elif request.forms.get('action') == 'edit-entry':
             log.debug("Edit entry button pressed")
-            entry_path = decode_path(request.forms.get('encoded_path'))
+            entry_path = request.forms.get('entry_path')
             parent_path, _ = os.path.split(entry_path)
             shared_cfg.change_session_path(parent_path)
             entry_name, entry = shared_cfg.get_entry_by_path(entry_path)
@@ -80,8 +81,8 @@ def handle_manage_command_post():
                             data=data)
         elif request.forms.get('action') == 'move-entry':
             log.debug("Move entry button pressed. path = "
-                      "{}".format(request.forms.get('encoded_path')))
-            entry_path = decode_path(request.forms.get('encoded_path'))
+                      "{}".format(request.forms.get('entry_path')))
+            entry_path = request.forms.get('entry_path')
             parent_path, _ = os.path.split(entry_path)
             shared_cfg.change_session_path(parent_path)
             return template(MOVE_ENTRY_TEMPLATE,
@@ -89,7 +90,7 @@ def handle_manage_command_post():
                             destination_path='/',
                             status_msg=None)
         elif request.forms.get('action') == 'create-folder':
-            parent_path = decode_path(request.forms.get('encoded_parent_path'))
+            parent_path = request.forms.get('parent_path')
             shared_cfg.change_session_path(parent_path)
             log.debug("Create folder button pressed. path = "
                       "{}".format(parent_path))
@@ -98,8 +99,8 @@ def handle_manage_command_post():
                             status_msg=None)
         elif request.forms.get('action') == 'move-folder':
             log.debug("Move folder button pressed. path = "
-                      "{}".format(request.forms.get('encoded_path')))
-            folder_path = decode_path(request.forms.get('encoded_path'))
+                      "{}".format(request.forms.get('folder_path')))
+            folder_path = request.forms.get('folder_path')
             parent_path, _ = os.path.split(folder_path)
             shared_cfg.change_session_path(parent_path)
             return template(MOVE_FOLDER_TEMPLATE,
@@ -108,7 +109,7 @@ def handle_manage_command_post():
                             status_msg=None)
         elif request.forms.get('action') == 'edit-folder':
             log.debug("Edit folder button pressed")
-            folder_path = decode_path(request.forms.get('encoded_path'))
+            folder_path = request.forms.get('folder_path')
             parent_path, folder_name = os.path.split(folder_path)
             shared_cfg.change_session_path(parent_path)
             data = dict()

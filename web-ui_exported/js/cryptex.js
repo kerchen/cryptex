@@ -112,21 +112,21 @@ function updateMasterPasswordCommit() {
 }
 
 
-function createFolder(encodedParentPath) {
+function createFolder(parentPath) {
     // Causes a transition to the create-folder page.
-    post('/manage-command', {action: 'create-folder', encoded_parent_path: encodedParentPath});
+    post('/manage-command', {action: 'create-folder', parent_path: parentPath});
 }
 
 
-function editFolder(encodedPath) {
+function editFolder(folderPath) {
     // Causes a transition to the edit-folder page.
-    post('/manage-command', {action: 'edit-folder', encoded_path: encodedPath});
+    post('/manage-command', {action: 'edit-folder', folder_path: folderPath});
 }
 
 
-function moveFolder(encodedPath) {
+function moveFolder(folderPath) {
     // Causes a transition to the move-folder page.
-    post('/manage-command', {action: 'move-folder', encoded_path: encodedPath});
+    post('/manage-command', {action: 'move-folder', folder_path: folderPath});
 }
 
 
@@ -179,21 +179,21 @@ function deleteFolderCommit(folderPath) {
 }
 
 
-function createEntry(encodedParentPath) {
+function createEntry(parentPath) {
     // Causes a transition to the create-entry page.
-    post('/manage-command', {action: 'create-entry', encoded_parent_path: encodedParentPath});
+    post('/manage-command', {action: 'create-entry', parent_path: parentPath});
 }
 
 
-function editEntry(encodedPath) {
+function editEntry(entryPath) {
     // Causes a transition to the edit-entry page.
-    post('/manage-command', {action: 'edit-entry', encoded_path: encodedPath});
+    post('/manage-command', {action: 'edit-entry', entry_path: entryPath});
 }
 
 
-function moveEntry(encodedPath) {
+function moveEntry(entryPath) {
     // Causes a transition to the move-entry page.
-    post('/manage-command', {action: 'move-entry', encoded_path: encodedPath});
+    post('/manage-command', {action: 'move-entry', entry_path: entryPath});
 }
 
 

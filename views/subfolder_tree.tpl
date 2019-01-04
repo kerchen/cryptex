@@ -36,14 +36,13 @@
     % end
     % folder_drop_items = None
     % entry_drop_items = None
-    % encoded_folder_path = path_util.encode_path(level)
     % if use_dropdowns:
         % folder_drop_items = [
-        %   ("create entry", "createEntry", "{0}".format(encoded_folder_path)),
-        %   ("create sub-folder", "createFolder", "{0}".format(encoded_folder_path)) ]
+        %   ("create entry", "createEntry", "{0}".format(level)),
+        %   ("create sub-folder", "createFolder", "{0}".format(level)) ]
         % if level != "/":
-            % folder_drop_items.append(("move folder", "moveFolder", "{0}".format(encoded_folder_path)))
-            % folder_drop_items.append(("edit folder", "editFolder", "{0}".format(encoded_folder_path)))
+            % folder_drop_items.append(("move folder", "moveFolder", "{0}".format(level)))
+            % folder_drop_items.append(("edit folder", "editFolder", "{0}".format(level)))
             % folder_drop_items.append(("delete folder", "deleteFolder", "{0}".format(level)))
         % end
     % end
@@ -54,13 +53,13 @@
             % # These IDs are saved in cookies, so they need to use a salt
             % # to make it harder to figure out the names of the folders in
             % # the store.
-            % id = "tn{0}".format(sha1(encoded_folder_path + hash_salt).hexdigest())
+            % id = "tn{0}".format(sha1(level + hash_salt).hexdigest())
             <li><span id="{{id}}" class="caret"></span>
         % else:
             <li><span class="caret"></span>
         % end
         % if use_dropdowns:
-            % dropdown_id = "fdd{0}".format(sha1(encoded_folder_path).hexdigest())
+            % dropdown_id = "fdd{0}".format(sha1(level).hexdigest())
             % include('dropdown.tpl',
             %         item_text=level_name,
             %         item_type='folder',
@@ -82,15 +81,14 @@
                 <span style="display:inline-block; width: 12px;"></span>
             % if use_dropdowns:
                 % entry_path = path_util.simplify_path(level + "/" + e)
-                % encoded_entry_path = path_util.encode_path(entry_path)
                 % entry_drop_items = [ ]
                 % if show_move:
-                    % entry_drop_items.append(("move entry", "moveEntry", "{0}".format(encoded_entry_path)))
+                    % entry_drop_items.append(("move entry", "moveEntry", "{0}".format(entry_path)))
                 % end
-                % entry_drop_items.append(("edit entry", "editEntry", "{0}".format(encoded_entry_path)))
+                % entry_drop_items.append(("edit entry", "editEntry", "{0}".format(entry_path)))
                 % entry_drop_items.append(("delete entry", "deleteEntry", "{0}".format(entry_path)))
 
-                % dropdown_id = "edd{0}".format(sha1(encoded_entry_path).hexdigest())
+                % dropdown_id = "edd{0}".format(sha1(entry_path).hexdigest())
                 % include('dropdown.tpl',
                 %         item_text=e,
                 %         item_type='entry',
@@ -107,7 +105,7 @@
         <li>
             <span style="display:inline-block; width: 12px;"></span>
         % if use_dropdowns:
-            % dropdown_id = "fdd{0}".format(sha1(encoded_folder_path).hexdigest())
+            % dropdown_id = "fdd{0}".format(sha1(level).hexdigest())
             % include('dropdown.tpl',
             %         item_text=level_name,
             %         item_type='folder',
