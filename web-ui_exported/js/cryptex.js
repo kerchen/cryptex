@@ -93,9 +93,9 @@ function createStoreCommit() {
 }
 
 
-function manageShowSessionPath() {
-    // Returns to the management page, showing the current session path.
-    post('/manage-command', {action: 'show-session-path'});
+function showManagePage() {
+    // Returns to the management page.
+    post('/manage-command', {action: 'show-manage'});
 }
 
 

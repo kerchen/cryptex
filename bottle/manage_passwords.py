@@ -50,7 +50,9 @@ def manage_path(path):
 def handle_manage_command_post():
     log.debug("Handling management command post")
     if shared_cfg.validate_session(request):
-        if request.forms.get('action') == 'create-entry':
+        if request.forms.get('action') == 'show-manage':
+            return redirect("/manage")
+        elif request.forms.get('action') == 'create-entry':
             log.debug("Create entry button pressed")
             shared_cfg.change_session_path(
                 decode_path(request.forms.get('encoded_parent_path')))
@@ -86,8 +88,6 @@ def handle_manage_command_post():
                             item_path=entry_path,
                             destination_path='/',
                             status_msg=None)
-        elif request.forms.get('action') == 'show-session-path':
-            return redirect("/manage")
         elif request.forms.get('action') == 'create-folder':
             parent_path = decode_path(request.forms.get('encoded_parent_path'))
             shared_cfg.change_session_path(parent_path)
