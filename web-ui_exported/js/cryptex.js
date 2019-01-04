@@ -133,8 +133,11 @@ function moveFolder(encodedPath) {
 function deleteFolder(folderPath) {
     // Prompt the user for confirmation and have onConfirmAction run if the
     // user confirms.
+    var pp = folderPath.split('/');
     header = 'Delete Folder?';
-    body = 'Delete ' + folderPath + ' and all sub-folders and entries it contains? This action cannot be undone.';
+    body = 'Are you sure you want to delete the folder named "'
+            + pp[pp.length-1]
+            + '" and all the sub-folders and entries it may contain? This action cannot be undone.';
     onConfirmAction = 'deleteFolderCommit("' + folderPath + '")'
     confirmAction(header, body, onConfirmAction)
 }
@@ -197,8 +200,11 @@ function moveEntry(encodedPath) {
 function deleteEntry(entryPath) {
     // Prompt the user for confirmation and have onConfirmAction run if the
     // user confirms.
+    var pp = entryPath.split('/');
     header = 'Delete Entry?';
-    body = 'Delete ' + entryPath + '? This action cannot be undone.';
+    body = 'Are you sure you want to delete the entry named "'
+        + pp[pp.length - 1]
+        + '"? This action cannot be undone.';
     onConfirmAction = 'deleteEntryCommit("' + entryPath + '")'
     confirmAction(header, body, onConfirmAction)
 }
