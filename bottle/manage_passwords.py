@@ -157,9 +157,9 @@ def handle_create_entry_post():
                           "entry.".format(entry[1]))
         except ECNaughtyCharacterException:
             log.debug("Bad character in entry name {0}".format(entry[1]))
-            status_msg = ("Entry names can only contain spaces and these "
-                          "characters: "
-                          "{0}".format(" ".join(shared_cfg.LEGAL_NAME_CHARS)))
+            status_msg = ("Entry names cannot contain any of these "
+                          "characters: {0}"
+                          .format(" ".join(shared_cfg.ILLEGAL_NAME_CHARS)))
         except ECException as ex:
             log.debug("Unexpected problem while adding entry "
                       "{0}".format(entry[1]))
@@ -225,10 +225,9 @@ def handle_edit_entry_post():
                           .format(entry_name))
         except ECNaughtyCharacterException:
             log.debug("Bad character in entry name {0}".format(entry_name))
-            status_msg = ("Entry names can only contain spaces and these "
-                          "characters: "
-                          "{0}. Please try again."
-                          .format(" ".join(shared_cfg.LEGAL_NAME_CHARS)))
+            status_msg = ("Entry names cannot contain these "
+                          "characters: {0}. Please try again."
+                          .format(" ".join(shared_cfg.ILLEGAL_NAME_CHARS)))
         except ECException as ex:
             log.debug("Unexpected problem while updating entry "
                       "{0}:{1}".format(current_entry_name, ex))
@@ -315,10 +314,10 @@ def handle_new_container_post():
                           "name.".format(cont_name))
         except ECNaughtyCharacterException:
             log.debug("Bad character in container name {0}".format(cont_name))
-            status_msg = ("Folder names can only contain spaces and these "
+            status_msg = ("Folder names cannot contain these "
                           "characters:{0}. Please enter a name "
-                          "containing only those characters."
-                          .format(" ".join(shared_cfg.LEGAL_NAME_CHARS)))
+                          "which does not use any of those characters."
+                          .format(" ".join(shared_cfg.ILLEGAL_NAME_CHARS)))
         except ECException as ex:
             log.debug("Exception while adding container {0}".format(cont_name))
             status_msg = "The folder could not be added. Reason: {0}".format(ex)
@@ -360,10 +359,9 @@ def handle_edit_folder_post():
                           .format(new_folder_name))
         except ECNaughtyCharacterException:
             log.debug("Bad character in folder name {0}".format(new_folder_name))
-            status_msg = ("Folder names can only contain spaces and these "
-                          "characters: "
-                          "{0}. Please try again."
-                          .format(" ".join(shared_cfg.LEGAL_NAME_CHARS)))
+            status_msg = ("Folder names cannot contain any of these "
+                          "characters: {0}. Please try again."
+                          .format(" ".join(shared_cfg.ILLEGAL_NAME_CHARS)))
         except ECException as ex:
             log.debug("Unexpected problem while updating folder "
                       "{0}:{1}".format(current_folder_name, ex))

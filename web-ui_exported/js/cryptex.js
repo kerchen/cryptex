@@ -47,6 +47,7 @@ function setHTMLInputValue(id, value) {
 }
 
 
+
 function setCookie(cname, cvalue) {
   document.cookie = cname + "=" + cvalue + ";path=/";
 }

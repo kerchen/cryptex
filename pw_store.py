@@ -10,8 +10,8 @@ from path_util import simplify_path
 
 log = logging.getLogger(__name__)
 
-LEGAL_NAME_CHARS = r"a-zA-Z0-9~\-_ "
-ILLEGAL_CHAR_RE = re.compile("[^"+LEGAL_NAME_CHARS+"]")
+ILLEGAL_NAME_CHARS = '"\'\\/&<>'
+ILLEGAL_CHAR_RE = re.compile("["+ILLEGAL_NAME_CHARS+"]")
 
 
 class ECException(Exception):
