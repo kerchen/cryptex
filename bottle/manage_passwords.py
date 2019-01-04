@@ -42,14 +42,8 @@ def manage_path(path):
         if path.find('/') > -1:
             return redirect("/manage")
 
-        path = decode_path(path)
-        log.debug("Routing to path {0}".format(path))
-        if shared_cfg.change_session_path(path):
-            return template(MANAGE_PASSWORDS_TEMPLATE,
-                            path=shared_cfg.session.path,
-                            status_msg=None)
-        else:
-            return redirect("/manage")
+        return template(MANAGE_PASSWORDS_TEMPLATE,
+                        status_msg=None)
 
     return redirect("/")
 
@@ -102,7 +96,7 @@ def handle_manage_command_post():
             return template(DELETE_ENTRY_TEMPLATE,
                             path=entry_path)
         elif request.forms.get('action') == 'show-session-path':
-            return manage_path(encode_path(shared_cfg.session.path))
+            return redirect("/manage")
         elif request.forms.get('action') == 'create-folder':
             parent_path = decode_path(request.forms.get('encoded_parent_path'))
             shared_cfg.change_session_path(parent_path)
@@ -202,7 +196,7 @@ def handle_create_entry_post():
                                 status_msg=status_msg,
                                 data=retry_data)
 
-        return redirect("/manage"+encode_path(shared_cfg.session.path))
+        return redirect("/manage")
     return redirect("/")
 
 
@@ -271,7 +265,7 @@ def handle_edit_entry_post():
                                 status_msg=status_msg,
                                 data=retry_data)
 
-        return redirect("/manage"+encode_path(shared_cfg.session.path))
+        return redirect("/manage")
     return redirect("/")
 
 
@@ -305,7 +299,7 @@ def handle_move_entry_post():
                                 destination_path=destination_path,
                                 status_msg=status_msg)
 
-        return redirect("/manage"+encode_path(shared_cfg.session.path))
+        return redirect("/manage")
     return redirect("/")
 
 
@@ -319,7 +313,7 @@ def handle_delete_entry_post():
         except ECException as ex:
             log.debug("Unexpected problem while deleting entry "
                       "{0}:{1}".format(entry_path, ex))
-        return redirect("/manage"+encode_path(shared_cfg.session.path))
+        return redirect("/manage")
     return redirect("/")
 
 
@@ -358,9 +352,7 @@ def handle_new_container_post():
                 return template(template_name,
                                 path=shared_cfg.session.path,
                                 status_msg=status_msg)
-        return redirect("/manage{0}+{1}".format(
-            encode_path(shared_cfg.session.path),
-            cont_name))
+        return redirect("/manage")
     return redirect("/")
 
 
@@ -408,7 +400,7 @@ def handle_edit_folder_post():
                                 status_msg=status_msg,
                                 data=retry_data)
 
-        return redirect("/manage"+encode_path(shared_cfg.session.path))
+        return redirect("/manage")
     return redirect("/")
 
 
@@ -442,7 +434,7 @@ def handle_move_folder_post():
                                 destination_path=destination_path,
                                 status_msg=status_msg)
 
-        return redirect("/manage"+encode_path(shared_cfg.session.path))
+        return redirect("/manage")
     return redirect("/")
 
 
@@ -456,7 +448,7 @@ def handle_delete_folder_post():
         except ECException as ex:
             log.debug("Unexpected problem while deleting folder "
                       "{0}:{1}".format(folder_path, ex))
-        return redirect("/manage"+encode_path(shared_cfg.session.path))
+        return redirect("/manage")
     return redirect("/")
 
 

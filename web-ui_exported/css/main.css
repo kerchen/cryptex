@@ -68,18 +68,6 @@ span.text-element#text-3 {
   font-size: 14px;
 }
 
-span.text-element#text-1-copy-3 {
-  margin-top: 1px;
-  margin-right: 12px;
-  padding-right: 6px;
-  padding-left: 0;
-  text-align: right;
-}
-
-span.text-element#text-1-copy-2 {
-  text-align: right;
-}
-
 span.text-element.manage-label.manage-msg {
   text-align: left;
   text-transform: none;
@@ -92,11 +80,6 @@ span.text-element#text-1 {
 
 span.text-element#text-2 {
   float: right;
-  text-align: right;
-}
-
-span.text-element#text-1-copy-1 {
-  padding-right: 12px;
   text-align: right;
 }
 
@@ -289,24 +272,6 @@ body > .row.row-2 {
   margin-bottom: 15px;
 }
 
-body > .row > [class*='col-xs-'].column-2 {
-  min-height: 30px;
-  background-color: #dfeef0;
-}
-
-body > .row > [class*='col-xs-'].column-4 {
-  min-height: 30px;
-  background-color: #dfeef0;
-}
-
-body > .row.row-3 {
-  min-height: 30px;
-}
-
-body > .row > [class*='col-xs-'].column-5 {
-  padding-right: 0;
-}
-
 body > .row > [class*='col-xs-'].column-6 {
   padding-right: 0;
   padding-left: 4px;
@@ -379,35 +344,6 @@ button.btn.ignition {
   color: #fff;
   font-weight: 300;
   font-family: 'Roboto Condensed', cursive;
-}
-
-.row > [class*='col-xs-'] .html-element.html-element-2 {
-  margin-top: 0;
-}
-
-button.btn.icon-btn {
-  float: right;
-  padding: .6rem .35rem .5rem 1.25rem;
-  background-color: #fc6300;
-  background-image: url('../images/BlankIcon.png');
-  background-attachment: scroll;
-  background-position: center center;
-  background-clip: border-box;
-  background-origin: padding-box;
-  background-size: auto auto;
-  background-repeat: no-repeat;
-
-  background-blend-mode: normal;
-}
-
-button#button-1 {
-  margin-top: 4px;
-  background-image: url('../images/AddIcon.png');
-}
-
-button#button-2 {
-  margin-top: 4px;
-  background-image: url('../images/AddIcon.png');
 }
 
 button.dropdown-btn {
