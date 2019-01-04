@@ -47,6 +47,34 @@ function setHTMLInputValue(id, value) {
 }
 
 
+function setCookie(cname, cvalue) {
+  document.cookie = cname + "=" + cvalue + ";path=/";
+}
+
+
+function deleteCookie(cname) {
+    document.cookie = cname + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+}
+
+
+function getCookiesWithPrefix(prefix) {
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  var matches = [];
+  for(var i = 0; i < ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(prefix) == 0) {
+      key_value = c.split('=');
+      matches.push(key_value[0]);
+    }
+  }
+  return matches;
+}
+
+
 function loginCommit() {
     // Uses the entered password to try to log in.
     var password = document.getElementById("password-store-pw").value;

@@ -10,6 +10,9 @@
 % #             display dropdown menus when clicked. If false, the default 'onclick'
 % #             behavior will be used (which is to invoke the switchLevel() function
 % #             for folders and do nothing for entries).
+% # hash_salt: A string that will be appended to cookie data before hashing. The
+% #             session key is a good candidate for this value. A value of None
+% #             means state data won't be saved for this tree.
 
 % from hashlib import sha1
 % import path_util
@@ -33,8 +36,8 @@
     % end
     % folder_drop_items = None
     % entry_drop_items = None
+    % encoded_folder_path = path_util.encode_path(level)
     % if use_dropdowns:
-        % encoded_folder_path = path_util.encode_path(level)
         % folder_drop_items = [
         %   ("create entry", "createEntry", "{0}".format(encoded_folder_path)),
         %   ("create sub-folder", "createFolder", "{0}".format(encoded_folder_path)) ]
@@ -45,7 +48,17 @@
         % end
     % end
     % if item_count > 0:
-        <li><span class="caret"></span>
+        % if level == "/":
+            <li><span id="root" class="caret"></span>
+        % elif hash_salt:
+            % # These IDs are saved in cookies, so they need to use a salt
+            % # to make it harder to figure out the names of the folders in
+            % # the store.
+            % id = "tn{0}".format(sha1(encoded_folder_path + hash_salt).hexdigest())
+            <li><span id="{{id}}" class="caret"></span>
+        % else:
+            <li><span class="caret"></span>
+        % end
         % if use_dropdowns:
             % dropdown_id = "fdd{0}".format(sha1(encoded_folder_path).hexdigest())
             % include('dropdown.tpl',
