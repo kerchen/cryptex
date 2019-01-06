@@ -71,7 +71,6 @@ def handle_manage_command_post():
                       "{}".format(request.forms.get('entry_path')))
             entry_path = request.forms.get('entry_path')
             parent_path, _ = os.path.split(entry_path)
-            shared_cfg.change_session_path(parent_path)
             return template(MOVE_ENTRY_TEMPLATE,
                             item_path=entry_path,
                             destination_path='/',
