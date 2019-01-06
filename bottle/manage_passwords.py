@@ -95,13 +95,12 @@ def handle_manage_command_post():
             log.debug("Edit folder button pressed")
             folder_path = request.forms.get('folder_path')
             parent_path, folder_name = os.path.split(folder_path)
-            shared_cfg.change_session_path(parent_path)
             data = dict()
+            data['parent_path'] = parent_path
             data['current_folder_name'] = folder_name
             data['new_folder_name'] = folder_name
 
             return template(EDIT_FOLDER_TEMPLATE,
-                            path=parent_path,
                             status_msg=None,
                             data=data)
     return redirect("/")
@@ -330,29 +329,30 @@ def handle_create_folder_post():
 @post('/manage-edit-folder')
 def handle_edit_folder_post():
     log.debug("Handling edit folder post")
-    status_msg = None
     if shared_cfg.validate_session(request):
         template_name = EDIT_FOLDER_TEMPLATE
+        parent_path = request.forms.get('parent_path')
         current_folder_name = request.forms.get('current_folder_name')
         new_folder_name = request.forms.get('new_folder_name').strip()
         retry_data = {
+            "parent_path": parent_path,
             "current_folder_name": current_folder_name,
             "new_folder_name": new_folder_name
         }
 
         if not new_folder_name:
             return template(template_name,
-                            path=shared_cfg.session.path,
                             status_msg=("Folder names cannot be empty. Please "
                                         "try again."),
                             data=retry_data)
-        container_path = shared_cfg.session.path + "/" + current_folder_name
+        container_path = parent_path + "/" + current_folder_name
+        status_msg = None
         try:
             shared_cfg.rename_container(container_path, new_folder_name)
         except ECDuplicateException:
             log.debug("Duplicate folder name {0}".format(new_folder_name))
             status_msg = ("'{0}' is already the name of another "
-                          "folder in the current folder. Please try again."
+                          "folder in the parent folder. Please try again."
                           .format(new_folder_name))
         except ECNaughtyCharacterException:
             log.debug("Bad character in folder name {0}".format(new_folder_name))
@@ -366,7 +366,6 @@ def handle_edit_folder_post():
         finally:
             if status_msg:
                 return template(template_name,
-                                path=shared_cfg.session.path,
                                 status_msg=status_msg,
                                 data=retry_data)
 

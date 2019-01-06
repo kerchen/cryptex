@@ -62,12 +62,6 @@ span.text-element.manage-label {
   font-family: 'Roboto', cursive;
 }
 
-span.text-element#text-3 {
-  padding-top: 4px;
-  text-align: left;
-  font-size: 14px;
-}
-
 span.text-element.manage-label.manage-msg {
   text-align: left;
   text-transform: none;
@@ -461,10 +455,6 @@ button.dropdown-btn {
     font-size: 14px;
   }
 
-  span.text-element#text-3 {
-    font-size: 16px;
-  }
-
   span.text-element#item-path-text {
     font-size: 16px;
   }
@@ -576,10 +566,6 @@ button.dropdown-btn {
     font-size: 15px;
   }
 
-  span.text-element#text-3 {
-    font-size: 17px;
-  }
-
   span.text-element#item-path-text {
     font-size: 17px;
   }
@@ -675,11 +661,6 @@ button.dropdown-btn {
     color: #fc6300;
     font-size: 18px;
     font-family: 'Roboto', cursive;
-  }
-
-  span.text-element#text-3 {
-    text-align: left;
-    font-size: 18px;
   }
 
   span.text-element.manage-label.manage-msg {

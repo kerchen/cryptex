@@ -278,11 +278,13 @@ function editFolderCommit() {
     // Causes a folder to be updated using data from fields in the edit-folder page.
     // Note that the current folder name is stashed in the element that displays
     // the current name, using a custom attribute named 'data-current-folder-name'.
+    var parentPath = document.getElementById("parent-path-text").getAttribute("data-parent-path");
     var currentFolderName = document.getElementById("current-folder-name-text").getAttribute("data-current-folder-name");
     var newFolderName = document.getElementById("folder-name-input").value;
 
     post('/manage-edit-folder',
-         {current_folder_name: currentFolderName,
+         {parent_path: parentPath,
+          current_folder_name: currentFolderName,
           new_folder_name: newFolderName});
 }
 
