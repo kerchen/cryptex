@@ -77,11 +77,10 @@ def handle_manage_command_post():
                             status_msg=None)
         elif request.forms.get('action') == 'create-folder':
             parent_path = request.forms.get('parent_path')
-            shared_cfg.change_session_path(parent_path)
             log.debug("Create folder button pressed. path = "
                       "{}".format(parent_path))
             return template(CREATE_FOLDER_TEMPLATE,
-                            path=parent_path,
+                            parent_path=parent_path,
                             status_msg=None)
         elif request.forms.get('action') == 'move-folder':
             log.debug("Move folder button pressed. path = "
@@ -289,40 +288,41 @@ def handle_delete_entry_post():
     return redirect("/")
 
 
-@post('/manage-new-container')
-def handle_new_container_post():
-    log.debug("Handling new container post")
+@post('/manage-create-folder')
+def handle_create_folder_post():
+    log.debug("Handling create folder post")
     if shared_cfg.validate_session(request):
         template_name = CREATE_FOLDER_TEMPLATE
-        cont_name = request.forms.get('name').strip()
-        log.debug("New container post for name {}".format(cont_name))
-        if not cont_name:
+        parent_path = request.forms.get('parent_path')
+        folder_name = request.forms.get('name').strip()
+        log.debug("Create folder post for name {}".format(folder_name))
+        if not folder_name:
             return template(template_name,
-                            path=shared_cfg.session.path,
+                            parent_path=parent_path,
                             status_msg="Folder names cannot be empty. "
                                        "Please try again.")
-        cont = EntryContainer()
+        folder = EntryContainer()
         status_msg = None
         try:
-            shared_cfg.add_container(cont, cont_name)
+            shared_cfg.add_container(folder, folder_name, parent_path)
         except ECDuplicateException:
-            log.debug("Duplicate container name {0}".format(cont_name))
+            log.debug("Duplicate container name {0}".format(folder_name))
             status_msg = ("There is already a folder with the name {0} "
-                          "in the current folder. Please enter a different "
-                          "name.".format(cont_name))
+                          "in the parent folder. Please enter a different "
+                          "name.".format(folder_name))
         except ECNaughtyCharacterException:
-            log.debug("Bad character in container name {0}".format(cont_name))
+            log.debug("Bad character in container name {0}".format(folder_name))
             status_msg = ("Folder names cannot contain these "
                           "characters:{0}. Please enter a name "
                           "which does not use any of those characters."
                           .format(" ".join(shared_cfg.ILLEGAL_NAME_CHARS)))
         except ECException as ex:
-            log.debug("Exception while adding container {0}".format(cont_name))
+            log.debug("Exception while adding container {0}".format(folder_name))
             status_msg = "The folder could not be added. Reason: {0}".format(ex)
         finally:
             if status_msg:
                 return template(template_name,
-                                path=shared_cfg.session.path,
+                                parent_path=parent_path,
                                 status_msg=status_msg)
         return redirect("/manage")
     return redirect("/")

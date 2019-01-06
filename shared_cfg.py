@@ -219,13 +219,13 @@ def remove_entry(entry_path):
         config_lock.release()
 
 
-def add_container(cont, cont_name):
-    global config_lock, master_store, pw_store_filename, master_password, session
+def add_container(cont, cont_name, parent_path):
+    global config_lock, master_store, pw_store_filename, master_password
 
     config_lock.acquire()
     try:
-        if master_store and master_password and session:
-            master_store.add_container(cont, cont_name, session.path)
+        if master_store and master_password:
+            master_store.add_container(cont, cont_name, parent_path)
             master_store.save(master_password, pw_store_filename)
     finally:
         config_lock.release()

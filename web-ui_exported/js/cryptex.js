@@ -242,9 +242,14 @@ function deleteEntry(entryPath) {
 
 function createFolderCommit() {
     // Causes a new folder to be created, named according to what the user entered.
+    // Note that the parent folder path is stashed in the element that displays
+    // the parent path, using a custom attribute.
+    var parentPath = document.getElementById("parent-path-text").getAttribute("data-parent-path");
     var folderName = document.getElementById("folder-name-input").value;
 
-    post('/manage-new-container', {name: folderName});
+    post('/manage-create-folder',
+         {parent_path: parentPath,
+          name: folderName});
 }
 
 

@@ -38,16 +38,16 @@
   </div>
   <div class="row">
     <div class="col-xs-4 col-sm-3 col-lg-3 col-xl-3 offset-lg-1 offset-xl-2 offset-md-1">
-      <span class="text-element manage-label" id="text-2">Current folder:</span>
+      <span class="text-element manage-label" id="text-2">parent folder</span>
     </div>
     <div class="col-xs-8 col-sm-9 col-lg-7 col-xl-5 col-md-7">
-      <span class="text-element manage-label" id="text-3">{{path}}</span>
+      <span class="text-element read-only-value-text" id="parent-path-text" data-parent-path="{{parent_path}}">{{parent_path}}</span>
     </div>
   </div>
   <div class="row full-width-row">
     <div class="col-xs-12 ignition">
       <form class="form-container">
-        <p class="paragraph intro-paragraph">The folder name cannot be empty and it must be different from all other folders in the current folder.</p>
+        <p class="paragraph intro-paragraph">The folder name cannot be empty and it must be different from all other folders in the parent folder.</p>
         <div class="subgrid">
           <div class="row">
             <div class="col-xs-6 subgrid-column-3"><label class="label entry-label">Folder Name</label>
