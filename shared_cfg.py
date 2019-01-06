@@ -286,19 +286,6 @@ def remove_container(container_path):
         config_lock.release()
 
 
-def change_session_path(path):
-    global config_lock, master_store, session
-    success = False
-    config_lock.acquire()
-    simp_path = pw_store.simplify_path(path)
-    if session and master_store and master_store.is_valid_path(simp_path):
-        log.debug("Changing session path to {0}".format(simp_path))
-        session.path = simp_path
-        success = True
-    config_lock.release()
-    return success
-
-
 def get_entry_by_path(path):
     global master_store
 
