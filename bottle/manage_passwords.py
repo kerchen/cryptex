@@ -43,14 +43,12 @@ def handle_manage_command_post():
             return redirect("/manage")
         elif request.forms.get('action') == 'create-entry':
             log.debug("Create entry button pressed")
-            if shared_cfg.change_session_path(request.forms.get('parent_path')):
-                return template(CREATE_ENTRY_TEMPLATE,
-                                path=shared_cfg.session.path,
-                                status_msg=None,
-                                data=None)
-            log.warning("Create entry failed: Couldn't set session path "
-                        "to {0}".format(request.forms.get('parent_path')))
-            return redirect("/manage")
+            parent_path = request.forms.get('parent_path')
+            data = dict()
+            data['parent_path'] = parent_path
+            return template(CREATE_ENTRY_TEMPLATE,
+                            status_msg=None,
+                            data=data)
         elif request.forms.get('action') == 'edit-entry':
             log.debug("Edit entry button pressed")
             entry_path = request.forms.get('entry_path')
@@ -115,25 +113,28 @@ def handle_manage_command_post():
 
 def process_new_entry_input(template_name):
     log.debug("Checking new Entry input data.")
-    ent_name = request.forms.get('entryname').strip()
+    parent_path = request.forms.get('parent_path')
+    ent_name = request.forms.get('entry_name').strip()
     username = request.forms.get('username').strip()
     password1 = request.forms.get('password1')
     password2 = request.forms.get('password2')
     url = request.forms.get('url').strip()
-    retry_data = {"entryname": ent_name, "username": username, "url": url}
+    retry_data = {
+        "parent_path": parent_path,
+        "entry_name": ent_name,
+        "username": username,
+        "url": url}
     if not ent_name:
         return None, template(template_name,
-                        path=shared_cfg.session.path,
                         status_msg="Entry name is required.",
                         data=retry_data)
     if password1 != password2:
         return None, template(template_name,
-                        path=shared_cfg.session.path,
                         status_msg="Passwords do not match.",
                         data=retry_data)
 
     ent = Entry(username=username, password=password1, url=url)
-    return (ent, ent_name), None
+    return (ent, retry_data), None
 
 
 @post('/manage-create-entry')
@@ -142,32 +143,33 @@ def handle_create_entry_post():
     status_msg = None
     if shared_cfg.validate_session(request):
         template_name = CREATE_ENTRY_TEMPLATE
-        entry, retry_entry = process_new_entry_input(template_name)
-        if not entry:
+        entry_data, retry_entry = process_new_entry_input(template_name)
+        if not entry_data:
             return retry_entry
 
-        retry_data = {"entryname": entry[1],
-                      "username": entry[0].get_username(),
-                      "url": entry[0].get_url()}
+        new_entry = entry_data[0]
+        retry_data = entry_data[1]
         try:
-            shared_cfg.add_entry(entry[0], entry[1])
+            shared_cfg.add_entry(new_entry,
+                                 retry_data["entry_name"],
+                                 retry_data["parent_path"])
         except ECDuplicateException:
-            log.debug("Duplicate entry name {0}".format(entry[1]))
-            status_msg = ("'{0}' is already in use by another "
-                          "entry.".format(entry[1]))
+            log.debug("Duplicate entry name {0}".format(retry_data["entry_name"]))
+            status_msg = ("'{0}' is already the name of another entry in "
+                          "the parent folder.".format(retry_data["entry_name"]))
         except ECNaughtyCharacterException:
-            log.debug("Bad character in entry name {0}".format(entry[1]))
+            log.debug("Bad character in entry name {0}"
+                      .format(retry_data["entry_name"]))
             status_msg = ("Entry names cannot contain any of these "
                           "characters: {0}"
                           .format(" ".join(shared_cfg.ILLEGAL_NAME_CHARS)))
         except ECException as ex:
             log.debug("Unexpected problem while adding entry "
-                      "{0}".format(entry[1]))
+                      "{0}".format(retry_data["entry_name"]))
             status_msg = "The entry could not be added. Reason: {0}".format(ex)
         finally:
             if status_msg:
                 return template(template_name,
-                                path=shared_cfg.session.path,
                                 status_msg=status_msg,
                                 data=retry_data)
 

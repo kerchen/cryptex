@@ -37,11 +37,21 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-xs-4 col-sm-3 col-lg-3 col-xl-3 offset-lg-1 offset-xl-2 column-8">
-      <span class="text-element manage-label" id="text-1">Current folder:</span>
+    <div class="col-xs-12 offset-lg-0 col-lg-12">
+      <div class="html-element"><!--
+% parent_path = ''
+% if data:
+%    parent_path = data['parent_path']
+% end
+--></div>
     </div>
-    <div class="col-xs-8 col-sm-9 col-lg-7 col-xl-5 column-9">
-      <span class="text-element manage-label" id="text-3">{{path}}</span>
+  </div>
+  <div class="row">
+    <div class="col-xs-4 col-sm-3 col-xl-3 offset-lg-1 offset-xl-2 column-8 col-lg-2">
+      <span class="text-element manage-label" id="text-1">parent folder:</span>
+    </div>
+    <div class="col-xs-8 col-sm-9 col-xl-5 col-lg-8">
+      <span class="text-element read-only-value-text" id="parent-path-text" data-parent-path="{{parent_path}}">{{parent_path}}</span>
     </div>
   </div>
   <div class="row full-width-row">
@@ -84,7 +94,7 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-xs-12">
+    <div class="col-xs-12 offset-lg-0 col-lg-12">
       <aside class="html-element"><!--
 % include('create_entry.tpl')
 --></aside>

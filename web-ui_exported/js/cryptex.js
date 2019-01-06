@@ -250,6 +250,9 @@ function createFolderCommit() {
 
 function createEntryCommit() {
     // Causes an Entry to be created using data from fields in the create-entry page.
+    // Note that the parent folder path is stashed in the element that displays
+    // the parent path, using a custom attribute.
+    var parentPath = document.getElementById("parent-path-text").getAttribute("data-parent-path");
     var entryName = document.getElementById("entry-name-input").value;
     var userName = document.getElementById("user-name-input").value;
     var password1 = document.getElementById("password-input").value;
@@ -257,7 +260,8 @@ function createEntryCommit() {
     var url = document.getElementById("url-input").value;
 
     post('/manage-create-entry',
-         {entryname: entryName,
+         {parent_path: parentPath,
+          entry_name: entryName,
           username: userName,
           password1: password1,
           password2: password2,

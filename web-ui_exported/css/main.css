@@ -111,6 +111,12 @@ span.text-element#destination-path-text {
   font-size: 14px;
 }
 
+span.text-element#parent-path-text {
+  padding-top: 4px;
+  text-align: left;
+  font-size: 14px;
+}
+
 a.link-text.text-link-1 {
   float: right;
   padding: .5rem;
@@ -283,10 +289,6 @@ body > .row > [class*='col-xs-'].column-7 {
 
 body > .row > [class*='col-xs-'].column-8 {
   padding-right: 4px;
-}
-
-body > .row > [class*='col-xs-'].column-9 {
-  padding-left: 4px;
 }
 
 body > .row.row-4 {
@@ -471,6 +473,10 @@ button.dropdown-btn {
     font-size: 16px;
   }
 
+  span.text-element#parent-path-text {
+    font-size: 16px;
+  }
+
   a.link-text.text-link-1 {
     float: right;
     padding: .5rem;
@@ -582,6 +588,10 @@ button.dropdown-btn {
     font-size: 17px;
   }
 
+  span.text-element#parent-path-text {
+    font-size: 17px;
+  }
+
   a.link-text.text-link-1 {
     float: right;
     padding: .5rem;
@@ -682,6 +692,11 @@ button.dropdown-btn {
   }
 
   span.text-element#destination-path-text {
+    text-align: left;
+    font-size: 18px;
+  }
+
+  span.text-element#parent-path-text {
     text-align: left;
     font-size: 18px;
   }

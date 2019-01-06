@@ -154,13 +154,13 @@ def is_in_keyboard_mode():
     return device_mode == HID_USB_MODE
 
 
-def add_entry(ent, ent_name):
+def add_entry(ent, ent_name, parent_path):
     global config_lock, master_store, pw_store_filename, master_password, session
 
     config_lock.acquire()
     try:
         if master_store and master_password and session:
-            master_store.add_entry(ent, ent_name, session.path)
+            master_store.add_entry(ent, ent_name, parent_path)
             master_store.save(master_password, pw_store_filename)
     finally:
         config_lock.release()
