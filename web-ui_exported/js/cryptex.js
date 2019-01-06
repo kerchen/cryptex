@@ -284,8 +284,9 @@ function editFolderCommit() {
 
 function editEntryCommit() {
     // Causes an Entry to be updated using data from fields in the edit-entry page.
-    // Note that the current entry name is stashed in the element that displays
-    // the current name, using a custom attribute named 'data-current-entry-name'.
+    // Note that the current entry name and parent folder path are stashed in the
+    // respective elements that display that information, using custom attributes.
+    var parentPath = document.getElementById("parent-path-text").getAttribute("data-parent-path");
     var currentEntryName = document.getElementById("current-entry-name-text").getAttribute("data-current-entry-name");
     var entryName = document.getElementById("entry-name-input").value;
     var userName = document.getElementById("user-name-input").value;
@@ -294,8 +295,9 @@ function editEntryCommit() {
     var url = document.getElementById("url-input").value;
 
     post('/manage-edit-entry',
-         {current_entry_name: currentEntryName,
-          entryname: entryName,
+         {parent_path: parentPath,
+          current_entry_name: currentEntryName,
+          entry_name: entryName,
           username: userName,
           password1: password1,
           password2: password2,

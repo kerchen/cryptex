@@ -53,18 +53,17 @@ def handle_manage_command_post():
             log.debug("Edit entry button pressed")
             entry_path = request.forms.get('entry_path')
             parent_path, _ = os.path.split(entry_path)
-            shared_cfg.change_session_path(parent_path)
             entry_name, entry = shared_cfg.get_entry_by_path(entry_path)
             data = dict()
+            data['parent_path'] = parent_path
             data['current_entry_name'] = entry_name
-            data['entryname'] = entry_name
+            data['entry_name'] = entry_name
             data['username'] = entry.get_username()
             data['password1'] = entry.get_password()
             data['password2'] = entry.get_password()
             data['url'] = entry.get_url()
 
             return template(EDIT_ENTRY_TEMPLATE,
-                            path=parent_path,
                             status_msg=None,
                             data=data)
         elif request.forms.get('action') == 'move-entry':
@@ -180,44 +179,43 @@ def handle_create_entry_post():
 @post('/manage-edit-entry')
 def handle_edit_entry_post():
     log.debug("Handling edit entry post")
-    status_msg = None
     if shared_cfg.validate_session(request):
         template_name = EDIT_ENTRY_TEMPLATE
+        parent_path = request.forms.get('parent_path')
         current_entry_name = request.forms.get('current_entry_name')
-        entry_name = request.forms.get('entryname').strip()
+        entry_name = request.forms.get('entry_name').strip()
         username = request.forms.get('username').strip()
         password1 = request.forms.get('password1')
         password2 = request.forms.get('password2')
         url = request.forms.get('url').strip()
         retry_data = {
+            "parent_path": parent_path,
             "current_entry_name": current_entry_name,
-            "entryname": entry_name,
+            "entry_name": entry_name,
             "username": username,
             "password1": password1,
             "password2": password2,
             "url": url
         }
 
+        status_msg = None
         if not entry_name:
-            return template(template_name,
-                            path=shared_cfg.session.path,
-                            status_msg=("Entry name cannot be empty. Please "
-                                        "try again."),
-                            data=retry_data)
+            status_msg = "Entry name cannot be empty. Please try again."
 
         if password1 != password2:
             retry_data["password1"] = ""
             retry_data["password2"] = ""
+            status_msg = "The entered passwords do not match. Please try again."
+
+        if status_msg:
             return template(template_name,
-                            path=shared_cfg.session.path,
-                            status_msg=("The entered passwords do not match. "
-                                        "Please try again"),
+                            status_msg=status_msg,
                             data=retry_data)
 
         updated_entry = Entry(username=username,
-                                       password=password1,
-                                       url=url)
-        entry_path = shared_cfg.session.path + '/' + current_entry_name
+                              password=password1,
+                              url=url)
+        entry_path = parent_path + '/' + current_entry_name
         try:
             shared_cfg.update_entry(entry_path, entry_name, updated_entry)
         except ECDuplicateException:
@@ -237,7 +235,6 @@ def handle_edit_entry_post():
         finally:
             if status_msg:
                 return template(template_name,
-                                path=shared_cfg.session.path,
                                 status_msg=status_msg,
                                 data=retry_data)
 

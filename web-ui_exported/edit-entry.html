@@ -36,11 +36,21 @@
     </div>
   </div>
   <div class="row">
+    <div class="col-xs-12">
+      <div class="html-element"><!--
+% parent_path = ''
+% if data:
+%    parent_path = data['parent_path']
+% end
+--></div>
+    </div>
+  </div>
+  <div class="row">
     <div class="col-xs-4 col-sm-3 column-7 offset-md-1 col-xl-2 col-lg-2 offset-xl-2 offset-lg-2">
-      <span class="text-element manage-label" id="text-4">Current folder:</span>
+      <span class="text-element manage-label" id="text-4">parent folder</span>
     </div>
     <div class="col-xs-8 col-sm-9 column-6 col-md-7 col-xl-6 col-lg-7">
-      <span class="text-element read-only-value-text" id="text-3">{{path}}</span>
+      <span class="text-element read-only-value-text" id="parent-path-text" data-parent-path="{{parent_path}}">{{parent_path}}</span>
     </div>
   </div>
   <div class="row full-width-row">

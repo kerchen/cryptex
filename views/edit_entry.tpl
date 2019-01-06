@@ -1,20 +1,30 @@
-% entryname = ''
+% entry_name = ''
 % username = ''
 % url = ''
 % password1 = ''
 % password2 = ''
 % if data:
-%   entryname = data['entryname']
-%   username = data['username']
-%   url = data['url']
-%   password1 = data['password1']
-%   password2 = data['password2']
+    % if 'entry_name' in data.keys():
+        % entry_name = data['entry_name']
+    % end
+    % if 'username' in data.keys():
+        % username = data['username']
+    % end
+    % if 'url' in data.keys():
+        % url = data['url']
+    % end
+    % if 'password1' in data.keys():
+        % password1 = data['password1']
+    % end
+    % if 'password2' in data.keys():
+        % password2 = data['password2']
+    % end
 % end
 -->
 <script src="js/jquery.min.js"></script>
 <script src="js/cryptex.js"></script>
 <script>
-  setHTMLInputValue("entry-name-input", "{{entryname}}");
+  setHTMLInputValue("entry-name-input", "{{entry_name}}");
   setHTMLInputValue("user-name-input", "{{username}}");
   setHTMLInputValue("password-input", "{{password1}}");
   setHTMLInputValue("password-confirm-input", "{{password2}}");
