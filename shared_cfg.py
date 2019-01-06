@@ -155,11 +155,11 @@ def is_in_keyboard_mode():
 
 
 def add_entry(ent, ent_name, parent_path):
-    global config_lock, master_store, pw_store_filename, master_password, session
+    global config_lock, master_store, pw_store_filename, master_password
 
     config_lock.acquire()
     try:
-        if master_store and master_password and session:
+        if master_store and master_password:
             master_store.add_entry(ent, ent_name, parent_path)
             master_store.save(master_password, pw_store_filename)
     finally:
