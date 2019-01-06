@@ -42,7 +42,6 @@ class Session:
         self.key = None
         self.last_active_time = None
         self.timeout_seconds = 60 * 5
-        self.path = "/"
 
 
 session = None
@@ -368,7 +367,7 @@ def activate_keyboard_mode():
 
 
 def activate_web_mode():
-    global config_lock, device_mode, master_store, master_password, session
+    global config_lock, device_mode
 
     config_lock.acquire()
     save_pw_store()
@@ -384,8 +383,7 @@ def lock_store():
         save_pw_store()
         master_store = None
         master_password = None
-        if session:
-            session.key = None
+        session = None
         activate_web_mode()
     finally:
         config_lock.release()
