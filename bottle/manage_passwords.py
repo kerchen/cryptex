@@ -87,7 +87,6 @@ def handle_manage_command_post():
                       "{}".format(request.forms.get('folder_path')))
             folder_path = request.forms.get('folder_path')
             parent_path, _ = os.path.split(folder_path)
-            shared_cfg.change_session_path(parent_path)
             return template(MOVE_FOLDER_TEMPLATE,
                             item_path=folder_path,
                             destination_path='/',
