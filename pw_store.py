@@ -10,7 +10,7 @@ from path_util import simplify_path
 
 log = logging.getLogger(__name__)
 
-ILLEGAL_NAME_CHARS = '"\'\\/&<>'
+ILLEGAL_NAME_CHARS = '\'\\/'
 ILLEGAL_CHAR_RE = re.compile("["+ILLEGAL_NAME_CHARS+"]")
 
 

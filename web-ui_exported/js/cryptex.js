@@ -47,6 +47,71 @@ function setHTMLInputValue(id, value) {
 }
 
 
+function encodeHTML(inputStr) {
+    var outputStr = "";
+    var entityToEncoding = [];
+
+    entityToEncoding['&'] = "&amp;";
+    entityToEncoding['>'] = "&gt;";
+    entityToEncoding['<'] = "&lt;";
+    entityToEncoding['"'] = "&quot;";
+
+    for (var i = 0; i < inputStr.length; i++) {
+        var c = inputStr.charAt(i);
+        var enc_c = entityToEncoding[c];
+
+        if (enc_c) {
+            outputStr += enc_c;
+        } else {
+            outputStr += c;
+        }
+    }
+    return outputStr;
+}
+
+
+function decodeHTML(inputStr) {
+    var outputStr = "";
+    var entityNameToChar = [];
+
+    entityNameToChar["amp"] = '&';
+    entityNameToChar["gt"] = '>';
+    entityNameToChar["lt"] = '<';
+    entityNameToChar["quot"] = '"';
+
+    for (var i = 0; i < inputStr.length; i++) {
+        var c = inputStr.charAt(i);
+        if (c == '&') {
+            var j = i + 1;
+            while ( j < inputStr.length ) {
+                c = inputStr.charAt(j);
+                if (c == ';') {
+                    break;
+                }
+                j++;
+            }
+            if (j == inputStr.length) {
+                console.log("Bailing out early. Returning string so far:" + outputStr)
+                return outputStr;
+            }
+            var encodedEntity = inputStr.substring(i+1, j);
+            var decodedChar = entityNameToChar[encodedEntity];
+            if (!decodedChar) {
+                // punt
+                console.log("Unexpected HTML encoded entity:" + encodedEntity)
+                outputStr += "&" + encodedEntity + ";";
+            } else {
+                outputStr += decodedChar;
+            }
+            i = j;
+        } else {
+            outputStr += c;
+        }
+    }
+
+    return outputStr;
+}
+
 
 function setCookie(cname, cvalue) {
   document.cookie = cname + "=" + cvalue + ";path=/";
@@ -119,9 +184,21 @@ function createFolder(parentPath) {
 }
 
 
+function createEntry(parentPath) {
+    // Causes a transition to the create-entry page.
+    post('/manage-command', {action: 'create-entry', parent_path: parentPath});
+}
+
+
 function editFolder(folderPath) {
     // Causes a transition to the edit-folder page.
     post('/manage-command', {action: 'edit-folder', folder_path: folderPath});
+}
+
+
+function editEntry(entryPath) {
+    // Causes a transition to the edit-entry page.
+    post('/manage-command', {action: 'edit-entry', entry_path: entryPath});
 }
 
 
@@ -131,15 +208,34 @@ function moveFolder(folderPath) {
 }
 
 
+function moveEntry(entryPath) {
+    // Causes a transition to the move-entry page.
+    post('/manage-command', {action: 'move-entry', entry_path: entryPath});
+}
+
+
 function deleteFolder(folderPath) {
     // Prompt the user for confirmation and have onConfirmAction run if the
     // user confirms.
     var pp = folderPath.split('/');
     header = 'Delete Folder?';
     body = 'Are you sure you want to delete the folder named "'
-            + pp[pp.length-1]
+            + encodeHTML(pp[pp.length-1])
             + '" and all the sub-folders and entries it may contain? This action cannot be undone.';
-    onConfirmAction = 'deleteFolderCommit("' + folderPath + '")'
+    onConfirmAction = 'deleteFolderCommit("' + encodeHTML(folderPath) + '")'
+    confirmAction(header, body, onConfirmAction)
+}
+
+
+function deleteEntry(entryPath) {
+    // Prompt the user for confirmation and have onConfirmAction run if the
+    // user confirms.
+    var pp = entryPath.split('/');
+    header = 'Delete Entry?';
+    body = 'Are you sure you want to delete the entry named "'
+        + encodeHTML(pp[pp.length - 1])
+        + '"? This action cannot be undone.';
+    onConfirmAction = 'deleteEntryCommit("' + encodeHTML(entryPath) + '")'
     confirmAction(header, body, onConfirmAction)
 }
 
@@ -149,6 +245,23 @@ function createFolderCommit() {
     var folderName = document.getElementById("folder-name-input").value;
 
     post('/manage-new-container', {name: folderName});
+}
+
+
+function createEntryCommit() {
+    // Causes an Entry to be created using data from fields in the create-entry page.
+    var entryName = document.getElementById("entry-name-input").value;
+    var userName = document.getElementById("user-name-input").value;
+    var password1 = document.getElementById("password-input").value;
+    var password2 = document.getElementById("password-confirm-input").value;
+    var url = document.getElementById("url-input").value;
+
+    post('/manage-create-entry',
+         {entryname: entryName,
+          username: userName,
+          password1: password1,
+          password2: password2,
+          url: url});
 }
 
 
@@ -162,70 +275,6 @@ function editFolderCommit() {
     post('/manage-edit-folder',
          {current_folder_name: currentFolderName,
           new_folder_name: newFolderName});
-}
-
-
-function moveFolderCommit() {
-    // Causes a folder to be moved using data from the move-folder page.
-    var itemPath = document.getElementById("item-path-text").innerHTML;
-    var destinationPath = document.getElementById("destination-path-text").innerHTML;
-
-    post('/manage-move-folder', {item_path: itemPath, destination_path: destinationPath});
-}
-
-
-function deleteFolderCommit(folderPath) {
-    // Causes a folder to be deleted using data from the delete-folder page.
-    post('/manage-delete-folder', {folder_path: folderPath});
-}
-
-
-function createEntry(parentPath) {
-    // Causes a transition to the create-entry page.
-    post('/manage-command', {action: 'create-entry', parent_path: parentPath});
-}
-
-
-function editEntry(entryPath) {
-    // Causes a transition to the edit-entry page.
-    post('/manage-command', {action: 'edit-entry', entry_path: entryPath});
-}
-
-
-function moveEntry(entryPath) {
-    // Causes a transition to the move-entry page.
-    post('/manage-command', {action: 'move-entry', entry_path: entryPath});
-}
-
-
-function deleteEntry(entryPath) {
-    // Prompt the user for confirmation and have onConfirmAction run if the
-    // user confirms.
-    var pp = entryPath.split('/');
-    header = 'Delete Entry?';
-    body = 'Are you sure you want to delete the entry named "'
-        + pp[pp.length - 1]
-        + '"? This action cannot be undone.';
-    onConfirmAction = 'deleteEntryCommit("' + entryPath + '")'
-    confirmAction(header, body, onConfirmAction)
-}
-
-
-function createEntryCommit() {
-    // Causes an Entry to be created using data from fields in the
-    // create-entry page.
-    var entryName = document.getElementById("entry-name-input").value;
-    var userName = document.getElementById("user-name-input").value;
-    var password1 = document.getElementById("password-input").value;
-    var password2 = document.getElementById("password-confirm-input").value;
-    var url = document.getElementById("url-input").value;
-
-    post('/manage-create-entry',
-         {entryname: entryName,
-          username: userName,
-          password1: password1,
-          password2: password2,
-          url: url});
 }
 
 
@@ -250,18 +299,35 @@ function editEntryCommit() {
 }
 
 
+function moveFolderCommit() {
+    // Causes a folder to be moved using data from the move-folder page.
+    var itemPath = document.getElementById("item-path-text").innerHTML;
+    var destinationPath = document.getElementById("destination-path-text").innerHTML;
+
+    post('/manage-move-folder', {item_path: decodeHTML(itemPath),
+                                 destination_path: decodeHTML(destinationPath)});
+}
+
+
 function moveEntryCommit() {
     // Causes an entry to be moved according to data entered in the move-entry page.
     var itemPath = document.getElementById("item-path-text").innerHTML;
     var destinationPath = document.getElementById("destination-path-text").innerHTML;
 
-    post('/manage-move-entry', {item_path: itemPath, destination_path: destinationPath});
+    post('/manage-move-entry', {item_path: decodeHTML(itemPath),
+                                destination_path: decodeHTML(destinationPath)});
+}
+
+
+function deleteFolderCommit(folderPath) {
+    // Causes a folder to be deleted using data from the delete-folder page.
+    post('/manage-delete-folder', {folder_path: decodeHTML(folderPath)});
 }
 
 
 function deleteEntryCommit(entryPath) {
     // Causes an Entry to be deleted using data from the delete-entry page.
-    post('/manage-delete-entry', {entry_path: entryPath});
+    post('/manage-delete-entry', {entry_path: decodeHTML(entryPath)});
 }
 
 
