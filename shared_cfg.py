@@ -36,6 +36,13 @@ SESSION_COOKIE_NAME = "cryptex-session-id"
 ILLEGAL_NAME_CHARS = pw_store.ILLEGAL_NAME_CHARS
 BASE_URL = "https://cryptex.local"
 
+PASSWORD_CHARS_UPPER_CASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+PASSWORD_CHARS_LOWER_CASE = "abcdefghijklmnopqrstuvwxyz"
+PASSWORD_CHARS_DIGITS = "0123456789"
+PASSWORD_CHARS_PUNCTUATION = ".,;:?!"
+PASSWORD_CHARS_BRACKETS = "[]{}()<>"
+PASSWORD_CHARS_OTHERS = "~`@#$%^&*-_=+|\"'/\\"
+
 
 class Session:
     def __init__(self):
