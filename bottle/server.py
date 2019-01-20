@@ -1,8 +1,9 @@
 from bottle import (get, redirect, request, route, run, ServerAdapter,
-                    static_file, template)
+                    static_file, template, TEMPLATE_PATH)
 from cheroot import wsgi
 from cheroot.ssl.builtin import BuiltinSSLAdapter
 import logging
+import os
 import ssl
 
 # Note: any modules that supply bottle functionality need to be imported
@@ -16,24 +17,35 @@ import manage_passwords
 log = logging.getLogger(__name__)
 
 
+# Tell bottle to look in these directories for templates.
+RBB_EXPORT_DIRECTORY = 'web-ui_exported'
+GENERATED_TEMPLATE_DIRECTORY = 'generated_templates'
+TEMPLATE_PATH.append('./{0}/'.format(RBB_EXPORT_DIRECTORY))
+TEMPLATE_PATH.append('./{0}/'.format(GENERATED_TEMPLATE_DIRECTORY))
+
+
 @get('/css/<filename:re:.*\.css>')
 def send_css(filename):
-    return static_file(filename, root='web-ui_exported/css')
+    global RBB_EXPORT_DIRECTORY
+    return static_file(filename, root='{0}/css'.format(RBB_EXPORT_DIRECTORY))
 
 
 @get('/fonts/<filename:re:.*\.(eot|svg|ttf|woff)>')
 def send_font(filename):
-    return static_file(filename, root='web-ui_exported/fonts')
+    global RBB_EXPORT_DIRECTORY
+    return static_file(filename, root='{0}/fonts'.format(RBB_EXPORT_DIRECTORY))
 
 
 @get('/images/<filename:re:.*\.(jpg|png)>')
 def send_image(filename):
-    return static_file(filename, root='web-ui_exported/images')
+    global RBB_EXPORT_DIRECTORY
+    return static_file(filename, root='{0}/images'.format(RBB_EXPORT_DIRECTORY))
 
 
 @get('/js/<filename:re:.*\.js>')
 def send_js(filename):
-    return static_file(filename, root='web-ui_exported/js')
+    global RBB_EXPORT_DIRECTORY
+    return static_file(filename, root='{0}/js'.format(RBB_EXPORT_DIRECTORY))
 
 
 @route('/')
@@ -48,6 +60,38 @@ def default():
         return template("keyboard-mode.html")
     else:
         return redirect("/login")
+
+
+def generate_template_from_body(page_filename):
+    """
+        Copies the body of page_filename (which is assumed to be an HTML
+        document) into a separate bottle template file. That file is
+        created in the generated template directory and its name is
+        returned by the function.
+    """
+
+    global GENERATED_TEMPLATE_DIRECTORY, RBB_EXPORT_DIRECTORY
+
+    in_body = False
+    if not os.path.exists(GENERATED_TEMPLATE_DIRECTORY):
+        os.mkdir(GENERATED_TEMPLATE_DIRECTORY)
+
+    tpl_filename = '{0}_body.tpl'.format(os.path.splitext(page_filename)[0])
+    tpl_file = open(os.path.join(GENERATED_TEMPLATE_DIRECTORY, tpl_filename),
+                    'wb')
+    with open(os.path.join(RBB_EXPORT_DIRECTORY, page_filename), 'rb') as f:
+        for line in f:
+            stripped_line = line.strip()
+            if stripped_line.startswith("<body>"):
+                in_body = True
+            elif in_body:
+                if stripped_line.startswith("</body>"):
+                    break
+                else:
+                    tpl_file.write(line)
+
+    tpl_file.close()
+    return tpl_filename
 
 
 # Create our own sub-class of Bottle's ServerAdapter
