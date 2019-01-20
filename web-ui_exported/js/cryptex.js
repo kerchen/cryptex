@@ -55,6 +55,7 @@ function encodeHTML(inputStr) {
     entityEncoding['>'] = "&gt;";
     entityEncoding['<'] = "&lt;";
     entityEncoding['"'] = "&quot;";
+    entityEncoding['\''] = "&#039;";
 
     for (var i = 0; i < inputStr.length; i++) {
         var c = inputStr.charAt(i);
@@ -78,6 +79,7 @@ function decodeHTML(inputStr) {
     encodingCharacter["gt"] = '>';
     encodingCharacter["lt"] = '<';
     encodingCharacter["quot"] = '"';
+    encodingCharacter["#039"] = '\'';
 
     for (var i = 0; i < inputStr.length; i++) {
         var c = inputStr.charAt(i);
