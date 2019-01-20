@@ -49,16 +49,16 @@ function setHTMLInputValue(id, value) {
 
 function encodeHTML(inputStr) {
     var outputStr = "";
-    var entityToEncoding = [];
+    var entityEncoding = [];
 
-    entityToEncoding['&'] = "&amp;";
-    entityToEncoding['>'] = "&gt;";
-    entityToEncoding['<'] = "&lt;";
-    entityToEncoding['"'] = "&quot;";
+    entityEncoding['&'] = "&amp;";
+    entityEncoding['>'] = "&gt;";
+    entityEncoding['<'] = "&lt;";
+    entityEncoding['"'] = "&quot;";
 
     for (var i = 0; i < inputStr.length; i++) {
         var c = inputStr.charAt(i);
-        var enc_c = entityToEncoding[c];
+        var enc_c = entityEncoding[c];
 
         if (enc_c) {
             outputStr += enc_c;
@@ -72,12 +72,12 @@ function encodeHTML(inputStr) {
 
 function decodeHTML(inputStr) {
     var outputStr = "";
-    var entityNameToChar = [];
+    var encodingCharacter = [];
 
-    entityNameToChar["amp"] = '&';
-    entityNameToChar["gt"] = '>';
-    entityNameToChar["lt"] = '<';
-    entityNameToChar["quot"] = '"';
+    encodingCharacter["amp"] = '&';
+    encodingCharacter["gt"] = '>';
+    encodingCharacter["lt"] = '<';
+    encodingCharacter["quot"] = '"';
 
     for (var i = 0; i < inputStr.length; i++) {
         var c = inputStr.charAt(i);
@@ -95,7 +95,7 @@ function decodeHTML(inputStr) {
                 return outputStr;
             }
             var encodedEntity = inputStr.substring(i+1, j);
-            var decodedChar = entityNameToChar[encodedEntity];
+            var decodedChar = encodingCharacter[encodedEntity];
             if (!decodedChar) {
                 // punt
                 console.log("Unexpected HTML encoded entity:" + encodedEntity)
