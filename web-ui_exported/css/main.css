@@ -378,6 +378,7 @@ button.dropdown-btn {
 }
 
 ul.list-container.list-container-1 {
+  margin-bottom: 0;
   list-style-position: inside;
   list-style-type: none;
 }
