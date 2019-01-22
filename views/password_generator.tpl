@@ -31,6 +31,7 @@
 function generatePassword() {
     var modal = document.getElementById('password-gen-modal');
 //    modal.getElementsByTagName("button")[0].setAttribute("onclick", onConfirmFunction);
+    document.getElementById("password-length-input").defaultValue = "15";
     $('#password-gen-modal').modal('show');
 }
 
@@ -76,11 +77,30 @@ function generatePreview() {
     if (isOptionChecked('others-checkbox')) {
         charSet += others;
     }
+    var includeChars = document.getElementById('include-chars-input').value;
+    for ( var i = 0; i < includeChars.length; i++ ) {
+        if ( charSet.indexOf(includeChars[i]) == -1 ) {
+            charSet += includeChars[i];
+        }
+    }
+    var excludeChars = document.getElementById('exclude-chars-input').value;
+    var tempCharSet = "";
+    for ( var i = 0; i < charSet.length; i++ ) {
+        if ( excludeChars.indexOf(charSet[i]) == -1 ) {
+            tempCharSet += charSet[i];
+        }
+    }
+    charSet = tempCharSet;
+    var desired_len = document.getElementById("password-length-input").value;
+
+    if ( charSet.length == 0 || ! desired_len || desired_len < 1 ) {
+        // TODO: Input error handling
+        return;
+    }
 
     var previewText = document.getElementById('generated-password-text');
     Math.seedrandom();
     var pwd = ""
-    var desired_len = 20;
     for ( var i = 0; i < desired_len; i++) {
         var idx = Math.floor(Math.random() * charSet.length);
         pwd += charSet[idx];
