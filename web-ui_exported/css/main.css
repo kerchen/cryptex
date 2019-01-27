@@ -395,6 +395,30 @@ button#button-1 {
   font-family: 'Roboto', cursive;
 }
 
+button.icon-btn {
+  margin: 0 4px;
+  padding: .65rem .35rem .65rem 1.25rem;
+  border-style: none;
+  background-color: #fc6300;
+  background-image: url('../images/BlankIcon.png');
+  background-attachment: scroll;
+  background-position: left top;
+  background-clip: border-box;
+  background-origin: padding-box;
+  background-size: auto auto;
+  background-repeat: no-repeat;
+
+  background-blend-mode: normal;
+}
+
+button#gen-password-btn {
+  background-image: url('../images/AddIcon.png');
+}
+
+button#copy-password-btn {
+  background-image: url('../images/MoveIcon.png');
+}
+
 @media screen and (min-width: 36rem) {
   /* Text Elements */
 

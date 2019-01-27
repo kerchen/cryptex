@@ -1,3 +1,4 @@
+% include('password_generator.tpl')
 % entry_name = ''
 % username = ''
 % url = ''
@@ -29,5 +30,25 @@
   setHTMLInputValue("password-input", "{{password1}}");
   setHTMLInputValue("password-confirm-input", "{{password2}}");
   setHTMLInputValue("url-input", "{{url}}");
+
+  function onPasswordAccepted(encodedPassword) {
+    var decodedPassword = decodeHTML(encodedPassword);
+    console.log("Got password: " + decodedPassword);
+    setHTMLInputValue("password-input", decodedPassword);
+    setHTMLInputValue("password-confirm-input", decodedPassword);
+  }
+
+  function copyPasswordToClipboard() {
+    var pwInput = document.getElementById('password-input');
+
+    // TODO: Verify that this works with all browsers!
+    var textArea = document.createElement('textarea');
+    textArea.setAttribute('style','width:1px;border:0;opacity:0;');
+    document.body.appendChild(textArea);
+    textArea.value = pwInput.value;
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+  }
 </script>
 <!--

@@ -10,16 +10,8 @@
 <div class="modal fade" id="password-gen-modal" role="dialog">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Header</h4>
-            </div>
             <div class="modal-body">
                 % include(generated_template_filename)
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn" data-dismiss="modal">Yes</button>
-                <button type="button" class="btn" data-dismiss="modal">No</button>
             </div>
         </div>
     </div>
@@ -28,10 +20,13 @@
 <script src="js/cryptex.js"></script>
 <script src="js/seedrandom.js"></script>
 <script>
-function generatePassword() {
+function showPasswordGenerator(onAcceptAction) {
     var modal = document.getElementById('password-gen-modal');
-//    modal.getElementsByTagName("button")[0].setAttribute("onclick", onConfirmFunction);
+    var getPasswordCode = "document.getElementById('generated-password-text').innerHTML";
+    var acceptCode = onAcceptAction + "(" + getPasswordCode + ")";
+    document.getElementById("accept-password-btn").setAttribute("onclick", acceptCode);
     document.getElementById("password-length-input").defaultValue = "15";
+    document.getElementById("generated-password-text").innerHTML = "generated";
     $('#password-gen-modal').modal('show');
 }
 
