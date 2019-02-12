@@ -112,10 +112,37 @@ span.text-element#parent-path-text {
 }
 
 span.text-element.generated-password {
-  background-color: #dfeef0;
-  text-align: center;
-  font-size: 16px;
+  float: left;
+  padding: .25rem;
+  text-align: left;
+  font-size: 14px;
+  font-family: 'Andale Mono', AndaleMono, monospace;
+}
+
+span.text-element.entry-label {
+  float: left;
+  padding-top: .25rem;
+  padding-bottom: .25rem;
+  color: #fc6300;
+  vertical-align: middle;
+  text-align: right;
+  text-transform: uppercase;
+  font-size: 14px;
   font-family: 'Roboto', cursive;
+}
+
+span.text-element#text-3 {
+  float: right;
+  padding-top: .51rem;
+  padding-bottom: .5rem;
+}
+
+span.text-element#text-5 {
+  float: right;
+}
+
+span.text-element#text-6 {
+  float: right;
 }
 
 a.link-text.text-link-1 {
@@ -180,11 +207,14 @@ input[type=text].form-input {
 }
 
 input[type=text].gen-password-input {
+  float: left;
+  margin-top: 3px;
   font-size: 14px;
   font-family: 'Roboto', cursive;
 }
 
 input[type=number].number-spinner {
+  float: left;
   margin-left: 4px;
   padding-right: 5px;
   padding-left: 6px;
@@ -197,14 +227,11 @@ input[type=password].form-password-input {
   font-family: 'Roboto', cursive;
 }
 
-input[type=password]#password-store-pw {
+input[type=password].centered-password-input {
+  display: block;
   margin-right: auto;
   margin-left: auto;
   text-align: center;
-}
-
-input[type=password].password-1 {
-  display: block;
   font-family: 'Roboto', cursive;
 }
 
@@ -315,6 +342,10 @@ body > .row.row-4 {
   margin-top: 7px;
 }
 
+body > .row.row-3 {
+  padding-bottom: 10px;
+}
+
 .subgrid > .row > [class*='col-xs-'].subgrid-column-1 {
   float: left;
   text-align: right;
@@ -387,14 +418,6 @@ ul.list-container#list-container-1 {
   margin-bottom: 0;
 }
 
-button#button-1 {
-  margin-right: 5px;
-  margin-left: 6px;
-  text-transform: uppercase;
-  font-size: 14px;
-  font-family: 'Roboto', cursive;
-}
-
 button.icon-btn {
   margin: 0 4px;
   padding: .65rem .35rem .65rem 1.25rem;
@@ -417,6 +440,28 @@ button#gen-password-btn {
 
 button#copy-password-btn {
   background-image: url('../images/MoveIcon.png');
+}
+
+button.btn.btn-info {
+  margin-right: 15px;
+  margin-left: 15px;
+  text-transform: uppercase;
+  font-size: 14px;
+  font-family: 'Roboto', cursive;
+}
+
+.container-fluid.container-1 {
+  background-color: #dfeef0;
+}
+
+button#button-1 {
+  margin-right: 10rem;
+  margin-bottom: 5px;
+  margin-left: 10rem;
+}
+
+button#show-password-btn {
+  background-image: url('../images/ViewPassword.png');
 }
 
 @media screen and (min-width: 36rem) {
@@ -447,6 +492,13 @@ button#copy-password-btn {
 
   span.text-element.manage-label.manage-msg {
     font-size: 13px;
+  }
+
+  span.text-element.entry-label {
+    color: #fc6300;
+    text-transform: uppercase;
+    font-size: 14px;
+    font-family: 'Roboto', cursive;
   }
 
   a.link-text.text-link-1 {
@@ -496,6 +548,10 @@ button#copy-password-btn {
   ul.list-container.list-container-1 {
     padding-left: 40px;
   }
+
+  button.btn.btn-info {
+    font-size: 15px;
+  }
 }
 
 @media screen and (min-width: 48rem) {
@@ -536,6 +592,17 @@ button#copy-password-btn {
   }
 
   span.text-element#parent-path-text {
+    font-size: 16px;
+  }
+
+  span.text-element.entry-label {
+    color: #fc6300;
+    text-transform: uppercase;
+    font-size: 16px;
+    font-family: 'Roboto', cursive;
+  }
+
+  span.text-element.generated-password {
     font-size: 16px;
   }
 
@@ -624,6 +691,10 @@ button#copy-password-btn {
   ul.list-container.list-container-1 {
     padding-left: 10px;
   }
+
+  button.btn.btn-info {
+    font-size: 16px;
+  }
 }
 
 @media screen and (min-width: 62rem) {
@@ -663,6 +734,16 @@ button#copy-password-btn {
   }
 
   span.text-element#parent-path-text {
+    font-size: 17px;
+  }
+
+  span.text-element.entry-label {
+    color: #fc6300;
+    font-size: 17px;
+    font-family: 'Roboto', cursive;
+  }
+
+  span.text-element.generated-password {
     font-size: 17px;
   }
 
@@ -751,6 +832,10 @@ button#copy-password-btn {
     padding-left: 8px;
     list-style-position: outside;
   }
+
+  button.btn.btn-info {
+    font-size: 17px;
+  }
 }
 
 @media screen and (min-width: 75rem) {
@@ -784,6 +869,18 @@ button#copy-password-btn {
 
   span.text-element#parent-path-text {
     text-align: left;
+    font-size: 18px;
+  }
+
+  span.text-element.entry-label {
+    position: static;
+    display: block;
+    color: #fc6300;
+    font-size: 18px;
+    font-family: 'Roboto', cursive;
+  }
+
+  span.text-element.generated-password {
     font-size: 18px;
   }
 
@@ -856,5 +953,9 @@ button#copy-password-btn {
 
   button.btn.ignition {
     background-color: #fc6300;
+  }
+
+  button.btn.btn-info {
+    font-size: 18px;
   }
 }
