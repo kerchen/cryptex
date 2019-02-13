@@ -37,6 +37,34 @@ function setReturnButton(textElementID, buttonID) {
 }
 
 
+// Toggles the display of a password input control.
+function togglePasswordVisibility(id) {
+    var pwd_input = document.getElementById(id);
+
+    if ( pwd_input.type === "password" ) {
+        pwd_input.type = "text";
+        pwd_input.className = "form-input";
+    } else {
+        pwd_input.type = "password";
+        pwd_input.className = "form-password-input";
+    }
+}
+
+
+function copyInputToClipboard(id) {
+    var input = document.getElementById(id);
+
+    // TODO: Verify that this works with all browsers!
+    var textArea = document.createElement('textarea');
+    textArea.setAttribute('style','width:1px;border:0;opacity:0;');
+    document.body.appendChild(textArea);
+    textArea.value = input.value;
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+}
+
+
 // Sets the value of a text input control, converting from HTML.
 function setHTMLInputValue(id, value) {
   if (value) {
