@@ -1,6 +1,7 @@
 import RPi.GPIO as GPIO
 import io
 import logging
+import subprocess
 
 import shared_cfg
 
@@ -8,17 +9,17 @@ import shared_cfg
 MODE_SWITCH_SCRIPT = "/home/pi/switch-mode.sh"
 
 # TFT buttons; button 1 is left-most
-TFT_BUTTON_1_PIN = 15
-TFT_BUTTON_2_PIN = 11
-TFT_BUTTON_3_PIN = 16
-TFT_BUTTON_4_PIN = 13
+TFT_BUTTON_1_PIN = 15   # GPIO22
+TFT_BUTTON_2_PIN = 11   # GPIO17
+TFT_BUTTON_3_PIN = 16   # GPIO23
+TFT_BUTTON_4_PIN = 13   # GPIO27
 
 # Encoder inputs
-ENC_A_PIN = 40
-ENC_B_PIN = 38
-ENC_BUTTON_PIN = 35
-#ENC_BIT4_PIN = 36
-ENC_COMMON_PIN = 33
+ENC_A_PIN = 40          # GPIO21
+ENC_B_PIN = 38          # GPIO20
+ENC_BUTTON_PIN = 35     # GPIO19
+#ENC_BIT4_PIN = 36      # GPIO16
+ENC_COMMON_PIN = 33     # GPIO13
 ENC_QUAD_PINS = [ ENC_B_PIN, ENC_A_PIN ]
 
 
@@ -26,9 +27,9 @@ log = logging.getLogger(__name__)
 
 
 def set_device_mode(mode):
-    if mode == HID_USB_MODE:
+    if mode == shared_cfg.HID_USB_MODE:
         subprocess.call([MODE_SWITCH_SCRIPT, "hid"])
-    elif mode == RNDIS_USB_MODE:
+    elif mode == shared_cfg.RNDIS_USB_MODE:
         subprocess.call([MODE_SWITCH_SCRIPT, "rndis"])
     else:
         log.warn("Unknown device mode requested.")

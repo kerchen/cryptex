@@ -313,6 +313,10 @@ def cryptex(stdscr):
     curses.curs_set(0)  # Turn off cursor
     maxy, maxx = stdscr.getmaxyx()
 
+    if maxx not in BTN_LABEL_X_POS.keys():
+        raise Exception("Screen resolution of {0} x {1} characters "
+                        "not supported. Sad.".format(maxx, maxy))
+
     try:
         while 1:
             stdscr.border()
