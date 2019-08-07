@@ -82,10 +82,10 @@ def generate_template_from_body(page_filename):
     with open(os.path.join(RBB_EXPORT_DIRECTORY, page_filename), 'rb') as f:
         for line in f:
             stripped_line = line.strip()
-            if stripped_line.startswith("<body>"):
+            if stripped_line.startswith("<body>".encode('utf-8')):
                 in_body = True
             elif in_body:
-                if stripped_line.startswith("</body>"):
+                if stripped_line.startswith("</body>".encode('utf-8')):
                     break
                 else:
                     tpl_file.write(line)

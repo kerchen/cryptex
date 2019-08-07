@@ -10,8 +10,8 @@ from path_util import simplify_path
 
 log = logging.getLogger(__name__)
 
-ILLEGAL_NAME_CHARS = '\'\\/'
-ILLEGAL_CHAR_RE = re.compile("["+ILLEGAL_NAME_CHARS+"]")
+ILLEGAL_NAME_CHARS = [u"'", u"\\\\", u"/"]
+ILLEGAL_CHAR_RE = re.compile("["+u"".join(ILLEGAL_NAME_CHARS)+"]")
 
 
 class ECException(Exception):
@@ -170,14 +170,14 @@ class Entry:
             self.url = None
 
 
-ROOT_TAG = "cryptex"
-STORE_ROOT_TAG = "store"
-NAME_ATTRIBUTE = "name"
-CONTAINER_TAG = "container"
-ENTRY_TAG = "entry"
-USERNAME_TAG = "username"
-PASSWORD_TAG = "password"
-URL_TAG = "url"
+ROOT_TAG = u"cryptex"
+STORE_ROOT_TAG = u"store"
+NAME_ATTRIBUTE = u"name"
+CONTAINER_TAG = u"container"
+ENTRY_TAG = u"entry"
+USERNAME_TAG = u"username"
+PASSWORD_TAG = u"password"
+URL_TAG = u"url"
 
 
 def deserialize_xml(xml_node=None):
@@ -192,7 +192,7 @@ def deserialize_xml(xml_node=None):
         return cont_name, cont
 
     if NAME_ATTRIBUTE in xml_node.attrib:
-        cont_name = b64decode(xml_node.attrib[NAME_ATTRIBUTE])
+        cont_name = b64decode(xml_node.attrib[NAME_ATTRIBUTE]).decode('utf-8')
 
     for el in list(xml_node):
         if el.tag == CONTAINER_TAG:
@@ -202,12 +202,12 @@ def deserialize_xml(xml_node=None):
             new_entry = Entry()
             for en in el.iter():
                 if en.tag == USERNAME_TAG:
-                    new_entry.set_username(b64decode(en.text))
+                    new_entry.set_username(b64decode(en.text).decode('utf-8'))
                 elif en.tag == PASSWORD_TAG:
-                    new_entry.set_password(b64decode(en.text))
+                    new_entry.set_password(b64decode(en.text).decode('utf-8'))
                 elif en.tag == URL_TAG:
-                    new_entry.set_url(b64decode(en.text))
-            cont.add_entry(new_entry, b64decode(el.attrib[NAME_ATTRIBUTE]))
+                    new_entry.set_url(b64decode(en.text).decode('utf-8'))
+            cont.add_entry(new_entry, b64decode(el.attrib[NAME_ATTRIBUTE]).decode('utf-8'))
 
     return cont_name, cont
 
@@ -217,20 +217,20 @@ def serialize_xml(xml_root, cont_name, cont, cont_tag=CONTAINER_TAG):
     the name 'cont_name'."""
     root_element = ET.SubElement(xml_root, cont_tag)
     if cont_name:
-        root_element.set(NAME_ATTRIBUTE, b64encode(cont_name))
+        root_element.set(NAME_ATTRIBUTE, b64encode(cont_name.encode()).decode('utf-8'))
 
     for k, e in cont.get_entries():
         entry_el = ET.SubElement(root_element, ENTRY_TAG)
-        entry_el.set(NAME_ATTRIBUTE, b64encode(k))
+        entry_el.set(NAME_ATTRIBUTE, b64encode(k.encode()).decode('utf-8'))
         if e.get_username():
             username_el = ET.SubElement(entry_el, USERNAME_TAG)
-            username_el.text = b64encode(e.get_username())
+            username_el.text = b64encode(e.get_username().encode()).decode('utf-8')
         if e.get_password():
             password_el = ET.SubElement(entry_el, PASSWORD_TAG)
-            password_el.text = b64encode(e.get_password())
+            password_el.text = b64encode(e.get_password().encode()).decode('utf-8')
         if e.get_url():
             url_el = ET.SubElement(entry_el, URL_TAG)
-            url_el.text = b64encode(e.get_url())
+            url_el.text = b64encode(e.get_url().encode()).decode('utf-8')
 
     for k, c in cont.get_containers():
         serialize_xml(root_element, k, c)
@@ -261,7 +261,7 @@ class PasswordStore:
         """Returns true if the given path is valid (i.e., is a path to a
         container or entry in the store)."""
         dest_cont = self.root
-        cont_chain = filter(None, simplify_path(path).split("/"))
+        cont_chain = list(filter(None, simplify_path(path).split("/")))
         cc_count = len(cont_chain)
         for c in cont_chain:
             cc_count -= 1
@@ -338,7 +338,8 @@ class PasswordStore:
     def serialize_to_xml(self):
         xml_root = ET.Element(ROOT_TAG)
         serialize_xml(xml_root, None, self.root, STORE_ROOT_TAG)
-        return ET.tostring(xml_root, encoding='utf8', method='xml')
+        xml_str = ET.tostring(xml_root, encoding='utf-8', method='xml')
+        return xml_str
 
     def save(self, password, filename):
         pw_store_xml = self.serialize_to_xml()

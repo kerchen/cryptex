@@ -20,33 +20,33 @@ class TestPasswordStore(TestCase):
         lvl1 = EntryContainer()
         lvl2 = EntryContainer()
         lvl3 = EntryContainer()
-        lvl2.add_container(lvl3, "lvl3")
-        lvl1.add_container(lvl2, "lvl2")
-        root.add_container(lvl1, "lvl1")
-        self.assertEqual(lvl1, self.cut.get_container_by_path("/lvl1"))
-        self.assertEqual(lvl2, self.cut.get_container_by_path("/lvl1/lvl2"))
-        self.assertEqual(lvl3, self.cut.get_container_by_path("/lvl1/lvl2/lvl3"))
+        lvl2.add_container(lvl3, u"lvl3")
+        lvl1.add_container(lvl2, u"lvl2")
+        root.add_container(lvl1, u"lvl1")
+        self.assertEqual(lvl1, self.cut.get_container_by_path(u"/lvl1"))
+        self.assertEqual(lvl2, self.cut.get_container_by_path(u"/lvl1/lvl2"))
+        self.assertEqual(lvl3, self.cut.get_container_by_path(u"/lvl1/lvl2/lvl3"))
 
     def test_valid_path(self):
         root = self.cut.get_root()
         lvl1 = EntryContainer()
         lvl2 = EntryContainer()
-        lvl1.add_container(lvl2, "lvl2")
-        root.add_container(lvl1, "lvl1")
-        self.assertTrue(self.cut.is_valid_path("/lvl1"))
-        self.assertTrue(self.cut.is_valid_path("/lvl1/lvl2"))
-        self.assertFalse(self.cut.is_valid_path("lvl2"))
+        lvl1.add_container(lvl2, u"lvl2")
+        root.add_container(lvl1, u"lvl1")
+        self.assertTrue(self.cut.is_valid_path(u"/lvl1"))
+        self.assertTrue(self.cut.is_valid_path(u"/lvl1/lvl2"))
+        self.assertFalse(self.cut.is_valid_path(u"lvl2"))
 
     def test_invalid_container_path(self):
         with self.assertRaises(ECNotFoundException):
-            self.cut.get_container_by_path("/Something/Not/there")
+            self.cut.get_container_by_path(u"/Something/Not/there")
 
     def test_get_entry_by_path(self):
         new_cont = EntryContainer()
         entry = Entry()
-        new_cont.add_entry(entry, "Entry1")
-        self.cut.add_container(new_cont, "A New Beginning", "/")
-        self.assertEqual(("Entry1", entry), self.cut.get_entry_by_path("/A New Beginning/Entry1"))
+        new_cont.add_entry(entry, u"Entry1")
+        self.cut.add_container(new_cont, u"A New Beginning", u"/")
+        self.assertEqual((u"Entry1", entry), self.cut.get_entry_by_path(u"/A New Beginning/Entry1"))
 
     def match_entries(self, cont1, cont2):
         self.assertEqual(cont1.get_entry_count(), cont2.get_entry_count())
@@ -78,30 +78,30 @@ class TestPasswordStore(TestCase):
 
     def test_update_entry_same_name(self):
         old_entry = Entry()
-        old_entry.url = "old_url"
-        old_entry.password = "old_password"
-        old_entry.username = "old_username"
-        self.cut.add_entry(old_entry, "Old One", "/")
+        old_entry.url = u"old_url"
+        old_entry.password = u"old_password"
+        old_entry.username = u"old_username"
+        self.cut.add_entry(old_entry, u"Old One", u"/")
         new_entry = Entry()
-        new_entry.url = "new_url"
-        new_entry.password = "new_password"
-        new_entry.username = "new_username"
-        self.cut.update_entry("/Old One", "Old One", new_entry)
-        ent_name, entry = self.cut.get_entry_by_path("/Old One")
-        self.assertEqual(ent_name, "Old One")
+        new_entry.url = u"new_url"
+        new_entry.password = u"new_password"
+        new_entry.username = u"new_username"
+        self.cut.update_entry(u"/Old One", u"Old One", new_entry)
+        ent_name, entry = self.cut.get_entry_by_path(u"/Old One")
+        self.assertEqual(ent_name, u"Old One")
         self.assertEqual(entry, new_entry)
 
     def test_update_entry_different_name(self):
         old_entry = Entry()
-        old_entry.url = "old_url"
-        old_entry.password = "old_password"
-        old_entry.username = "old_username"
-        self.cut.add_entry(old_entry, "Old One", "/")
+        old_entry.url = u"old_url"
+        old_entry.password = u"old_password"
+        old_entry.username = u"old_username"
+        self.cut.add_entry(old_entry, u"Old One", u"/")
         new_entry = Entry()
-        new_entry.url = "new_url"
-        new_entry.password = "new_password"
-        new_entry.username = "new_username"
-        self.cut.update_entry("/Old One", "New One", new_entry)
-        ent_name, entry = self.cut.get_entry_by_path("/New One")
-        self.assertEqual(ent_name, "New One")
+        new_entry.url = u"new_url"
+        new_entry.password = u"new_password"
+        new_entry.username = u"new_username"
+        self.cut.update_entry(u"/Old One", u"New One", new_entry)
+        ent_name, entry = self.cut.get_entry_by_path(u"/New One")
+        self.assertEqual(ent_name, u"New One")
         self.assertEqual(entry, new_entry)

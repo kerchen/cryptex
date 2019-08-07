@@ -17,10 +17,6 @@ if [ "$_IP" ]; then
   printf "My IP address is %s\n" "$_IP"
 fi
 
-#/usr/local/bin/make-gadgets
-#/usr/local/bin/hid-gadget
 /home/pi/switch-mode.sh rndis
-
-python /home/pi/switch-gadget.py &
 
 exit 0

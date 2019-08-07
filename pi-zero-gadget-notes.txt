@@ -58,10 +58,10 @@ character and not the British pound symbol.
      /home/pi/switch-mode.sh rndis
 8.5. Install things that need a connection to the internet:
   a. sudo apt-get update
-  b. sudo apt-get install python-crypto
-  c. sudo pip2 install cheroot (optional; for serving HTTPS)
+  b. sudo pip3 install pycryptodome
+  c. sudo pip3 install cheroot
 9. At this point, you're ready to ditch the WiFi dongle. n.B. Avahi doesn't
-  seem to work with WiFi(?). You should probably install anything that
+  seem to work with WiFi(?). You should probably install anything else that
   requires hitting an external server now.
   a. Shut down the Pi and disconnect the USB hub.
   b. Remove wpa_supplicant.conf from root of SD card.
@@ -94,7 +94,7 @@ Modify per-device cert creation steps:
 1. Generate private device key:
 openssl genrsa -out device.key 2048
 2. Generate cert signing request:
-openssreq -config device-ssl-cert.cfg -new -key device.key -out device.csr
+openssl req -config device-ssl-cert.cfg -new -key device.key -out device.csr
 3. Sign CSR with CA root key:
 openssl x509 -req -in device.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out device.crt -days 500 -sha256 -extfile v3.ext
 4. Install root certificate in Windows certificate repository so that browsers

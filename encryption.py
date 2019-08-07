@@ -2,6 +2,7 @@ import hashlib
 import random
 import os
 import struct
+from Crypto import Random
 from Crypto.Cipher import AES
 
 # Adapted from Eli Bendersky's intro to AES encryption using PyCrypto:
@@ -29,14 +30,14 @@ def encrypt(password, in_filename, out_filename, chunk_size=64*1024):
             chunk_size must be divisible by 16.
     """
 
-    key = hashlib.sha256(password).digest()
-    iv = ''.join(chr(random.randint(0, 0xFF)) for i in range(16))
+    key = hashlib.sha256(password.encode()).digest()
+    iv = Random.new().read(16)
     encryptor = AES.new(key, AES.MODE_CBC, iv)
     data_size = os.path.getsize(in_filename)
 
     with open(in_filename, 'rb') as infile:
         with open(out_filename, 'wb') as outfile:
-            outfile.write(COOKIE)
+            outfile.write(COOKIE.encode())
             outfile.write(struct.pack('<Q', data_size))
             outfile.write(iv)
 
@@ -45,7 +46,7 @@ def encrypt(password, in_filename, out_filename, chunk_size=64*1024):
                 if len(chunk) == 0:
                     break
                 elif len(chunk) % 16 != 0:
-                    chunk += ' ' * (16 - len(chunk) % 16)
+                    chunk += b' ' * (16 - len(chunk) % 16)
 
                 outfile.write(encryptor.encrypt(chunk))
 
@@ -69,13 +70,13 @@ def encrypt_from_string(password, plaintext, out_filename, chunk_size=64*1024):
             chunk_size must be divisible by 16.
     """
 
-    key = hashlib.sha256(password).digest()
-    iv = ''.join(chr(random.randint(0, 0xFF)) for i in range(16))
+    key = hashlib.sha256(password.encode()).digest()
+    iv = Random.new().read(16)
     encryptor = AES.new(key, AES.MODE_CBC, iv)
     data_size = len(plaintext)
 
     with open(out_filename, 'wb') as outfile:
-        outfile.write(COOKIE)
+        outfile.write(COOKIE.encode())
         outfile.write(struct.pack('<Q', data_size))
         outfile.write(iv)
 
@@ -85,7 +86,7 @@ def encrypt_from_string(password, plaintext, out_filename, chunk_size=64*1024):
             if len(chunk) == 0:
                 break
             elif len(chunk) % 16 != 0:
-                chunk += ' ' * (16 - len(chunk) % 16)
+                chunk += b' ' * (16 - len(chunk) % 16)
 
             outfile.write(encryptor.encrypt(chunk))
             i += chunk_size
@@ -108,10 +109,10 @@ def decrypt(password, in_filename, out_filename, chunk_size=24*1024):
             chunk_size must be divisible by 16.
     """
 
-    key = hashlib.sha256(password).digest()
+    key = hashlib.sha256(password.encode()).digest()
     with open(in_filename, 'rb') as infile:
         cookie = infile.read(len(COOKIE))
-        if cookie != COOKIE:
+        if cookie != COOKIE.encode():
             raise Exception("Input file does not have expected cookie")
 
         orig_size = struct.unpack('<Q', infile.read(struct.calcsize('Q')))[0]
@@ -142,12 +143,12 @@ def decrypt_to_string(password, in_filename, chunk_size=24*1024):
             chunk_size must be divisible by 16.
     """
 
-    key = hashlib.sha256(password).digest()
+    key = hashlib.sha256(password.encode()).digest()
     plaintext = ""
 
     with open(in_filename, 'rb') as infile:
         cookie = infile.read(len(COOKIE))
-        if cookie != COOKIE:
+        if cookie != COOKIE.encode():
             raise Exception("Input file does not have expected cookie")
 
         orig_size = struct.unpack('<Q', infile.read(struct.calcsize('Q')))[0]
@@ -158,7 +159,7 @@ def decrypt_to_string(password, in_filename, chunk_size=24*1024):
             chunk = infile.read(chunk_size)
             if len(chunk) == 0:
                 break
-            plaintext += decryptor.decrypt(chunk)
+            plaintext += decryptor.decrypt(chunk).decode('utf-8')
 
         plaintext = plaintext[:orig_size]
 
@@ -177,31 +178,31 @@ def main():
                  "passages, and more recently with desktop publishing software "
                  "like Aldus PageMaker including versions of Lorem Ipsum.")
 
-    password = 's3krit pa55wort!'
+    password = u's3krit pa55wort!'
     plaintext_filename = 'lorem-encryptum.txt'
     ciphertext_filename = 'lorem-encryptum.enc'
 
-    with open(plaintext_filename, 'wb') as ptfile:
+    with open(plaintext_filename, 'wt', encoding='utf-8') as ptfile:
         ptfile.write(plaintext)
 
     encrypt(password, plaintext_filename, ciphertext_filename)
     decrypt(password, ciphertext_filename, plaintext_filename)
 
-    with open(plaintext_filename, 'rb') as ptfile:
+    with open(plaintext_filename, 'rt', encoding='utf-8') as ptfile:
         rt_plaintext = ptfile.read()
 
     if rt_plaintext != plaintext:
-        print("Round-trip plaintext doesn't match original?!")
+        print("ERROR: Round-trip plaintext doesn't match original?!")
     else:
-        print("Round-trip plaintext matches original")
+        print("SUCCESS: Round-trip plaintext matches original")
 
-    encrypt_from_string(password, plaintext, ciphertext_filename)
+    encrypt_from_string(password, plaintext.encode(), ciphertext_filename)
     rt_plaintext = decrypt_to_string(password, ciphertext_filename)
 
     if rt_plaintext != plaintext:
-        print("Round-trip plaintext doesn't match original?!")
+        print("ERROR: Round-trip plaintext doesn't match original?!")
     else:
-        print("Round-trip plaintext matches original")
+        print("SUCCESS: Round-trip plaintext matches original")
 
 
 if __name__ == "__main__":
