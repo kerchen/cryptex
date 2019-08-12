@@ -7,7 +7,7 @@ command="$1" # "hid" or "rndis"
 
 rndis_gadget="/sys/kernel/config/usb_gadget/pwlocker.rndis"
 hid_gadget="/sys/kernel/config/usb_gadget/pwlocker.hid"
-
+log_file="/home/pi/cryptex.log"
 
 hid_up() {
     mkdir -p ${hid_gadget}
@@ -43,10 +43,10 @@ hid_up() {
 
 hid_down() {
     if [ ! -d ${hid_gadget} ]; then
-        echo "HID gadget is already down."
+        echo "HID gadget is already down." >> log_file
         return
     fi
-    echo "Taking down HID gadget..."
+    echo "Taking down HID gadget..." >> log_file
 
     # Have to unlink and remove directories in reverse order.
     # Checks allow to finish takedown after error.
@@ -61,7 +61,7 @@ hid_down() {
     [ -d ${hid_gadget}/strings/0x409 ] && rmdir ${hid_gadget}/strings/0x409
     rmdir ${hid_gadget}
 
-    echo "Done."
+    echo "Done." >> log_file
 }
 
 rndis_up() {
@@ -126,10 +126,10 @@ rndis_up() {
 
 rndis_down() {
     if [ ! -d ${rndis_gadget} ]; then
-        echo "RNDIS gadget is already down."
+        echo "RNDIS gadget is already down." >> log_file
         return
     fi
-    echo "Taking down RNDIS gadget..."
+    echo "Taking down RNDIS gadget..." >> log_file
 
     # Have to unlink and remove directories in reverse order.
     # Checks allow to finish takedown after error.
@@ -149,7 +149,7 @@ rndis_down() {
     [ -d ${rndis_gadget}/strings/0x409 ] && rmdir ${rndis_gadget}/strings/0x409
     rmdir ${rndis_gadget}
 
-    echo "Done."
+    echo "Done." >> log_file
 }
 
 
