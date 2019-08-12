@@ -343,6 +343,7 @@ def cryptex(stdscr):
                 shared_cfg.lock_store()
                 in_keyboard_mode = False
                 navigator = None
+                hardware.set_device_mode(shared_cfg.RNDIS_USB_MODE)
             elif shared_cfg.is_in_keyboard_mode():
                 if hw_button == ButtonAction.EDIT:
                     log.debug("Going to web mode.")
@@ -364,6 +365,7 @@ def cryptex(stdscr):
                     if not in_keyboard_mode:
                         in_keyboard_mode = True
                         navigator = StoreNavigator(1, row, maxx-2, maxy-3)
+                        hardware.set_device_mode(shared_cfg.HID_USB_MODE)
                     navigator.change_selection(direction)
                     navigator.render_level(stdscr)
                     if eb_pressed:
