@@ -7,6 +7,7 @@ import hardware
 # Order of encoder values for each direction
 CW_ORDER = [1, 3, 0, 2]
 CCW_ORDER = [2, 0, 3, 1]
+TICKS_PER_STEP = float(2)
 
 
 # Button label positions are determined empirically and are dependent on
@@ -41,7 +42,7 @@ class ColorPair:
     SELECTED = 2
     NO_DATA = 3
     NO_DATA_SELECTED = 4
-    INSTRUCTION = 5
+    TITLE = 5
 
 
 log = logging.getLogger(__name__)
@@ -265,7 +266,7 @@ class StoreNavigator:
 
 
 def render_instructions(stdscr, row, maxx):
-    text_attr = curses.color_pair(ColorPair.INSTRUCTION)
+    text_attr = curses.color_pair(ColorPair.TITLE)
     text = ""
     addl_text_attr = curses.color_pair(ColorPair.NORMAL)
     addl_text = []
@@ -304,11 +305,12 @@ def cryptex(stdscr):
     curses.init_pair(ColorPair.SELECTED, curses.COLOR_BLACK, curses.COLOR_WHITE)
     curses.init_pair(ColorPair.NO_DATA, curses.COLOR_RED, curses.COLOR_BLACK)
     curses.init_pair(ColorPair.NO_DATA_SELECTED, curses.COLOR_WHITE, curses.COLOR_RED)
-    curses.init_pair(ColorPair.INSTRUCTION, curses.COLOR_WHITE, curses.COLOR_GREEN)
+    curses.init_pair(ColorPair.TITLE, curses.COLOR_BLACK, curses.COLOR_GREEN)
     hardware.set_device_mode(shared_cfg.RNDIS_USB_MODE)
     enc_value = hardware.get_enc_value()
     in_keyboard_mode = False
     navigator = None
+    last_direction = 0
 
     curses.curs_set(0)  # Turn off cursor
     maxy, maxx = stdscr.getmaxyx()
@@ -351,22 +353,26 @@ def cryptex(stdscr):
                     in_keyboard_mode = False
                     navigator = None
                 else:
-                    direction = 0
+                    direction = last_direction
                     if hw_button == 0:
                         if new_enc_value != enc_value:
                             if new_enc_value == CW_ORDER[enc_value]:
-                                direction = 1
+                                direction -= 1.0 / TICKS_PER_STEP
                             elif new_enc_value == CCW_ORDER[enc_value]:
-                                direction = -1
+                                direction += 1.0 / TICKS_PER_STEP
+                            last_direction = direction
+                            if abs(last_direction) >= 1.0:
+                                last_direction = 0
                             enc_value = new_enc_value
                     elif hw_button == ButtonAction.BACK:
                         direction = -1
+                        last_direction = 0
 
                     if not in_keyboard_mode:
                         in_keyboard_mode = True
                         navigator = StoreNavigator(1, row, maxx-2, maxy-3)
                         hardware.set_device_mode(shared_cfg.HID_USB_MODE)
-                    navigator.change_selection(direction)
+                    navigator.change_selection(round(direction))
                     navigator.render_level(stdscr)
                     if eb_pressed:
                         navigator.change_level(-1)
