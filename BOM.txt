@@ -1,0 +1,14 @@
+Enclosure:
+PacTec 81491-510-000 XP Black Kit
+Mouser #: 616-81491-000
+
+Encoder:
+Bourns PEC11L-4215F-S0015
+Mouser #: 652-PEC11L4215FS0015
+
+Encoder Knob:
+Generic eBay "Axle Shaft Rotary Encoder Caps Round Plastic"
+Outer diameter: 42 mm
+Pit diameter: 12 mm
+Hole diameter: 5.7 mm
+
