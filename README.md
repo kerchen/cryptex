@@ -36,11 +36,13 @@ to--no drivers, no apps. All of the needed software is on the cryptex itself.
 * Raspberry Pi zero
 * Adafruit 2.2" TFT (non-touch) display with four tactile buttons
 * A rotary encoder
+* MicroSD card (8 GB or larger)
+
+See BOM.txt for more details.
 
 ## Software
-* Adafruit Raspian Linux distro with extensions to support the TFT display
-* Python 2.7
-* bottle (Python web framework)
+* Adafruit Jessie Linux distro with PiTFT 2.2" HAT image 
+* Python 3.7 and these packages: bottle, cheroot, pycryptodome 
 
 # Basic Operation
 Upon plugging the cryptex into a computer, it boots and presents itself as an
@@ -50,9 +52,8 @@ can use the web interface to manage existing passwords, etc. or the cryptex can
 be put into 'keyboard' mode. In keyboard mode, all interactions with the
 cryptex are made through the dedicated display and input hardware.
 
-# Open Questions/Issues
-As of this writing (26 Nov 2017), the project is in its infancy, with lots of
-unanswered questions. I'm also still experimenting with different 
-hardware and software, so there are plenty of things that still need to be
-figured out. See the Issues section of this repo.
+# Status
+As of this writing (13 Aug 2019), the device basically works! There are still
+plenty of improvements I'd like to make (see the Issues tab), but, as a 
+proof-of-concept, it's sound.
 
