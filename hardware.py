@@ -9,8 +9,8 @@ import shared_cfg
 MODE_SWITCH_SCRIPT = "/home/pi/switch-mode.sh"
 
 # TFT buttons; button 1 is left-most
-TFT_BUTTON_1_PIN = 15   # GPIO22
-TFT_BUTTON_2_PIN = 11   # GPIO17
+TFT_BUTTON_1_PIN = 11   # GPIO17
+TFT_BUTTON_2_PIN = 15   # GPIO22
 TFT_BUTTON_3_PIN = 16   # GPIO23
 TFT_BUTTON_4_PIN = 13   # GPIO27
 
