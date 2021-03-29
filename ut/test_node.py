@@ -76,7 +76,7 @@ class TestNode(TestCase):
         self.cut.add_node(Node(), name=cont_name)
         with self.assertRaises(ECDuplicateException) as context:
             self.cut.add_node(Node(), name=cont_name)
-        self.assertEqual(f"Duplicate container name {cont_name}", str(context.exception))
+        self.assertEqual(f"Container with name {cont_name} already exists", str(context.exception))
 
     @parameterized.expand(ILLEGAL_NAME_CHARS)
     def test_illegal_character_at_start_of_node_name(self, c):
@@ -184,5 +184,6 @@ class TestNode(TestCase):
     def test_add_duplicate_entry(self):
         entry_name = "Rogue One"
         self.cut.add_credential(Credential(), entry_name)
-        with self.assertRaises(ECDuplicateException):
+        with self.assertRaises(ECDuplicateException) as context:
             self.cut.add_credential(Node(), name=entry_name)
+        self.assertEqual(f"Credential with name {entry_name} already exists", str(context.exception))
