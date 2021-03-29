@@ -80,39 +80,27 @@ class TestNode(TestCase):
 
     @parameterized.expand(ILLEGAL_NAME_CHARS)
     def test_illegal_character_at_start_of_node_name(self, c):
-        cont_name = c + "after"
-        with self.assertRaises(ECNaughtyCharacterException):
-            self.cut.add_node(Node(), name=cont_name)
+        self.assertRaiseNaughtyCharacterException(self.cut.add_node, Node(), f"{c}after")
 
     @parameterized.expand(ILLEGAL_NAME_CHARS)
     def test_illegal_character_in_middle_of_container_name(self, c):
-        cont_name = "before" + c + "after"
-        with self.assertRaises(ECNaughtyCharacterException):
-            self.cut.add_node(Node(), name=cont_name)
+        self.assertRaiseNaughtyCharacterException(self.cut.add_node, Node(), f"before{c}after")
 
     @parameterized.expand(ILLEGAL_NAME_CHARS)
     def test_illegal_character_at_end_of_container_name(self, c):
-        cont_name = "before" + c
-        with self.assertRaises(ECNaughtyCharacterException):
-            self.cut.add_node(Node(), name=cont_name)
+        self.assertRaiseNaughtyCharacterException(self.cut.add_node, Node(), f"before{c}")
 
     @parameterized.expand(ILLEGAL_NAME_CHARS)
     def test_illegal_character_at_start_of_credential_name(self, c):
-        ent_name = c + "after"
-        with self.assertRaises(ECNaughtyCharacterException):
-            self.cut.add_credential(Credential(), name=ent_name)
+        self.assertRaiseNaughtyCharacterException(self.cut.add_credential, Credential(), f"{c}after")
 
     @parameterized.expand(ILLEGAL_NAME_CHARS)
     def test_illegal_in_middle_of_credential_name(self, c):
-        ent_name = "before" + c + "after"
-        with self.assertRaises(ECNaughtyCharacterException):
-            self.cut.add_credential(Credential(), name=ent_name)
+        self.assertRaiseNaughtyCharacterException(self.cut.add_credential, Credential(), f"before{c}after")
 
     @parameterized.expand(ILLEGAL_NAME_CHARS)
     def test_illegal_character_at_end_of_credential_name(self, c):
-        ent_name = "before" + c
-        with self.assertRaises(ECNaughtyCharacterException):
-            self.cut.add_credential(Credential(), name=ent_name)
+        self.assertRaiseNaughtyCharacterException(self.cut.add_credential, Credential, "before" + c)
 
     def test_add_entry(self):
         new_entry = Credential()
@@ -121,24 +109,18 @@ class TestNode(TestCase):
 
     def test_replace_entry(self):
         old_entry = Credential()
-        old_entry.url = "old_url"
-        old_entry.password = "old_password"
-        old_entry.username = "old_username"
         self.cut.add_credential(old_entry, "Old One")
         new_entry = Credential()
-        new_entry.url = "new_url"
-        new_entry.password = "new_password"
-        new_entry.username = "new_username"
         self.cut.replace_credential(new_entry, "Old One")
         entry = self.cut.get_entry("Old One")
-        self.assertEqual(entry, new_entry)
+        self.assertEqual(new_entry, entry)
 
     def test_get_entry(self):
         entry_name = "Enter the Dragon"
         new_entry = Credential()
         self.cut.add_credential(new_entry, entry_name)
-        e = self.cut.get_entry(entry_name)
-        self.assertEqual(e, new_entry)
+        entry = self.cut.get_entry(entry_name)
+        self.assertEqual(new_entry, entry)
 
     def test_get_nonexistent_entry(self):
         with self.assertRaises(ECNotFoundException):
@@ -187,3 +169,7 @@ class TestNode(TestCase):
         with self.assertRaises(ECDuplicateException) as context:
             self.cut.add_credential(Node(), name=entry_name)
         self.assertEqual(f"Credential with name {entry_name} already exists", str(context.exception))
+
+    def assertRaiseNaughtyCharacterException(self, function, parameter, name):
+        with self.assertRaises(ECNaughtyCharacterException):
+            function(parameter, name)
