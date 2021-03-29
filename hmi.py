@@ -144,9 +144,9 @@ class StoreNavigator:
         self.level_entry_names = []
         if not self.entry:
             self.level_container = shared_cfg.master_store.get_container_by_path(self.level)
-            for k, c in self.level_container.get_containers():
+            for k, c in self.level_container.get_nodes():
                 self.level_container_names.append(k)
-            for k, e in self.level_container.get_entries():
+            for k, e in self.level_container.get_credentials():
                 self.level_entry_names.append(k)
             self.level_container_names.sort()
             self.level_entry_names.sort()

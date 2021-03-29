@@ -67,10 +67,10 @@ class TestPasswordStore(TestCase):
         self.assertEqual((u"Entry1", entry), self.password_store.get_entry_by_path(u"/A New Beginning/Entry1"))
 
     def match_entries(self, cont1, cont2):
-        self.assertEqual(cont1.get_entry_count(), cont2.get_entry_count())
-        for k, e1 in cont1.get_entries():
+        self.assertEqual(cont1.get_credential_count(), cont2.get_credential_count())
+        for k, e1 in cont1.get_credentials():
             try:
-                e2 = cont2.get_entry(k)
+                e2 = cont2.get_credential(k)
                 self.assertEqual(e1.get_username(), e2.get_username())
                 self.assertEqual(e1.get_password(), e2.get_password())
                 self.assertEqual(e1.get_url(), e2.get_url())
@@ -78,12 +78,12 @@ class TestPasswordStore(TestCase):
                 self.fail("Credential {0} not found in both containers.".format(k))
 
     def match_containers(self, cont1, cont2):
-        self.assertEqual(cont1.get_container_count(),
-                         cont2.get_container_count())
+        self.assertEqual(cont1.get_node_count(),
+                         cont2.get_node_count())
         self.match_entries(cont1, cont2)
-        for k, c1 in cont1.get_containers():
+        for k, c1 in cont1.get_nodes():
             try:
-                c2 = cont2.get_container(k)
+                c2 = cont2.get_node(k)
                 self.match_containers(c1, c2)
             except ECNotFoundException:
                 self.fail("Container {0} not found in both containers.".format(k))

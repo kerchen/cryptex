@@ -10,27 +10,27 @@ class Node:
     def has_container(self, cont_name):
         return cont_name in self.nodes
 
-    def get_container(self, name):
+    def get_node(self, name):
         self.ensure_is_present(self.nodes, name, 'Container')
         return self.nodes[name]
 
-    def get_container_count(self):
+    def get_node_count(self):
         return len(self.nodes)
 
-    def get_containers(self):
+    def get_nodes(self):
         return frozenset(self.nodes.items())
 
-    def has_entry(self, name):
+    def has_credential(self, name):
         return name in self.credentials
 
-    def get_entry(self, name):
+    def get_credential(self, name):
         self.ensure_is_present(self.credentials, name, 'Credential')
         return self.credentials[name]
 
-    def get_entry_count(self):
+    def get_credential_count(self):
         return len(self.credentials)
 
-    def get_entries(self):
+    def get_credentials(self):
         return frozenset(self.credentials.items())
 
     def clear(self):

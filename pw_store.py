@@ -61,7 +61,7 @@ def serialize_xml(xml_root, cont_name, cont, cont_tag=CONTAINER_TAG):
     if cont_name:
         root_element.set(NAME_ATTRIBUTE, b64encode(cont_name.encode()).decode('utf-8'))
 
-    for k, e in cont.get_entries():
+    for k, e in cont.get_credentials():
         entry_el = ET.SubElement(root_element, ENTRY_TAG)
         entry_el.set(NAME_ATTRIBUTE, b64encode(k.encode()).decode('utf-8'))
         if e.get_username():
@@ -74,7 +74,7 @@ def serialize_xml(xml_root, cont_name, cont, cont_tag=CONTAINER_TAG):
             url_el = ET.SubElement(entry_el, URL_TAG)
             url_el.text = b64encode(e.get_url().encode()).decode('utf-8')
 
-    for k, c in cont.get_containers():
+    for k, c in cont.get_nodes():
         serialize_xml(root_element, k, c)
 
 
@@ -97,7 +97,7 @@ class PasswordStore:
 
     def is_empty(self):
         """Returns True if the store has no containers nor entries."""
-        return self.root.get_container_count() == 0 and self.root.get_entry_count() == 0
+        return self.root.get_node_count() == 0 and self.root.get_credential_count() == 0
 
     def is_valid_path(self, path):
         """Returns true if the given path is valid (i.e., is a path to a
@@ -109,10 +109,10 @@ class PasswordStore:
             cc_count -= 1
             try:
                 if cc_count > 0:
-                    dest_cont = dest_cont.get_container(c)
+                    dest_cont = dest_cont.get_node(c)
                 else:
                     if not dest_cont.has_container(c):
-                        if not dest_cont.has_entry(c):
+                        if not dest_cont.has_credential(c):
                             return False
             except ECNotFoundException:
                 return False
@@ -126,7 +126,7 @@ class PasswordStore:
         cont_chain = simplify_path(path).split("/")
         for c in cont_chain:
             if len(c):
-                dest_cont = dest_cont.get_container(c)
+                dest_cont = dest_cont.get_node(c)
         return dest_cont
 
     def add_entry(self, entry, entry_name, path):
@@ -151,15 +151,15 @@ class PasswordStore:
     def get_entry_by_path(self, path):
         cont_path, ent_name = os.path.split(simplify_path(path))
         cont = self.get_container_by_path(cont_path)
-        return ent_name, cont.get_entry(ent_name)
+        return ent_name, cont.get_credential(ent_name)
 
     def get_entry_count_by_path(self, path):
         cont = self.get_container_by_path(simplify_path(path))
-        return len(cont.get_entries())
+        return len(cont.get_credentials())
 
     def get_entries_by_path(self, path):
         cont = self.get_container_by_path(simplify_path(path))
-        return cont.get_entries()
+        return cont.get_credentials()
 
     def add_container(self, cont, cont_name, path):
         if not cont:
@@ -171,11 +171,11 @@ class PasswordStore:
 
     def get_container_count_by_path(self, path):
         cont = self.get_container_by_path(simplify_path(path))
-        return len(cont.get_containers())
+        return len(cont.get_nodes())
 
     def get_containers_by_path(self, path):
         cont = self.get_container_by_path(simplify_path(path))
-        return cont.get_containers()
+        return cont.get_nodes()
 
     def serialize_to_xml(self):
         xml_root = ET.Element(ROOT_TAG)

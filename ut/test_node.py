@@ -14,39 +14,39 @@ class TestNode(TestCase):
     def test_clear(self):
         new_cont = Node()
         self.cut.add_node(new_cont, "Foo")
-        self.assertEqual(1, self.cut.get_container_count())
+        self.assertEqual(1, self.cut.get_node_count())
         self.cut.clear()
-        self.assertEqual(0, self.cut.get_container_count())
+        self.assertEqual(0, self.cut.get_node_count())
 
-    def test_add_container(self):
+    def test_add_node(self):
         new_cont = Node()
         self.cut.add_node(new_cont, "A New Beginning")
         self.assertTrue(self.cut.has_container("A New Beginning"))
 
-    def test_get_container(self):
+    def test_get_node(self):
         cont_name = "A New Beginning"
         new_cont = Node()
         self.cut.add_node(new_cont, cont_name)
-        c = self.cut.get_container(cont_name)
+        c = self.cut.get_node(cont_name)
         self.assertEqual(c, new_cont)
 
-    def test_get_nonexistent_container(self):
+    def test_get_nonexistent_node(self):
         with self.assertRaises(ECNotFoundException):
-            self.cut.get_container("Anything")
+            self.cut.get_node("Anything")
 
-    def test_get_containers(self):
+    def test_get_nodes(self):
         new_cont = Node()
         self.cut.add_node(new_cont, "Confidence")
-        containers = self.cut.get_containers()
+        containers = self.cut.get_nodes()
         for k, c in containers:
             self.assertEqual("Confidence", k)
             self.assertEqual(new_cont, c)
 
-    def test_rename_nonexistent_container(self):
+    def test_rename_nonexistent_node(self):
         with self.assertRaises(ECNotFoundException):
             self.cut.rename_node("old", "new")
 
-    def test_rename_duplicate_container(self):
+    def test_rename_duplicate_node(self):
         cont_name1 = "A New Beginning"
         cont_name2 = "A Newer Beginning"
         self.cut.add_node(Node(), name=cont_name1)
@@ -54,7 +54,7 @@ class TestNode(TestCase):
         with self.assertRaises(ECDuplicateException):
             self.cut.rename_node(cont_name1, cont_name2)
 
-    def test_rename_container(self):
+    def test_rename_node(self):
         cont_name1 = "A New Beginning"
         cont_name2 = "A Newer Beginning"
         self.cut.add_node(Node(), cont_name1)
@@ -62,16 +62,16 @@ class TestNode(TestCase):
         with self.assertRaises(ECNotFoundException):
             self.cut.remove_node(cont_name1)
         self.cut.remove_node(cont_name2)
-        self.assertEqual(0, self.cut.get_container_count())
+        self.assertEqual(0, self.cut.get_node_count())
 
-    def test_add_and_remove_container(self):
+    def test_add_and_remove_node(self):
         new_cont = Node()
         self.cut.add_node(new_cont, name="Queen")
-        self.assertEqual(1, self.cut.get_container_count())
+        self.assertEqual(1, self.cut.get_node_count())
         self.cut.remove_node("Queen")
-        self.assertEqual(0, self.cut.get_container_count())
+        self.assertEqual(0, self.cut.get_node_count())
 
-    def test_add_duplicate_container(self):
+    def test_add_duplicate_node(self):
         cont_name = "A New Beginning"
         self.cut.add_node(Node(), name=cont_name)
         with self.assertRaises(ECDuplicateException) as context:
@@ -83,11 +83,11 @@ class TestNode(TestCase):
         self.assertRaiseNaughtyCharacterException(self.cut.add_node, Node(), f"{c}after")
 
     @parameterized.expand(ILLEGAL_NAME_CHARS)
-    def test_illegal_character_in_middle_of_container_name(self, c):
+    def test_illegal_character_in_middle_of_node_name(self, c):
         self.assertRaiseNaughtyCharacterException(self.cut.add_node, Node(), f"before{c}after")
 
     @parameterized.expand(ILLEGAL_NAME_CHARS)
-    def test_illegal_character_at_end_of_container_name(self, c):
+    def test_illegal_character_at_end_of_node_name(self, c):
         self.assertRaiseNaughtyCharacterException(self.cut.add_node, Node(), f"before{c}")
 
     @parameterized.expand(ILLEGAL_NAME_CHARS)
@@ -102,43 +102,43 @@ class TestNode(TestCase):
     def test_illegal_character_at_end_of_credential_name(self, c):
         self.assertRaiseNaughtyCharacterException(self.cut.add_credential, Credential(), "before" + c)
 
-    def test_add_entry(self):
-        new_entry = Credential()
-        self.cut.add_credential(new_entry, "Rogue One")
-        self.assertTrue(self.cut.has_entry("Rogue One"))
+    def test_add_credential(self):
+        new_credential = Credential()
+        self.cut.add_credential(new_credential, "Rogue One")
+        self.assertTrue(self.cut.has_credential("Rogue One"))
 
-    def test_replace_entry(self):
-        old_entry = Credential()
-        self.cut.add_credential(old_entry, "Old One")
-        new_entry = Credential()
-        self.cut.replace_credential(new_entry, "Old One")
-        entry = self.cut.get_entry("Old One")
-        self.assertEqual(new_entry, entry)
+    def test_replace_credential(self):
+        old_credential = Credential()
+        self.cut.add_credential(old_credential, "Old One")
+        new_credential = Credential()
+        self.cut.replace_credential(new_credential, "Old One")
+        entry = self.cut.get_credential("Old One")
+        self.assertEqual(new_credential, entry)
 
-    def test_get_entry(self):
+    def test_get_credential(self):
         entry_name = "Enter the Dragon"
-        new_entry = Credential()
-        self.cut.add_credential(new_entry, entry_name)
-        entry = self.cut.get_entry(entry_name)
-        self.assertEqual(new_entry, entry)
+        new_credential = Credential()
+        self.cut.add_credential(new_credential, entry_name)
+        entry = self.cut.get_credential(entry_name)
+        self.assertEqual(new_credential, entry)
 
-    def test_get_nonexistent_entry(self):
+    def test_get_nonexistent_credential(self):
         with self.assertRaises(ECNotFoundException):
-            self.cut.get_entry("Anything")
+            self.cut.get_credential("Anything")
 
     def test_get_entries(self):
-        new_entry = Credential()
-        self.cut.add_credential(new_entry, name="Rogue One")
-        entries = self.cut.get_entries()
+        new_credential = Credential()
+        self.cut.add_credential(new_credential, name="Rogue One")
+        entries = self.cut.get_credentials()
         for k, e in entries:
             self.assertEqual("Rogue One", k)
-            self.assertEqual(new_entry, e)
+            self.assertEqual(new_credential, e)
 
-    def test_rename_nonexistent_entry(self):
+    def test_rename_nonexistent_credential(self):
         with self.assertRaises(ECNotFoundException):
             self.cut.rename_credential("old", "new")
 
-    def test_rename_duplicate_entry(self):
+    def test_rename_duplicate_credential(self):
         entry_name1 = "Rogue One"
         entry_name2 = "Rogue Two"
         self.cut.add_credential(Credential(), name=entry_name1)
@@ -146,7 +146,7 @@ class TestNode(TestCase):
         with self.assertRaises(ECDuplicateException):
             self.cut.rename_credential(entry_name1, entry_name2)
 
-    def test_rename_entry(self):
+    def test_rename_credential(self):
         entry_name1 = "Rogue One"
         entry_name2 = "Rogue Two"
         self.cut.add_credential(Credential(), name=entry_name1)
@@ -154,16 +154,16 @@ class TestNode(TestCase):
         with self.assertRaises(ECNotFoundException):
             self.cut.remove_credential(entry_name1)
         self.cut.remove_credential(entry_name2)
-        self.assertEqual(0, self.cut.get_entry_count())
+        self.assertEqual(0, self.cut.get_credential_count())
 
-    def test_add_and_remove_entry(self):
-        new_entry = Credential()
-        self.cut.add_credential(new_entry, "~ Rogue-1")
-        self.assertEqual(1, self.cut.get_entry_count())
+    def test_add_and_remove_credential(self):
+        new_credential = Credential()
+        self.cut.add_credential(new_credential, "~ Rogue-1")
+        self.assertEqual(1, self.cut.get_credential_count())
         self.cut.remove_credential("~ Rogue-1")
-        self.assertEqual(0, self.cut.get_entry_count())
+        self.assertEqual(0, self.cut.get_credential_count())
 
-    def test_add_duplicate_entry(self):
+    def test_add_duplicate_credential(self):
         entry_name = "Rogue One"
         self.cut.add_credential(Credential(), entry_name)
         with self.assertRaises(ECDuplicateException) as context:

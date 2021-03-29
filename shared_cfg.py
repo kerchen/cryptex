@@ -193,7 +193,7 @@ def move_entry(entry_path, new_parent_path):
             entry_name, entry = master_store.get_entry_by_path(entry_path)
             new_parent_container = master_store. \
                 get_container_by_path(new_parent_path)
-            if new_parent_container.has_entry(entry_name):
+            if new_parent_container.has_credential(entry_name):
                 ex_text = ("Destination folder already has an entry with "
                            "the name {0} in it.".format(entry_name))
                 raise ec_exceptions.ECDuplicateException(ex_text)
