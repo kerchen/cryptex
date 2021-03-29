@@ -82,11 +82,11 @@ class StoreNavigator:
                   .format(min_row, max_row, self.row_extent.span(),
                           min_col, max_col, self.col_extent.span()))
         self.entry_actions = []
-        # Each action tuple holds the UI text and the corresponding Entry class
-        # function that should be invoked on an Entry instance to get the
+        # Each action tuple holds the UI text and the corresponding Credential class
+        # function that should be invoked on an Credential instance to get the
         # string that should be sent via the USB keyboard device for the action.
         # For example, the "Send password" action invokes "get_password()" on
-        # the currently-selected Entry, and outputs the result to the USB
+        # the currently-selected Credential, and outputs the result to the USB
         # keyboard device.
         self.entry_actions.append(["Send password", "get_password"])
         self.entry_actions.append(["Send username", "get_username"])
@@ -96,10 +96,10 @@ class StoreNavigator:
 
     def get_entry_action_text(self, index):
         """
-        For the Entry indicated by self.level, return the result of invoking the
-        Entry member function for the action at index.
+        For the Credential indicated by self.level, return the result of invoking the
+        Credential member function for the action at index.
         :param index: Index into self.entry_actions, which selects the function
-        to be invoked on the currently-selected Entry.
+        to be invoked on the currently-selected Credential.
         :return: A string or None.
         """
         action = self.entry_actions[index][1]
