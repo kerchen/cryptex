@@ -4,68 +4,68 @@ from illegal_chars import ILLEGAL_CHAR_RE
 
 class Node:
     def __init__(self):
-        self.containers = dict()
-        self.entries = dict()
+        self.nodes = dict()
+        self.credentials = dict()
 
     def has_container(self, cont_name):
-        return cont_name in self.containers
+        return cont_name in self.nodes
 
     def get_container(self, name):
-        self.ensure_is_present(self.containers, name, 'Container')
-        return self.containers[name]
+        self.ensure_is_present(self.nodes, name, 'Container')
+        return self.nodes[name]
 
     def get_container_count(self):
-        return len(self.containers)
+        return len(self.nodes)
 
     def get_containers(self):
-        return frozenset(self.containers.items())
+        return frozenset(self.nodes.items())
 
     def has_entry(self, name):
-        return name in self.entries
+        return name in self.credentials
 
     def get_entry(self, name):
-        self.ensure_is_present(self.entries, name, 'Credential')
-        return self.entries[name]
+        self.ensure_is_present(self.credentials, name, 'Credential')
+        return self.credentials[name]
 
     def get_entry_count(self):
-        return len(self.entries)
+        return len(self.credentials)
 
     def get_entries(self):
-        return frozenset(self.entries.items())
+        return frozenset(self.credentials.items())
 
     def clear(self):
-        self.containers.clear()
-        self.entries.clear()
+        self.nodes.clear()
+        self.credentials.clear()
 
-    def add_node(self, cont, name):
-        self.ensure_add_is_possible(self.containers, name, 'Container')
-        self.containers[name] = cont
+    def add_node(self, node, name):
+        self.ensure_add_is_possible(self.nodes, name, 'Container')
+        self.nodes[name] = node
 
     def rename_node(self, old_name, new_name):
-        self.ensure_rename_is_possible(self.containers, old_name, new_name, 'Container')
-        cont = self.containers.pop(old_name)
+        self.ensure_rename_is_possible(self.nodes, old_name, new_name, 'Container')
+        cont = self.nodes.pop(old_name)
         self.add_node(cont, new_name)
 
     def remove_node(self, name):
-        self.ensure_remove_is_possible(self.containers, 'Container', name)
-        self.containers.pop(name)
+        self.ensure_remove_is_possible(self.nodes, 'Container', name)
+        self.nodes.pop(name)
 
-    def add_credential(self, entry, name):
-        self.ensure_add_is_possible(self.entries, name, "Credential")
-        self.entries[name] = entry
+    def add_credential(self, credential, name):
+        self.ensure_add_is_possible(self.credentials, name, "Credential")
+        self.credentials[name] = credential
 
     def replace_credential(self, entry, name):
-        self.ensure_replace_is_possible(self.entries, name, 'Credential')
-        self.entries[name] = entry
+        self.ensure_replace_is_possible(self.credentials, name, 'Credential')
+        self.credentials[name] = entry
 
     def rename_credential(self, old_name, new_name):
-        self.ensure_rename_is_possible(self.entries, old_name, new_name, 'Credential')
-        entry = self.entries.pop(old_name)
+        self.ensure_rename_is_possible(self.credentials, old_name, new_name, 'Credential')
+        entry = self.credentials.pop(old_name)
         self.add_credential(entry, new_name)
 
     def remove_credential(self, name):
-        self.ensure_remove_is_possible(self.entries, 'Credential', name)
-        self.entries.pop(name)
+        self.ensure_remove_is_possible(self.credentials, 'Credential', name)
+        self.credentials.pop(name)
 
     def ensure_add_is_possible(self, containers, name, description):
         self.ensure_not_present(containers, name, description)
