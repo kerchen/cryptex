@@ -1,106 +1,97 @@
-from illegal_chars import ILLEGAL_CHAR_RE
 from ec_exceptions import ECDuplicateException, ECNotFoundException, ECNaughtyCharacterException
+from illegal_chars import ILLEGAL_CHAR_RE
 
 
 class Node:
     def __init__(self):
-        self.containers = dict()
-        self.entries = dict()
+        self.nodes = dict()
+        self.credentials = dict()
 
     def has_container(self, cont_name):
-        return cont_name in self.containers
+        return cont_name in self.nodes
 
-    def get_container(self, cont_name):
-        if cont_name not in self.containers:
-            raise ECNotFoundException(
-                "Container with name '{0}' not found".format(cont_name))
-        return self.containers[cont_name]
+    def get_container(self, name):
+        self.ensure_is_present(self.nodes, name, 'Container')
+        return self.nodes[name]
 
     def get_container_count(self):
-        return len(self.containers)
+        return len(self.nodes)
 
     def get_containers(self):
-        return frozenset(self.containers.items())
+        return frozenset(self.nodes.items())
 
-    def has_entry(self, entry_name):
-        return entry_name in self.entries
+    def has_entry(self, name):
+        return name in self.credentials
 
-    def get_entry(self, entry_name):
-        if entry_name not in self.entries:
-            raise ECNotFoundException(
-                "Credential with name '{0}' not found".format(entry_name))
-        return self.entries[entry_name]
+    def get_entry(self, name):
+        self.ensure_is_present(self.credentials, name, 'Credential')
+        return self.credentials[name]
 
     def get_entry_count(self):
-        return len(self.entries)
+        return len(self.credentials)
 
     def get_entries(self):
-        return frozenset(self.entries.items())
+        return frozenset(self.credentials.items())
 
     def clear(self):
-        self.containers.clear()
-        self.entries.clear()
+        self.nodes.clear()
+        self.credentials.clear()
 
-    def add_node(self, cont, name):
-        self.ensure_add_is_possible('container', self.containers, name)
-        self.containers[name] = cont
-
-    def ensure_add_is_possible(self, container, containers, name):
-        if name in containers:
-            raise ECDuplicateException(f"Duplicate {container} name {name}")
-        if name and ILLEGAL_CHAR_RE.search(name):
-            raise ECNaughtyCharacterException(
-                "Illegal character used in name {0}".format(name))
+    def add_node(self, node, name):
+        self.ensure_add_is_possible(self.nodes, name, 'Container')
+        self.nodes[name] = node
 
     def rename_node(self, old_name, new_name):
-        if old_name not in self.containers:
-            raise ECNotFoundException(
-                "Container with name '{0}' not found".format(old_name))
-        if new_name in self.containers:
-            raise ECDuplicateException(
-                "Container with name '{0}' already present".format(new_name))
-        if ILLEGAL_CHAR_RE.search(new_name):
-            raise ECNaughtyCharacterException(
-                "Illegal character used in new name {0}".format(new_name))
-        cont = self.containers.pop(old_name)
+        self.ensure_rename_is_possible(self.nodes, old_name, new_name, 'Container')
+        cont = self.nodes.pop(old_name)
         self.add_node(cont, new_name)
 
     def remove_node(self, name):
-        if name not in self.containers:
-            raise ECNotFoundException(
-                "Container with name '{}' not found".format(name))
-        self.containers.pop(name)
+        self.ensure_remove_is_possible(self.nodes, 'Container', name)
+        self.nodes.pop(name)
 
-    def add_credential(self, entry, name):
-        if name in self.entries:
-            raise ECDuplicateException(
-                "Credential with name {0} already exists".format(name))
-        if ILLEGAL_CHAR_RE.search(name):
-            raise ECNaughtyCharacterException(
-                "Illegal character used in name {0}".format(name))
-        self.entries[name] = entry
+    def add_credential(self, credential, name):
+        self.ensure_add_is_possible(self.credentials, name, "Credential")
+        self.credentials[name] = credential
 
     def replace_credential(self, entry, name):
-        if name not in self.entries:
-            raise ECNotFoundException(
-                "Credential with name '{0}' not found".format(name))
-        self.entries[name] = entry
+        self.ensure_replace_is_possible(self.credentials, name, 'Credential')
+        self.credentials[name] = entry
 
     def rename_credential(self, old_name, new_name):
-        if old_name not in self.entries:
-            raise ECNotFoundException(
-                "Credential with name '{0}' not found".format(old_name))
-        if new_name in self.entries:
-            raise ECDuplicateException(
-                "Credential with name '{0}' already present".format(new_name))
-        if ILLEGAL_CHAR_RE.search(new_name):
-            raise ECNaughtyCharacterException(
-                "Illegal character used in new name {0}".format(new_name))
-        entry = self.entries.pop(old_name)
+        self.ensure_rename_is_possible(self.credentials, old_name, new_name, 'Credential')
+        entry = self.credentials.pop(old_name)
         self.add_credential(entry, new_name)
 
     def remove_credential(self, name):
-        if name not in self.entries:
+        self.ensure_remove_is_possible(self.credentials, 'Credential', name)
+        self.credentials.pop(name)
+
+    def ensure_add_is_possible(self, containers, name, description):
+        self.ensure_not_present(containers, name, description)
+        self.ensure_legal_characters(name)
+
+    def ensure_rename_is_possible(self, containers, old_name, new_name, description):
+        self.ensure_is_present(containers, old_name, description)
+        self.ensure_not_present(containers, new_name, description)
+        self.ensure_legal_characters(new_name)
+
+    def ensure_remove_is_possible(self, containers, description, name):
+        self.ensure_is_present(containers, name, description)
+
+    def ensure_replace_is_possible(self, containers, name, description):
+        self.ensure_is_present(containers, name, description)
+
+    def ensure_is_present(self, containers, name, description):
+        if name not in containers:
             raise ECNotFoundException(
-                "Credential with name '{}' not found".format(name))
-        self.entries.pop(name)
+                f"{description} with name '{name}' not found")
+
+    def ensure_not_present(self, containers, name, description):
+        if name in containers:
+            raise ECDuplicateException(f"{description} with name {name} already exists")
+
+    def ensure_legal_characters(self, name):
+        if name and ILLEGAL_CHAR_RE.search(name):
+            raise ECNaughtyCharacterException(f"Illegal character used in name {name}")
+
