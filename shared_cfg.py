@@ -1,11 +1,10 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 import logging
 import os
 import threading
 import uuid
 
-import pw_store
-
+import ec_exceptions
 
 HID_USB_MODE = 1    # aka 'curses/keyboard' mode
 RNDIS_USB_MODE = 2  # aka 'web interface' mode
@@ -33,7 +32,6 @@ class LockWrapper:
 config_lock = LockWrapper(True)
 
 SESSION_COOKIE_NAME = "cryptex-session-id"
-ILLEGAL_NAME_CHARS = pw_store.ILLEGAL_NAME_CHARS
 BASE_URL = "https://cryptex.local"
 
 PASSWORD_CHARS_UPPER_CASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -198,11 +196,11 @@ def move_entry(entry_path, new_parent_path):
             if new_parent_container.has_entry(entry_name):
                 ex_text = ("Destination folder already has an entry with "
                            "the name {0} in it.".format(entry_name))
-                raise pw_store.ECDuplicateException(ex_text)
+                raise ec_exceptions.ECDuplicateException(ex_text)
             # If this raises an exception, the entry hasn't been removed
             # from the old parent yet, so we shouldn't lose it.
-            new_parent_container.add_entry(entry, entry_name)
-            parent_container.remove_entry(entry_name)
+            new_parent_container.add_credential(entry, entry_name)
+            parent_container.remove_credential(entry_name)
             master_store.save(master_password, pw_store_filename)
     finally:
         config_lock.release()
@@ -217,7 +215,7 @@ def remove_entry(entry_path):
             try:
                 cont_path, entry_name = os.path.split(entry_path)
                 cont = master_store.get_container_by_path(cont_path)
-                cont.remove_entry(entry_name)
+                cont.remove_credential(entry_name)
                 master_store.save(master_password, pw_store_filename)
             finally:
                 pass
@@ -245,7 +243,7 @@ def rename_container(container_path, updated_name):
         if master_store and master_password:
             parent_path, current_name = os.path.split(container_path)
             parent_container = master_store.get_container_by_path(parent_path)
-            parent_container.rename_container(current_name, updated_name)
+            parent_container.rename_node(current_name, updated_name)
             master_store.save(master_password, pw_store_filename)
     finally:
         config_lock.release()
@@ -265,11 +263,11 @@ def move_container(container_path, new_parent_path):
             if new_parent_container.has_container(container_name):
                 ex_text = ("Destination folder already has a folder with "
                            "the name {0} in it.".format(container_name))
-                raise pw_store.ECDuplicateException(ex_text)
+                raise ec_exceptions.ECDuplicateException(ex_text)
             # If this raises an exception, the container hasn't been removed
             # from the old parent yet, so we shouldn't lose the container.
-            new_parent_container.add_container(moving_container, container_name)
-            parent_container.remove_container(container_name)
+            new_parent_container.add_node(moving_container, container_name)
+            parent_container.remove_node(container_name)
             master_store.save(master_password, pw_store_filename)
     finally:
         config_lock.release()
@@ -284,7 +282,7 @@ def remove_container(container_path):
             try:
                 parent_container, container_name = os.path.split(container_path)
                 parent_container = master_store.get_container_by_path(parent_container)
-                parent_container.remove_container(container_name)
+                parent_container.remove_node(container_name)
                 master_store.save(master_password, pw_store_filename)
             finally:
                 pass
@@ -394,3 +392,6 @@ def lock_store():
         activate_web_mode()
     finally:
         config_lock.release()
+
+
+

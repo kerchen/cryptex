@@ -1,174 +1,16 @@
 from base64 import b64decode, b64encode
 import logging
 import os
-import re
 import xml.etree.cElementTree as ET
 
 import encryption
+from credential import Credential
+from ec_exceptions import ECException, ECNotFoundException
+from node import Node
 from path_util import simplify_path
 
 
 log = logging.getLogger(__name__)
-
-ILLEGAL_NAME_CHARS = [u"'", u"\\\\", u"/"]
-ILLEGAL_CHAR_RE = re.compile("["+u"".join(ILLEGAL_NAME_CHARS)+"]")
-
-
-class ECException(Exception):
-    pass
-
-
-class ECDuplicateException(ECException):
-    pass
-
-
-class ECNotFoundException(ECException):
-    pass
-
-
-class ECNaughtyCharacterException(ECException):
-    pass
-
-
-class ECBadPathException(ECException):
-    pass
-
-
-class EntryContainer:
-    def __init__(self):
-        self.containers = dict()
-        self.entries = dict()
-
-    def has_container(self, cont_name):
-        return cont_name in self.containers
-
-    def get_container(self, cont_name):
-        if cont_name not in self.containers:
-            raise ECNotFoundException(
-                "Container with name '{0}' not found".format(cont_name))
-        return self.containers[cont_name]
-
-    def get_container_count(self):
-        return len(self.containers)
-
-    def get_containers(self):
-        return frozenset(self.containers.items())
-
-    def has_entry(self, entry_name):
-        return entry_name in self.entries
-
-    def get_entry(self, entry_name):
-        if entry_name not in self.entries:
-            raise ECNotFoundException(
-                "Entry with name '{0}' not found".format(entry_name))
-        return self.entries[entry_name]
-
-    def get_entry_count(self):
-        return len(self.entries)
-
-    def get_entries(self):
-        return frozenset(self.entries.items())
-
-    def clear(self):
-        self.containers.clear()
-        self.entries.clear()
-
-    def add_container(self, cont, name):
-        if name in self.containers:
-            raise ECDuplicateException(
-                "Duplicate container name {0}".format(name))
-        if name and ILLEGAL_CHAR_RE.search(name):
-            raise ECNaughtyCharacterException(
-                "Illegal character used in name {0}".format(name))
-        self.containers[name] = cont
-
-    def rename_container(self, old_name, new_name):
-        if old_name not in self.containers:
-            raise ECNotFoundException(
-                "Container with name '{0}' not found".format(old_name))
-        if new_name in self.containers:
-            raise ECDuplicateException(
-                "Container with name '{0}' already present".format(new_name))
-        if ILLEGAL_CHAR_RE.search(new_name):
-            raise ECNaughtyCharacterException(
-                "Illegal character used in new name {0}".format(new_name))
-        cont = self.containers.pop(old_name)
-        self.add_container(cont, new_name)
-
-    def remove_container(self, name):
-        if name not in self.containers:
-            raise ECNotFoundException(
-                "Container with name '{}' not found".format(name))
-        self.containers.pop(name)
-
-    def add_entry(self, entry, name):
-        if name in self.entries:
-            raise ECDuplicateException(
-                "Entry with name {0} already exists".format(name))
-        if ILLEGAL_CHAR_RE.search(name):
-            raise ECNaughtyCharacterException(
-                "Illegal character used in name {0}".format(name))
-        self.entries[name] = entry
-
-    def replace_entry(self, entry, name):
-        if name not in self.entries:
-            raise ECNotFoundException(
-                "Entry with name '{0}' not found".format(name))
-        self.entries[name] = entry
-
-    def rename_entry(self, old_name, new_name):
-        if old_name not in self.entries:
-            raise ECNotFoundException(
-                "Entry with name '{0}' not found".format(old_name))
-        if new_name in self.entries:
-            raise ECDuplicateException(
-                "Entry with name '{0}' already present".format(new_name))
-        if ILLEGAL_CHAR_RE.search(new_name):
-            raise ECNaughtyCharacterException(
-                "Illegal character used in new name {0}".format(new_name))
-        entry = self.entries.pop(old_name)
-        self.add_entry(entry, new_name)
-
-    def remove_entry(self, name):
-        if name not in self.entries:
-            raise ECNotFoundException(
-                "Entry with name '{}' not found".format(name))
-        self.entries.pop(name)
-
-
-class Entry:
-    def __init__(self,  username=None, password=None, url=None):
-        self.username = username
-        self.password = password
-        self.url = url
-
-    def get_username(self):
-        return self.username
-
-    def set_username(self, username):
-        if len(username):
-            self.username = username
-        else:
-            self.username = None
-
-    def get_password(self):
-        return self.password
-
-    def set_password(self, password):
-        if len(password):
-            self.password = password
-        else:
-            self.password = None
-
-    def get_url(self):
-        return self.url
-
-    def set_url(self, url):
-        if len(url):
-            self.url = url
-        else:
-            self.url = None
-
 
 ROOT_TAG = u"cryptex"
 STORE_ROOT_TAG = u"store"
@@ -182,10 +24,10 @@ URL_TAG = u"url"
 
 def deserialize_xml(xml_node=None):
     """Given an XML node which represents the root of a container, creates
-    an EntryContainer object and adds the entries and containers that are
+    an Node object and adds the entries and containers that are
     children of the node.
     :returns a tuple of the container name and object"""
-    cont = EntryContainer()
+    cont = Node()
     cont_name = None
     
     if xml_node is None:
@@ -197,9 +39,9 @@ def deserialize_xml(xml_node=None):
     for el in list(xml_node):
         if el.tag == CONTAINER_TAG:
             n, c = deserialize_xml(el)
-            cont.add_container(c, n)
+            cont.add_node(c, n)
         elif el.tag == ENTRY_TAG:
-            new_entry = Entry()
+            new_entry = Credential()
             for en in el.iter():
                 if en.tag == USERNAME_TAG:
                     new_entry.set_username(b64decode(en.text).decode('utf-8'))
@@ -207,13 +49,13 @@ def deserialize_xml(xml_node=None):
                     new_entry.set_password(b64decode(en.text).decode('utf-8'))
                 elif en.tag == URL_TAG:
                     new_entry.set_url(b64decode(en.text).decode('utf-8'))
-            cont.add_entry(new_entry, b64decode(el.attrib[NAME_ATTRIBUTE]).decode('utf-8'))
+            cont.add_credential(new_entry, b64decode(el.attrib[NAME_ATTRIBUTE]).decode('utf-8'))
 
     return cont_name, cont
 
 
 def serialize_xml(xml_root, cont_name, cont, cont_tag=CONTAINER_TAG):
-    """Given an XML root node, serializes to XML the EntryContainer 'cont' with
+    """Given an XML root node, serializes to XML the Node 'cont' with
     the name 'cont_name'."""
     root_element = ET.SubElement(xml_root, cont_tag)
     if cont_name:
@@ -250,7 +92,7 @@ class PasswordStore:
             _, self.root = deserialize_xml()
 
     def get_root(self):
-        """Returns the EntryContainer that is the root of the store."""
+        """Returns the Node that is the root of the store."""
         return self.root
 
     def is_empty(self):
@@ -293,7 +135,7 @@ class PasswordStore:
         if not entry_name or len(entry_name) == 0:
             raise ECException("Invalid entry name")
         dest_cont = self.get_container_by_path(simplify_path(path))
-        dest_cont.add_entry(entry, entry_name)
+        dest_cont.add_credential(entry, entry_name)
 
     def update_entry(self, path, updated_name, updated_entry):
         if not updated_entry:
@@ -303,8 +145,8 @@ class PasswordStore:
         cont_path, current_name = os.path.split(path)
         cont = self.get_container_by_path(simplify_path(cont_path))
         if updated_name != current_name:
-            cont.rename_entry(current_name, updated_name)
-        cont.replace_entry(updated_entry, updated_name)
+            cont.rename_credential(current_name, updated_name)
+        cont.replace_credential(updated_entry, updated_name)
 
     def get_entry_by_path(self, path):
         cont_path, ent_name = os.path.split(simplify_path(path))
@@ -325,7 +167,7 @@ class PasswordStore:
         if not cont_name or len(cont_name) == 0:
             raise ECException("Invalid container name")
         dest_cont = self.get_container_by_path(simplify_path(path))
-        dest_cont.add_container(cont, cont_name)
+        dest_cont.add_node(cont, cont_name)
 
     def get_container_count_by_path(self, path):
         cont = self.get_container_by_path(simplify_path(path))

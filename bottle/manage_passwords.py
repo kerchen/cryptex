@@ -1,9 +1,11 @@
+import illegal_chars
 from bottle import (post, redirect, request, route, template)
 import logging
 import os
 
-from pw_store import (Entry, EntryContainer, ECDuplicateException,
-                      ECException, ECNaughtyCharacterException)
+from credential import Credential
+from ec_exceptions import ECException, ECDuplicateException, ECNaughtyCharacterException
+from node import Node
 import shared_cfg
 
 log = logging.getLogger(__name__)
@@ -128,7 +130,7 @@ def process_new_entry_input(template_name):
                         status_msg="Passwords do not match.",
                         data=retry_data)
 
-    ent = Entry(username=username, password=password1, url=url)
+    ent = Credential(username=username, password=password1, url=url)
     return (ent, retry_data), None
 
 
@@ -157,7 +159,7 @@ def handle_create_entry_post():
                       .format(retry_data["entry_name"]))
             status_msg = ("Entry names cannot contain any of these "
                           "characters: {0}"
-                          .format(" ".join(shared_cfg.ILLEGAL_NAME_CHARS)))
+                          .format(" ".join(illegal_chars.ILLEGAL_NAME_CHARS)))
         except ECException as ex:
             log.debug("Unexpected problem while adding entry "
                       "{0}".format(retry_data["entry_name"]))
@@ -208,9 +210,9 @@ def handle_edit_entry_post():
                             status_msg=status_msg,
                             data=retry_data)
 
-        updated_entry = Entry(username=username,
-                              password=password1,
-                              url=url)
+        updated_entry = Credential(username=username,
+                                   password=password1,
+                                   url=url)
         entry_path = parent_path + '/' + current_entry_name
         try:
             shared_cfg.update_entry(entry_path, entry_name, updated_entry)
@@ -223,7 +225,7 @@ def handle_edit_entry_post():
             log.debug("Bad character in entry name {0}".format(entry_name))
             status_msg = ("Entry names cannot contain these "
                           "characters: {0}. Please try again."
-                          .format(" ".join(shared_cfg.ILLEGAL_NAME_CHARS)))
+                          .format(" ".join(illegal_chars.ILLEGAL_NAME_CHARS)))
         except ECException as ex:
             log.debug("Unexpected problem while updating entry "
                       "{0}:{1}".format(current_entry_name, ex))
@@ -299,7 +301,7 @@ def handle_create_folder_post():
                             parent_path=parent_path,
                             status_msg="Folder names cannot be empty. "
                                        "Please try again.")
-        folder = EntryContainer()
+        folder = Node()
         status_msg = None
         try:
             shared_cfg.add_container(folder, folder_name, parent_path)
@@ -313,7 +315,7 @@ def handle_create_folder_post():
             status_msg = ("Folder names cannot contain these "
                           "characters:{0}. Please enter a name "
                           "which does not use any of those characters."
-                          .format(" ".join(shared_cfg.ILLEGAL_NAME_CHARS)))
+                          .format(" ".join(illegal_chars.ILLEGAL_NAME_CHARS)))
         except ECException as ex:
             log.debug("Exception while adding container {0}".format(folder_name))
             status_msg = "The folder could not be added. Reason: {0}".format(ex)
@@ -358,7 +360,7 @@ def handle_edit_folder_post():
             log.debug("Bad character in folder name {0}".format(new_folder_name))
             status_msg = ("Folder names cannot contain any of these "
                           "characters: {0}. Please try again."
-                          .format(" ".join(shared_cfg.ILLEGAL_NAME_CHARS)))
+                          .format(" ".join(illegal_chars.ILLEGAL_NAME_CHARS)))
         except ECException as ex:
             log.debug("Unexpected problem while updating folder "
                       "{0}:{1}".format(current_folder_name, ex))
