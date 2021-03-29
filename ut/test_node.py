@@ -100,7 +100,7 @@ class TestNode(TestCase):
 
     @parameterized.expand(ILLEGAL_NAME_CHARS)
     def test_illegal_character_at_end_of_credential_name(self, c):
-        self.assertRaiseNaughtyCharacterException(self.cut.add_credential, Credential, "before" + c)
+        self.assertRaiseNaughtyCharacterException(self.cut.add_credential, Credential(), "before" + c)
 
     def test_add_entry(self):
         new_entry = Credential()
