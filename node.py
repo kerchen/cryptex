@@ -18,7 +18,7 @@ class Node:
         return len(self.__nodes)
 
     def is_empty(self):
-        return not (self.__nodes and self.__credentials)
+        return not (self.__nodes or self.__credentials)
 
     @property
     def nodes(self):
