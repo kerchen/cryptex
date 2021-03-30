@@ -260,7 +260,7 @@ def move_container(container_path, new_parent_path):
             moving_container = master_store.get_container_by_path(container_path)
             new_parent_container = master_store.\
                 get_container_by_path(new_parent_path)
-            if new_parent_container.has_container(container_name):
+            if new_parent_container.has_node(container_name):
                 ex_text = ("Destination folder already has a folder with "
                            "the name {0} in it.".format(container_name))
                 raise ec_exceptions.ECDuplicateException(ex_text)

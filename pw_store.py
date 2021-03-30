@@ -61,7 +61,7 @@ def serialize_xml(xml_root, cont_name, cont, cont_tag=CONTAINER_TAG):
     if cont_name:
         root_element.set(NAME_ATTRIBUTE, b64encode(cont_name.encode()).decode('utf-8'))
 
-    for k, e in cont.get_credentials():
+    for k, e in cont.credentials:
         entry_el = ET.SubElement(root_element, ENTRY_TAG)
         entry_el.set(NAME_ATTRIBUTE, b64encode(k.encode()).decode('utf-8'))
         if e.get_username():
@@ -74,7 +74,7 @@ def serialize_xml(xml_root, cont_name, cont, cont_tag=CONTAINER_TAG):
             url_el = ET.SubElement(entry_el, URL_TAG)
             url_el.text = b64encode(e.get_url().encode()).decode('utf-8')
 
-    for k, c in cont.get_nodes():
+    for k, c in cont.nodes:
         serialize_xml(root_element, k, c)
 
 
@@ -111,7 +111,7 @@ class PasswordStore:
                 if cc_count > 0:
                     dest_cont = dest_cont.get_node(c)
                 else:
-                    if not dest_cont.has_container(c):
+                    if not dest_cont.has_node(c):
                         if not dest_cont.has_credential(c):
                             return False
             except ECNotFoundException:
@@ -155,11 +155,11 @@ class PasswordStore:
 
     def get_entry_count_by_path(self, path):
         cont = self.get_container_by_path(simplify_path(path))
-        return len(cont.get_credentials())
+        return len(cont.credentials)
 
     def get_entries_by_path(self, path):
         cont = self.get_container_by_path(simplify_path(path))
-        return cont.get_credentials()
+        return cont.credentials
 
     def add_container(self, cont, cont_name, path):
         if not cont:
@@ -171,11 +171,11 @@ class PasswordStore:
 
     def get_container_count_by_path(self, path):
         cont = self.get_container_by_path(simplify_path(path))
-        return len(cont.get_nodes())
+        return len(cont.nodes)
 
     def get_containers_by_path(self, path):
         cont = self.get_container_by_path(simplify_path(path))
-        return cont.get_nodes()
+        return cont.nodes
 
     def serialize_to_xml(self):
         xml_root = ET.Element(ROOT_TAG)

@@ -68,7 +68,7 @@ class TestPasswordStore(TestCase):
 
     def match_entries(self, cont1, cont2):
         self.assertEqual(cont1.get_credential_count(), cont2.get_credential_count())
-        for k, e1 in cont1.get_credentials():
+        for k, e1 in cont1.credentials:
             try:
                 e2 = cont2.get_credential(k)
                 self.assertEqual(e1.get_username(), e2.get_username())
@@ -81,7 +81,7 @@ class TestPasswordStore(TestCase):
         self.assertEqual(cont1.get_node_count(),
                          cont2.get_node_count())
         self.match_entries(cont1, cont2)
-        for k, c1 in cont1.get_nodes():
+        for k, c1 in cont1.nodes:
             try:
                 c2 = cont2.get_node(k)
                 self.match_containers(c1, c2)
