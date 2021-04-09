@@ -53,7 +53,7 @@ be put into 'keyboard' mode. In keyboard mode, all interactions with the
 cryptex are made through the dedicated display and input hardware.
 
 # Status
-As of this writing (13 Aug 2019), the device basically works! There are still
+As of this writing (09 Apr 2021), the device basically works! There are still
 plenty of improvements I'd like to make (see the Issues tab), but, as a 
 proof-of-concept, it's sound.
 
